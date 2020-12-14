@@ -57,11 +57,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => html.window.open(
                         '${_properties[index].listingURL}',
                         '${_properties[index].listingURL}'),
-                    child: new Text('${_properties[index].displayableAddress}'),
+                    child: Text('${_properties[index].displayableAddress}'),
                   ),
                   Text('£${_properties[index].price}'),
                   Text('${_properties[index].size.toString()}'),
-                  Image.network('${_properties[index].imageURL}'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.network('${_properties[index].floorPlan[0]}',
+                          height: 300),
+                      Image.network('${_properties[index].imageURL}',
+                          height: 300),
+                    ],
+                  ),
+                  FlatButton(
+                    onPressed: () => html.window.open(
+                        '${_properties[index].floorPlan[0]}',
+                        '${_properties[index].floorPlan[0]}'),
+                    child: new Text('${_properties[index].floorPlan[0]}'),
+                  ),
                 ],
               ),
             );

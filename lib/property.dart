@@ -8,6 +8,7 @@ class Property {
   String imageURL;
   String price;
   String displayableAddress;
+  List<dynamic> floorPlan;
 
   Property(this.listingURL, this.size, this.imageURL, this.price,
       this.displayableAddress);
@@ -17,7 +18,8 @@ class Property {
         size = json['floor_area'],
         imageURL = json['image_url'],
         price = json['price'],
-        displayableAddress = json['displayable_address'];
+        displayableAddress = json['displayable_address'],
+        floorPlan = json['floor_plan'];
 }
 
 class PropertyService {
