@@ -14,6 +14,7 @@ class NetworkManager {
         '&maximum_price=800000'
         '&minimum_beds=2'
         '&property_type=houses'
+        '&page_size=100'
         '&api_key=${secret.apiKey}';
     print(url);
     return http.get(url);

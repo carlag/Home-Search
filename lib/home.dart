@@ -51,30 +51,50 @@ class _MyHomePageState extends State<MyHomePage> {
           itemCount: _properties.length,
           itemBuilder: (context, index) {
             return ListTile(
+              title: FlatButton(
+                onPressed: () => html.window.open(
+                    '${_properties[index].listingURL}',
+                    '${_properties[index].listingURL}'),
+                child: Text(
+                  '${_properties[index].displayableAddress}',
+                  style: DefaultTextStyle.of(context)
+                      .style
+                      .apply(fontSizeFactor: 2.0),
+                ),
+              ),
               subtitle: Column(
                 children: [
-                  FlatButton(
-                    onPressed: () => html.window.open(
-                        '${_properties[index].listingURL}',
-                        '${_properties[index].listingURL}'),
-                    child: Text('${_properties[index].displayableAddress}'),
+                  Text(
+                    '£${_properties[index].price}',
+                    style: DefaultTextStyle.of(context)
+                        .style
+                        .apply(fontSizeFactor: 1.2),
                   ),
-                  Text('£${_properties[index].price}'),
-                  Text('${_properties[index].size.toString()}'),
+                  Text(
+                    '${_properties[index].size.toString()}',
+                    style: DefaultTextStyle.of(context)
+                        .style
+                        .apply(fontSizeFactor: 1.2),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.network('${_properties[index].floorPlan[0]}',
-                          height: 300),
-                      Image.network('${_properties[index].imageURL}',
-                          height: 300),
+                      FlatButton(
+                        onPressed: () => html.window.open(
+                            '${_properties[index].floorPlan[0] ?? ''}',
+                            '${_properties[index].floorPlan[0] ?? ''}'), // handle your image tap here
+                        child: Image.network(
+                            '${_properties[index].floorPlan[0] ?? ''}',
+                            height: 300),
+                      ),
+                      FlatButton(
+                        onPressed: () => html.window.open(
+                            '${_properties[index].imageURL ?? ''}',
+                            '${_properties[index].imageURL ?? ''}'),
+                        child: Image.network('${_properties[index].imageURL}',
+                            height: 300),
+                      ),
                     ],
-                  ),
-                  FlatButton(
-                    onPressed: () => html.window.open(
-                        '${_properties[index].floorPlan[0]}',
-                        '${_properties[index].floorPlan[0]}'),
-                    child: new Text('${_properties[index].floorPlan[0]}'),
                   ),
                 ],
               ),

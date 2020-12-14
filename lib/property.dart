@@ -6,7 +6,7 @@ class Property {
   String listingURL;
   dynamic size;
   String imageURL;
-  String price;
+  dynamic price;
   String displayableAddress;
   List<dynamic> floorPlan;
 
@@ -14,12 +14,12 @@ class Property {
       this.displayableAddress);
 
   Property.fromJson(Map<String, dynamic> json)
-      : listingURL = json['details_url'],
-        size = json['floor_area'],
-        imageURL = json['image_url'],
-        price = json['price'],
-        displayableAddress = json['displayable_address'],
-        floorPlan = json['floor_plan'];
+      : listingURL = json['details_url'] ?? 'No listing URL',
+        size = json['floor_area'] ?? 'No floor area',
+        imageURL = json['image_url'] ?? 'No image',
+        price = json['price'] ?? 'No price',
+        displayableAddress = json['displayable_address'] ?? 'No Address',
+        floorPlan = json['floor_plan'] ?? ['No floorplan'];
 }
 
 class PropertyService {
