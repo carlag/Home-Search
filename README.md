@@ -14,3 +14,19 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+## OCR service
+
+### Set up the environment
+
+If you haven't already:
+
+1. `python3 -m venv .env`
+1. `source .env/bin/activate`
+1. `pip install -r requirements.txt`
+
+### Running the service
+
+1. `cd ocr_service`
+1. `uvicorn main:app --reload`
