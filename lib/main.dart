@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:proper_house_search/home.dart';
+import 'package:proper_house_search/view/home.dart';
 
 void main() {
   runApp(MyApp());
