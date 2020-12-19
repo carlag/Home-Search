@@ -19,7 +19,7 @@ class Property {
         imageURL = json['image_url'] ?? 'No image',
         price = json['price'] ?? 'No price',
         displayableAddress = json['displayable_address'] ?? 'No Address',
-        floorPlan = json['floor_plan'] ?? ['No floorplan'];
+        floorPlan = json['floor_plan'] ?? [];
 }
 
 class PropertyService {

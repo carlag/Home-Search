@@ -1,9 +1,8 @@
-import 'dart:html' as html;
-
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/property.dart';
+import 'package:universal_html/html.dart' as html;
 
-Widget PropertySummary(BuildContext context, Property property) {
+Widget propertySummary(BuildContext context, Property property) {
   final titleStyle =
       DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
   final subTitleStyle =
