@@ -5,6 +5,6 @@ from ocr import get_area
 app = FastAPI()
 
 
-@app.get("/uri/{uri}")
-async def get_floorplan_area(uri):
-    return {"area": get_area(f"https://lc.zoocdn.com/{uri}")}
+@app.get("/image/{image_file}")
+async def get_floorplan_area(image_file):
+    return {"area": get_area(f"https://lc.zoocdn.com/{image_file}")}

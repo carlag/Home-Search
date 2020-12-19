@@ -30,3 +30,8 @@ If you haven't already:
 
 1. `cd ocr_service`
 1. `uvicorn main:app --reload`
+
+### Calling the service
+
+1. send a request to where ever the service is running (e.g. `http://127.0.0.1:8000`) followed by `/image/{image_file}`.
+   e.g. `curl http://127.0.0.1:8000/image/f9bcacc95fcbeb8e7490ad7cc6726f667785b6e2.jpg`
