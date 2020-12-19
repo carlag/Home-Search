@@ -9,8 +9,10 @@ class NetworkManager {
     final listingsURL = 'https://api.zoopla.co.uk/api/v1/property_listings.js';
     final url = '$listingsURL?'
         'postcode=nw36hf'
-        '&radius=20.0'
+        '&keywords=garden'
+        '&radius=5.0'
         '&listing_status=sale'
+        '&minimum_price=500000'
         '&maximum_price=800000'
         '&minimum_beds=2'
         '&property_type=houses'

@@ -29,6 +29,10 @@ Widget _body(Property property, TextStyle style) => Column(
           style: style,
         ),
         Text(
+          '£${property.status}',
+          style: style,
+        ),
+        Text(
           '${property.size?.toString() ?? 'No size'}',
           style: style,
         ),
