@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
-import 'package:proper_house_search/secret.dart';
+import 'package:proper_house_search/data/secret.dart';
 
 class NetworkManager {
   Future<http.Response> fetchProperties() async {

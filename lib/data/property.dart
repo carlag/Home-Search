@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:proper_house_search/network.dart';
+import 'package:proper_house_search/data/network.dart';
 
 class Property {
   String listingURL;
@@ -33,6 +33,7 @@ class PropertyService {
           jsonDecode(response.body)['listing'] as List<dynamic>;
       final properties = propertiesJSON
           .map((property) => Property.fromJson(property))
+          .where((property) => property.floorPlan.isNotEmpty)
           .toList();
       return properties;
     } else {
