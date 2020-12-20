@@ -5,8 +5,10 @@ import 'package:proper_house_search/data/network.dart';
 class Property {
   String listingURL;
   dynamic size;
+  String ocrSize;
   String imageURL;
   String status;
+  String propertyType;
   dynamic price;
   String displayableAddress;
   List<dynamic> floorPlan;
@@ -17,6 +19,7 @@ class Property {
   Property.fromJson(Map<String, dynamic> json)
       : listingURL = json['details_url'] ?? 'No listing URL',
         status = json['status'] ?? 'No status',
+        propertyType = json['property_type'] ?? 'No property type',
         size = json['floor_area'] ?? 'No floor area',
         imageURL = json['image_url'] ?? 'No image',
         price = json['price'] ?? 'No price',
@@ -41,7 +44,20 @@ class PropertyService {
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
-      throw Exception('Failed to load album');
+      throw Exception('Failed to load property');
+    }
+  }
+
+  Future<String> fetchOcrSize(String floorPlanURL) async {
+    final response = await NetworkManager.fetchArea(floorPlanURL);
+
+    if (response.statusCode == 200) {
+      final areaJSON = jsonDecode(response.body)['area'] as String;
+      return areaJSON;
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load ocr size');
     }
   }
 }

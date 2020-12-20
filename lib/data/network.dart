@@ -4,6 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/secret.dart';
 
 class NetworkManager {
+  static const zooplaEndpoint = 'https://lc.zoocdn.com/';
+  static const ocrServiceEndpoint = 'http://127.0.0.1:8000/image/';
+
   Future<http.Response> fetchProperties() async {
     final secret = await SecretLoader(secretPath: "secrets.json").load();
     final listingsURL = 'https://api.zoopla.co.uk/api/v1/property_listings.js';
@@ -20,5 +23,11 @@ class NetworkManager {
         '&api_key=${secret.apiKey}';
     print(url);
     return http.get(url);
+  }
+
+  static Future<http.Response> fetchArea(String floorPlanURL) async {
+    final floorPlanId =
+        floorPlanURL.replaceFirst(zooplaEndpoint, ocrServiceEndpoint);
+    return http.get(floorPlanId);
   }
 }
