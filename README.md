@@ -25,6 +25,7 @@ If you haven't already:
 1. `python3 -m venv .env`
 1. `source .env/bin/activate`
 1. `pip install -r requirements.txt`
+1. `brew install poppler`
 
 ### Running the service
 
@@ -33,5 +34,6 @@ If you haven't already:
 
 ### Calling the service
 
-1. send a request to where ever the service is running (e.g. `http://127.0.0.1:8000`) followed by `/image/{image_file}`.
-   e.g. `curl http://127.0.0.1:8000/image/f9bcacc95fcbeb8e7490ad7cc6726f667785b6e2.jpg`
+1. send a request to where ever the service is running (e.g. `http://127.0.0.1:8000`) followed by `/{file_type}/{image_file}`.
+   e.g. `curl http://127.0.0.1:8000/jpg/f9bcacc95fcbeb8e7490ad7cc6726f667785b6e2` or
+   `curl http://127.0.0.1:8000/pdf/acf057f7f02b0cf3552e149de5772640bf0bfd2c`
