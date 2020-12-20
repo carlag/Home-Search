@@ -51,13 +51,18 @@ class PropertyService {
   Future<String> fetchOcrSize(String floorPlanURL) async {
     final response = await NetworkManager.fetchArea(floorPlanURL);
 
-    if (response.statusCode == 200) {
-      final areaJSON = jsonDecode(response.body)['area'] as String;
-      return areaJSON;
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load ocr size');
+    try {
+      if (response.statusCode == 200) {
+        final areaJSON = jsonDecode(response.body)['area'] as String;
+        return areaJSON;
+      } else {
+        // If the server did not return a 200 OK response,
+        // then throw an exception.
+        throw Exception('Failed to load ocr size');
+      }
+    } catch (error, stackTrace) {
+      print(error);
+      print(stackTrace);
     }
   }
 }
