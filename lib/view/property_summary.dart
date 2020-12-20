@@ -12,12 +12,11 @@ class PropertySummary extends StatefulWidget {
 }
 
 class _PropertySummaryState extends State<PropertySummary> {
-  Property _property;
-
   String _ocrSize;
 
   Future<void> _fetchOcrSize() async {
-    final size = await PropertyService().fetchOcrSize(_property.floorPlan[0]);
+    final size =
+        await PropertyService().fetchOcrSize(widget.property.floorPlan[0]);
     setState(() {
       _ocrSize = size;
     });
@@ -25,14 +24,17 @@ class _PropertySummaryState extends State<PropertySummary> {
 
   @override
   Widget build(BuildContext context) {
-    _fetchOcrSize();
+    if (widget.property == null) {
+      return ListTile(title: Text('Missing Property'));
+    }
+    // _fetchOcrSize();
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.2);
     return ListTile(
-      title: _title(_property, titleStyle),
-      subtitle: _body(_property, _ocrSize, subTitleStyle),
+      title: _title(widget.property, titleStyle),
+      subtitle: _body(widget.property, _ocrSize, subTitleStyle),
     );
   }
 }
@@ -57,10 +59,10 @@ Widget _body(Property property, String ocrSize, TextStyle style) => Column(
           style: style,
         ),
         Text(
-          '${property.size?.toString() ?? 'No size'}',
+          'Floor Area: ${property.size?.toString() ?? 'Unknown'}',
           style: style,
         ),
-        Text('OCR Size: ${ocrSize}'),
+        Text('OCR Floor Area: ${ocrSize ?? 'Unknown'}'),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
