@@ -3,7 +3,7 @@ import 'package:proper_house_search/data/property.dart';
 import 'package:universal_html/html.dart' as html;
 
 class PropertySummary extends StatefulWidget {
-  PropertySummary({Key key, this.property}) : super(key: key);
+  PropertySummary({required Key key, required this.property}) : super(key: key);
 
   final Property property;
 
@@ -12,13 +12,13 @@ class PropertySummary extends StatefulWidget {
 }
 
 class _PropertySummaryState extends State<PropertySummary> {
-  String _ocrSize;
+  String _ocrSize = 'Not loaded';
 
   Future<void> _fetchOcrSize() async {
     final size =
-        await PropertyService().fetchOcrSize(widget.property.floorPlan[0]);
+        await PropertyService().fetchOcrSize(widget.property.floorPlan?[0]);
     setState(() {
-      _ocrSize = size;
+      _ocrSize = size ?? 'Error';
     });
   }
 
@@ -62,7 +62,7 @@ Widget _body(Property property, String ocrSize, TextStyle style) => Column(
           'Floor Area: ${property.size?.toString() ?? 'Unknown'}',
           style: style,
         ),
-        Text('OCR Floor Area: ${ocrSize ?? 'Unknown'}'),
+        Text('OCR Floor Area: $ocrSize'),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -78,9 +78,9 @@ Widget _body(Property property, String ocrSize, TextStyle style) => Column(
     );
 
 Widget _floorPlan(Property property) => FlatButton(
-      onPressed: () => html.window.open('${property.floorPlan[0] ?? ''}',
-          '${property.floorPlan[0] ?? ''}'), // handle your image tap here
-      child: Image.network('${property.floorPlan[0] ?? ''}', height: 300),
+      onPressed: () => html.window.open('${property.floorPlan?[0] ?? ''}',
+          '${property.floorPlan?[0] ?? ''}'), // handle your image tap here
+      child: Image.network('${property.floorPlan?[0] ?? ''}', height: 300),
     );
 
 Widget _image(Property property) => FlatButton(

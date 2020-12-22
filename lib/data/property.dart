@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:proper_house_search/data/network.dart';
 
 class Property {
-  String listingURL;
-  dynamic size;
-  String ocrSize;
-  String imageURL;
-  String status;
-  String propertyType;
-  dynamic price;
-  String displayableAddress;
-  List<dynamic> floorPlan;
+  String? listingURL;
+  dynamic? size;
+  String? ocrSize;
+  String? imageURL;
+  String? status;
+  String? propertyType;
+  dynamic? price;
+  String? displayableAddress;
+  List<dynamic>? floorPlan;
 
   Property(this.listingURL, this.size, this.imageURL, this.price,
       this.displayableAddress);
@@ -38,7 +38,7 @@ class PropertyService {
           jsonDecode(response.body)['listing'] as List<dynamic>;
       final properties = propertiesJSON
           .map((property) => Property.fromJson(property))
-          .where((property) => property.floorPlan.isNotEmpty)
+          .where((property) => property.floorPlan?.isNotEmpty ?? false)
           .toList();
       return properties;
     } else {
@@ -48,8 +48,9 @@ class PropertyService {
     }
   }
 
-  Future<String> fetchOcrSize(String floorPlanURL) async {
+  Future<String?> fetchOcrSize(String floorPlanURL) async {
     final response = await NetworkManager.fetchArea(floorPlanURL);
+    print('FLOOR PLAN URL RESPONSE: ${response}');
 
     try {
       if (response.statusCode == 200) {

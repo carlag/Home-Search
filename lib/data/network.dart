@@ -5,7 +5,7 @@ import 'package:proper_house_search/data/secret.dart';
 
 class NetworkManager {
   static const zooplaEndpoint = 'https://lc.zoocdn.com/';
-  static const ocrServiceEndpoint = 'http://127.0.0.1:8000';
+  static const ocrServiceEndpoint = 'localhost:80';
 
   Future<http.Response> fetchProperties() async {
     final secret = await SecretLoader(secretPath: "secrets.json").load();
@@ -37,7 +37,7 @@ class NetworkManager {
       floorPlanURL =
           floorPlanURL.replaceFirst(zooplaEndpoint, '$ocrServiceEndpoint/pdf/');
     }
-
+    print('FLOOR PLAN URL: $floorPlanURL');
     return http.get(floorPlanURL);
   }
 }
