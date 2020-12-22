@@ -17,28 +17,28 @@ class Ocr:
         self.sqm_pattern= re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*m", re.IGNORECASE)
         self.sqft_pattern= re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*ft", re.IGNORECASE)
 
-    def get_area_jpg(self, floorplan_url: str) -> float:
+    def get_area_image(self, floorplan_url: str) -> float:
 
-        image = requests.get(f"{floorplan_url}.jpg").content
+        image = requests.get(f"{floorplan_url}").content
         floorplan_text = pytesseract.image_to_string(Image.open(BytesIO(image)))
         LOGGER.debug(f"OCR text:\n\n{floorplan_text}")
         return self._get_area_from_text(floorplan_text)
 
     def get_area_pdf(self, floorplan_url: str) -> float:
 
-        pdf = requests.get(f"{floorplan_url}.pdf").content
+        pdf = requests.get(f"{floorplan_url}").content
         image = convert_from_bytes(pdf)[0]
         floorplan_text = pytesseract.image_to_string(image)
         LOGGER.debug(f"OCR text:\n\n{floorplan_text}")
         return self._get_area_from_text(floorplan_text)
 
     def _get_area_from_text(self, text: str) -> float:
-        result = self.sqm_pattern.search(text)
+        result = self.sqm_pattern.findall(text)
         if result:
-            return max(float(area) for area in result.groups())
+            return max(float(area) for area in result)
         else:
-            result = self.sqft_pattern.search(text)
+            result = self.sqft_pattern.findall(text)
             if result:
-                return max(float(area) * 0.092903 for area in result.groups())
+                return max(float(area) * 0.092903 for area in result)
 
         raise ValueError("No regex matches found.")

@@ -41,8 +41,8 @@ Test it
 ### Calling the service
 
 ```bash
-curl localhost/jpg/f9bcacc95fcbeb8e7490ad7cc6726f667785b6e2
-curl localhost/pdf/acf057f7f02b0cf3552e149de5772640bf0bfd2c
+curl localhost/image/f9bcacc95fcbeb8e7490ad7cc6726f667785b6e2.jpg
+curl localhost/pdf/acf057f7f02b0cf3552e149de5772640bf0bfd2c.pdf
 ```
 
 
@@ -63,5 +63,12 @@ If you haven't already:
 ### Calling the service
 
 1. send a request to where ever the service is running (e.g. `http://127.0.0.1:8000`) followed by `/{file_type}/{image_file}`.
-   e.g. `curl http://127.0.0.1:8000/jpg/f9bcacc95fcbeb8e7490ad7cc6726f667785b6e2` or
-   `curl http://127.0.0.1:8000/pdf/acf057f7f02b0cf3552e149de5772640bf0bfd2c`
+   e.g. `curl http://127.0.0.1:8000/image/f9bcacc95fcbeb8e7490ad7cc6726f667785b6e2.jpg` or
+   `curl http://127.0.0.1:8000/pdf/acf057f7f02b0cf3552e149de5772640bf0bfd2c.pdf`
+
+### Examples:
+- More than one area:
+  - `curl localhost/jpg/d9dfc791e696ced419c31d54b4c3a66535098457`
+  - should return maximum area of `115.7`
+- .png:
+  - `curl localhost/image/a64beb115ca989474d2589b96043fcf663ba3207.png`
