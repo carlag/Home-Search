@@ -10,12 +10,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 // class PropertyMapState extends State<PropertyMap> {
 class PropertyMap extends StatelessWidget {
+  double longitude;
+  double latitude;
   Completer<GoogleMapController> _controller = Completer();
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
+  PropertyMap({required this.longitude, required this.latitude});
+
+  // static final CameraPosition _kGooglePlex = CameraPosition(
+  //   target: LatLng(37.42796133580664, -122.085749655962),
+  //   zoom: 14.4746,
+  // );
 
   static final CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
@@ -25,9 +29,16 @@ class PropertyMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final position = LatLng(latitude, longitude);
+    final cameraPosition = CameraPosition(
+      target: position,
+      zoom: 15,
+    );
     return new Scaffold(
       body: GoogleMap(
-        initialCameraPosition: _kGooglePlex,
+        markers: {Marker(markerId: MarkerId('property'), position: position)},
+        initialCameraPosition: cameraPosition,
+        zoomGesturesEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },

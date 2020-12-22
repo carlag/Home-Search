@@ -12,6 +12,7 @@ class PropertySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(property);
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =
@@ -52,11 +53,12 @@ Widget _body(Key key, Property property, TextStyle style) => Column(
           style: style,
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _floorPlan(property),
             _image(property),
-            // _map(property),
+            if (property.longitude != null && property.latitude != null)
+              Expanded(child: _map(property)),
           ],
         ),
         Padding(
@@ -78,5 +80,12 @@ Widget _image(Property property) => FlatButton(
       child: Image.network('${property.imageURL}', height: 300),
     );
 
-Widget _map(Property property) =>
-    SizedBox(height: 300, width: 200, child: PropertyMap());
+Widget _map(Property property) => Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+          height: 300,
+          child: PropertyMap(
+            longitude: property.longitude!,
+            latitude: property.latitude!,
+          )),
+    );
