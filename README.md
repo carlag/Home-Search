@@ -72,3 +72,5 @@ If you haven't already:
   - should return maximum area of `115.7`
 - .png:
   - `curl localhost/image/a64beb115ca989474d2589b96043fcf663ba3207.png`
+- no area
+  - https://lc.zoocdn.com/db1074144fdc6bf06d02224d09fa588ba1545fb1.gif

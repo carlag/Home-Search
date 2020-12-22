@@ -46,7 +46,11 @@ Widget _body(Key key, Property property, TextStyle style) => Column(
           'Floor Area: ${property.size?.toString() ?? 'Unknown'}',
           style: style,
         ),
-        OcrSize(key: key, floorPlanUrl: property.floorPlan?[0]),
+        OcrSize(
+          key: key,
+          floorPlanUrl: property.floorPlan?[0],
+          style: style,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

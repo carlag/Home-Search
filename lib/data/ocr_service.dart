@@ -40,20 +40,14 @@ class OcrService {
   }
 
   String _fetchOcrSizeRequest(String floorPlanURL) {
-    if (floorPlanURL.endsWith('jpg')) {
-      floorPlanURL = floorPlanURL.replaceFirst('.jpg', '');
-      floorPlanURL = floorPlanURL.replaceFirst(
-          _zooplaEndpoint, '$_ocrServiceEndpoint/jpg/');
-    } else if (floorPlanURL.endsWith('pdf')) {
-      floorPlanURL.replaceFirst('.pdf', '');
+    if (floorPlanURL.endsWith('pdf')) {
       floorPlanURL = floorPlanURL.replaceFirst(
           _zooplaEndpoint, '$_ocrServiceEndpoint/pdf/');
     } else {
-      throw ('Unhandled type: $floorPlanURL');
+      floorPlanURL = floorPlanURL.replaceFirst(
+          _zooplaEndpoint, '$_ocrServiceEndpoint/image/');
     }
-
-    print('FLOOR PLAN URL: $floorPlanURL');
-
+    print('Floor plan URL: $floorPlanURL');
     return floorPlanURL;
   }
 }
