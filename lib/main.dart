@@ -1,8 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/view/home.dart';
 
 void main() {
-  runApp(MyApp());
+  runZonedGuarded(
+    () => runApp(MyApp()),
+    (error, stackTrace) {
+      print(error);
+      print(stackTrace);
+    },
+  );
 }
 
 class MyApp extends StatelessWidget {

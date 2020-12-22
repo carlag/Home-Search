@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ListView.builder(
               itemCount: propertiesCount,
               itemBuilder: (context, index) {
-                print(_properties[index]);
+                print('PROPERTY: ${_properties[index]}');
                 return PropertySummary(
                   property: _properties[index],
                   key: Key('property_$index'),
