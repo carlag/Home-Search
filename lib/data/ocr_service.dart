@@ -28,7 +28,7 @@ class OcrService {
         // If the server did not return a 200 OK response,
         // then throw an exception.
         final message = jsonDecode(response.body)['detail'] as String;
-        throw Exception('Failed to load ocr size, $message');
+        throw Exception('Request Failed: $request, \n Error: $message');
       }
     } catch (error, stackTrace) {
       print(error);
