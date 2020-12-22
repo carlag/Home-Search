@@ -9,7 +9,7 @@ from pdf2image import convert_from_bytes
 
 
 LOGGER = logging.getLogger()
-PATTERN = re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*m")
+PATTERN = re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*m", re.IGNORECASE)
 
 def get_area_jpg(floorplan_url: str) -> float:
 
