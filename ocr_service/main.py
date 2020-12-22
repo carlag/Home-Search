@@ -2,15 +2,28 @@ import logging
 from typing import Dict, Any, Callable
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from ocr import get_area_jpg, get_area_pdf
 
 
 LOGGER = logging.getLogger()
+logging.basicConfig(level=logging.INFO)
+
 app = FastAPI()
 
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+]
 
-logging.basicConfig(level=logging.INFO)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/jpg/{image_file}")
