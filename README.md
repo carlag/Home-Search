@@ -18,7 +18,24 @@ samples, guidance on mobile development, and a full API reference.
 
 ## OCR service
 
-### Set up the environment
+### Deploy with Docker
+
+Create an environment variable with a version number
+```
+export TAG=0.1
+```
+
+Build the image:
+```bash
+docker build . -f OCRDockerfile -t home_search_ocr:$TAG
+```
+
+Run the container:
+```bash
+docker run -d --name ocr -p 80:80 home_search_ocr:$TAG
+```
+
+### Deploy locally
 
 If you haven't already:
 
