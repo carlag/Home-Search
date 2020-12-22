@@ -25,14 +25,16 @@ app.add_middleware(
 
 floorplan_reader = Ocr()
 
-@app.get("/jpg/{image_file}")
+
+@app.get("/image/{image_file}")
 async def get_floorplan_area(image_file: str) -> Dict[str, Any]:
-    return _get_area(image_file, floorplan_reader.get_area_jpg)
+    return _get_area(image_file, floorplan_reader.get_area_image)
 
 
 @app.get("/pdf/{image_file}")
 async def get_floorplan_area(image_file: str) -> Dict[str, Any]:
     return _get_area(image_file, floorplan_reader.get_area_pdf)
+
 
 def _get_area(image_file: str, area_function: Callable[[str], Dict[str, Any]]) -> Dict[str, Any]:
     try:
