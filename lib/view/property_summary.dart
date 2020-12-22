@@ -27,7 +27,7 @@ class _PropertySummaryState extends State<PropertySummary> {
     if (widget.property == null) {
       return ListTile(title: Text('Missing Property'));
     }
-    // _fetchOcrSize();
+    _fetchOcrSize();
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =

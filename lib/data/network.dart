@@ -30,14 +30,18 @@ class NetworkManager {
       floorPlanURL = floorPlanURL.replaceFirst('.jpg', '');
       floorPlanURL =
           floorPlanURL.replaceFirst(zooplaEndpoint, '$ocrServiceEndpoint/jpg/');
-    }
-
-    if (floorPlanURL.endsWith('pdf')) {
+    } else if (floorPlanURL.endsWith('pdf')) {
       floorPlanURL.replaceFirst('.pdf', '');
       floorPlanURL =
           floorPlanURL.replaceFirst(zooplaEndpoint, '$ocrServiceEndpoint/pdf/');
+    } else {
+      throw ('Unhandled type: $floorPlanURL');
     }
+
     print('FLOOR PLAN URL: $floorPlanURL');
-    return http.get(floorPlanURL);
+    return http.get(
+      floorPlanURL,
+      headers: {"Access-Control-Allow-Origin": "*"},
+    );
   }
 }
