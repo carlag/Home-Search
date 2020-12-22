@@ -23,7 +23,10 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Proper-ty Search'),
+      home: MyHomePage(
+        title: 'Proper-ty Search',
+        key: Key('homepage'),
+      ),
     );
   }
 }
