@@ -5,7 +5,7 @@ import 'package:proper_house_search/data/network.dart';
 class Property {
   String? listingURL;
   dynamic? size;
-  String? ocrSize;
+  double? ocrSize;
   String? imageURL;
   String? status;
   String? propertyType;
@@ -48,18 +48,18 @@ class PropertyService {
     }
   }
 
-  Future<String?> fetchOcrSize(String floorPlanURL) async {
+  Future<double?> fetchOcrSize(String floorPlanURL) async {
     final response = await NetworkManager.fetchArea(floorPlanURL);
-    print('FLOOR PLAN URL RESPONSE: ${response}');
+    print('FLOOR PLAN URL RESPONSE: ${response.toString()}');
 
     try {
       if (response.statusCode == 200) {
-        final areaJSON = jsonDecode(response.body)['area'] as String;
+        final areaJSON = jsonDecode(response.body)['area'] as double;
         return areaJSON;
       } else {
         // If the server did not return a 200 OK response,
         // then throw an exception.
-        throw Exception('Failed to load ocr size');
+        throw Exception('Failed to load ocr size, ${response.toString()}');
       }
     } catch (error, stackTrace) {
       print(error);

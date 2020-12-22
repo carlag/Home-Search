@@ -20,7 +20,7 @@ class _PropertySummaryState extends State<PropertySummary> {
     final size =
         await PropertyService().fetchOcrSize(widget.property.floorPlan?[0]);
     setState(() {
-      _ocrSize = size ?? 'Error';
+      _ocrSize = size != null ? '$size sqm' : 'Error';
     });
   }
 
@@ -66,7 +66,7 @@ Widget _body(Property property, String ocrSize, TextStyle style) => Column(
         ),
         Text('OCR Floor Area: $ocrSize'),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _floorPlan(property),
             _image(property),
@@ -93,4 +93,4 @@ Widget _image(Property property) => FlatButton(
     );
 
 Widget _map(Property property) =>
-    SizedBox(height: 300, width: 300, child: PropertyMap());
+    SizedBox(height: 300, width: 200, child: PropertyMap());
