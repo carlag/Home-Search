@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/property.dart';
 import 'package:universal_html/html.dart' as html;
 
+import 'property_map.dart';
+
 class PropertySummary extends StatefulWidget {
   PropertySummary({required Key key, required this.property}) : super(key: key);
 
@@ -18,7 +20,7 @@ class _PropertySummaryState extends State<PropertySummary> {
     final size =
         await PropertyService().fetchOcrSize(widget.property.floorPlan?[0]);
     setState(() {
-      _ocrSize = size ?? 'Error';
+      _ocrSize = size != null ? '$size sqm' : 'Error';
     });
   }
 
@@ -64,10 +66,11 @@ Widget _body(Property property, String ocrSize, TextStyle style) => Column(
         ),
         Text('OCR Floor Area: $ocrSize'),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _floorPlan(property),
             _image(property),
+            _map(property),
           ],
         ),
         Padding(
@@ -88,3 +91,6 @@ Widget _image(Property property) => FlatButton(
           .open('${property.imageURL ?? ''}', '${property.imageURL ?? ''}'),
       child: Image.network('${property.imageURL}', height: 300),
     );
+
+Widget _map(Property property) =>
+    SizedBox(height: 300, width: 200, child: PropertyMap());

@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/secret.dart';
 
 class NetworkManager {
+  static final client = new http.Client();
   static const zooplaEndpoint = 'https://lc.zoocdn.com/';
-  static const ocrServiceEndpoint = 'localhost:80';
+  static const ocrServiceEndpoint = 'http://127.0.0.1:80';
 
   Future<http.Response> fetchProperties() async {
     final secret = await SecretLoader(secretPath: "secrets.json").load();
@@ -39,7 +40,7 @@ class NetworkManager {
     }
 
     print('FLOOR PLAN URL: $floorPlanURL');
-    return http.get(
+    return client.get(
       floorPlanURL,
       headers: {"Access-Control-Allow-Origin": "*"},
     );
