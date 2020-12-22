@@ -18,6 +18,8 @@ samples, guidance on mobile development, and a full API reference.
 
 ## OCR service
 
+ou can either deploy is via docker or manually
+
 ### Deploy with Docker
 
 Create an environment variable with a version number
@@ -35,7 +37,16 @@ Run the container:
 docker run -d --name ocr -p 80:80 home_search_ocr:$TAG
 ```
 
-### Deploy locally
+Test it
+### Calling the service
+
+```bash
+curl localhost/jpg/f9bcacc95fcbeb8e7490ad7cc6726f667785b6e2
+curl localhost/pdf/acf057f7f02b0cf3552e149de5772640bf0bfd2c
+```
+
+
+### Deploy manually
 
 If you haven't already:
 
