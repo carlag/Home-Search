@@ -14,7 +14,8 @@ LOGGER = logging.getLogger()
 class Ocr:
 
     def __init__(self):
-        self.pattern= re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*m", re.IGNORECASE)
+        self.sqm_pattern= re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*m", re.IGNORECASE)
+        self.sqft_pattern= re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*ft", re.IGNORECASE)
 
     def get_area_jpg(self, floorplan_url: str) -> float:
 
@@ -32,7 +33,12 @@ class Ocr:
         return self._get_area_from_text(floorplan_text)
 
     def _get_area_from_text(self, text: str) -> float:
-        result = self.pattern.search(text)
-        if not result:
-            raise ValueError("No regex matches found.")
-        return max(float(area) for area in result.groups())
+        result = self.sqm_pattern.search(text)
+        if result:
+            return max(float(area) for area in result.groups())
+        else:
+            result = self.sqft_pattern.search(text)
+            if result:
+                return max(float(area) * 0.092903 for area in result.groups())
+
+        raise ValueError("No regex matches found.")
