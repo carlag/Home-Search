@@ -3,10 +3,8 @@ from typing import Dict, Any, Callable, List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-
-from ocr import Ocr
-
 from map_server import get_stations_information, Location
+from ocr import Ocr
 
 LOGGER = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -28,9 +26,9 @@ floorplan_reader = Ocr()
 
 
 @app.get("/stations/origin/{lat},{lng}")
-async def get_stations(lat: str, lng: str) -> List[Dict[str, Any]]:
+async def get_stations(lat: str, lng: str) -> Dict[str, List[Dict[str, Any]]]:
     try:
-        return get_stations_information(Location(lat, lng))
+        return {"stations": get_stations_information(Location(lat, lng))}
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Unable to get stations information: {err}")
 
