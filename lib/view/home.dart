@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:proper_house_search/data/property_service.dart';
 import 'package:proper_house_search/view/property_summary.dart';
 
-import '../data/property.dart';
+import '../data/models/property.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({required Key key, required this.title}) : super(key: key);
@@ -25,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Property> _properties = [];
 
   Future<void> _onPressed() async {
-    final properties = await PropertyService().fetch();
+    final properties = await PropertyService().fetchProperties();
     setState(() {
       _properties = properties;
     });
@@ -45,7 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ListView.builder(
               itemCount: propertiesCount,
               itemBuilder: (context, index) {
-                print('PROPERTY: ${_properties[index]}');
                 return PropertySummary(
                   property: _properties[index],
                   key: Key('property_$index'),

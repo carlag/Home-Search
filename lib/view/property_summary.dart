@@ -1,42 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:proper_house_search/data/property.dart';
+import 'package:proper_house_search/data/models/property.dart';
 import 'package:universal_html/html.dart' as html;
 
+import 'ocr_size.dart';
 import 'property_map.dart';
 
-class PropertySummary extends StatefulWidget {
+class PropertySummary extends StatelessWidget {
   PropertySummary({required Key key, required this.property}) : super(key: key);
 
   final Property property;
 
   @override
-  _PropertySummaryState createState() => _PropertySummaryState();
-}
-
-class _PropertySummaryState extends State<PropertySummary> {
-  String _ocrSize = 'Not loaded';
-
-  Future<void> _fetchOcrSize() async {
-    final size =
-        await PropertyService().fetchOcrSize(widget.property.floorPlan?[0]);
-    setState(() {
-      _ocrSize = size != null ? '$size sqm' : 'Error';
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (widget.property == null) {
-      return ListTile(title: Text('Missing Property'));
-    }
-    _fetchOcrSize();
+    print(property);
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.2);
     return ListTile(
-      title: _title(widget.property, titleStyle),
-      subtitle: _body(widget.property, _ocrSize, subTitleStyle),
+      title: _title(property, titleStyle),
+      subtitle: _body(key!, property, subTitleStyle),
     );
   }
 }
@@ -50,7 +33,7 @@ Widget _title(Property property, TextStyle style) => FlatButton(
       ),
     );
 
-Widget _body(Property property, String ocrSize, TextStyle style) => Column(
+Widget _body(Key key, Property property, TextStyle style) => Column(
       children: [
         Text(
           '£${property.price}',
@@ -64,13 +47,18 @@ Widget _body(Property property, String ocrSize, TextStyle style) => Column(
           'Floor Area: ${property.size?.toString() ?? 'Unknown'}',
           style: style,
         ),
-        Text('OCR Floor Area: $ocrSize'),
+        OcrSize(
+          key: key,
+          floorPlanUrl: property.floorPlan?[0],
+          style: style,
+        ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _floorPlan(property),
             _image(property),
-            _map(property),
+            if (property.longitude != null && property.latitude != null)
+              Expanded(child: _map(property)),
           ],
         ),
         Padding(
@@ -92,5 +80,12 @@ Widget _image(Property property) => FlatButton(
       child: Image.network('${property.imageURL}', height: 300),
     );
 
-Widget _map(Property property) =>
-    SizedBox(height: 300, width: 200, child: PropertyMap());
+Widget _map(Property property) => Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+          height: 300,
+          child: PropertyMap(
+            longitude: property.longitude!,
+            latitude: property.latitude!,
+          )),
+    );
