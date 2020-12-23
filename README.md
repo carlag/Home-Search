@@ -27,6 +27,11 @@ Create an environment variable with a version number
 export TAG=0.1
 ```
 
+Create an environment variable with your google maps API key
+```bash
+export MAPSAPIKEY=<your key>
+```
+
 Build the image:
 ```bash
 docker build . -f OCRDockerfile -t home_search_ocr:$TAG
@@ -34,7 +39,7 @@ docker build . -f OCRDockerfile -t home_search_ocr:$TAG
 
 Run the container:
 ```bash
-docker run -d --name ocr -p 80:80 home_search_ocr:$TAG
+docker run -d --env MAPSAPIKEY --name ocr -p 80:80 home_search_ocr:$TAG
 ```
 
 Test it
