@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import NamedTuple, List, Any, Dict
 
 import os
@@ -34,7 +35,12 @@ class Station(NamedTuple):
         }
 
 
-def nearby_station_locations(location: Location) -> List[Location]:
+class StationType(Enum):
+    TRAIN = "train_station"
+    SUBWAY = "subway_station"
+
+
+def nearby_station_locations(location: Location, station_type: StationType) -> List[Location]:
 
     if not API_KEY:
         raise KeyError("Maps API_KEY environment variable undefined.")
@@ -43,7 +49,7 @@ def nearby_station_locations(location: Location) -> List[Location]:
     params = {
         "location": f"{location}",
         "rankby": "distance",
-        "type": "train_station",
+        "type": station_type.value,
         "key": API_KEY,
     }
     response = requests.get(uri, params=params)
@@ -59,12 +65,17 @@ def get_stations_information(origin: Location, nearest_k: int = 4) -> List[Dict[
     if not API_KEY:
         raise KeyError("Maps API_KEY environment variable undefined.")
 
+    nearby_stations = (nearby_station_locations(origin, StationType.TRAIN)[:nearest_k]
+                       + nearby_station_locations(origin, StationType.SUBWAY)[:nearest_k])
+
+    print(nearby_stations)
+
     uri = "https://maps.googleapis.com/maps/api/distancematrix/json"
     params = {
         "units": "metric",
         "mode": "walking",
         "origins": f"{origin}",
-        "destinations": "|".join(f"{dest}" for dest in nearby_station_locations(origin)),
+        "destinations": "|".join(f"{dest}" for dest in nearby_stations),
         "key": API_KEY,
     }
     response = requests.get(uri, params=params)
