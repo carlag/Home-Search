@@ -23,7 +23,8 @@ class OcrSize extends StatelessWidget {
             if (snapshot.hasError)
               return new Text('Error: ${snapshot.error}', style: style);
             else
-              return new Text('${snapshot.data}', style: style);
+              return new Text('Total floor area: ${snapshot.data}',
+                  style: style);
         }
       },
     );

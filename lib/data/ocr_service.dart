@@ -48,7 +48,6 @@ class OcrService {
       floorPlanURL = floorPlanURL.replaceFirst(
           _zooplaEndpoint, '$_ocrServiceEndpoint/image/');
     }
-    print('Floor plan URL: $floorPlanURL');
     return floorPlanURL;
   }
 }

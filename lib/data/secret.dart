@@ -4,10 +4,15 @@ import 'dart:convert' show json;
 import 'package:flutter/services.dart' show rootBundle;
 
 class Secret {
-  final String apiKey;
-  Secret({this.apiKey = ""});
+  final String zooplaApiKey;
+  final String googleMapsApiKey;
+  Secret({this.zooplaApiKey = "", this.googleMapsApiKey = ""});
+
   factory Secret.fromJson(Map<String, dynamic> jsonMap) {
-    return new Secret(apiKey: jsonMap["api_key"]);
+    return Secret(
+      zooplaApiKey: jsonMap["zoopla_api_key"],
+      googleMapsApiKey: jsonMap["google_maps_api_key"],
+    );
   }
 }
 
