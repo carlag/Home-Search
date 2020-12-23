@@ -34,7 +34,7 @@ class Station(NamedTuple):
         }
 
 
-def nearby_station_locations(location: Location, top_n: int = 5) -> List[Location]:
+def nearby_station_locations(location: Location) -> List[Location]:
 
     if not API_KEY:
         raise KeyError("Maps API_KEY environment variable undefined.")
@@ -49,11 +49,12 @@ def nearby_station_locations(location: Location, top_n: int = 5) -> List[Locatio
     response = requests.get(uri, params=params)
     response.raise_for_status()
 
-    return [Location(result["geometry"]["location"]["lat"], result["geometry"]["location"]["lng"])
-            for result in response.json()["results"]][:top_n]
+    locations = [Location(result["geometry"]["location"]["lat"], result["geometry"]["location"]["lng"])
+                 for result in response.json()["results"]]
+    return locations
 
 
-def get_stations_information(origin: Location) -> List[Dict[str, Any]]:
+def get_stations_information(origin: Location, nearest_k: int = 4) -> List[Dict[str, Any]]:
 
     if not API_KEY:
         raise KeyError("Maps API_KEY environment variable undefined.")
@@ -69,8 +70,11 @@ def get_stations_information(origin: Location) -> List[Dict[str, Any]]:
     response = requests.get(uri, params=params)
     response.raise_for_status()
 
-    return [Station(address=address,
-                    distance=info["distance"]["value"],
-                    duration=info["duration"]["value"],
-                    origin=origin).to_dict()
-            for address, info in zip(response.json()["destination_addresses"], response.json()["rows"][0]["elements"])]
+    stations = [Station(address=address,
+                        distance=info["distance"]["value"],
+                        duration=info["duration"]["value"],
+                        origin=origin).to_dict()
+                for address, info in zip(response.json()["destination_addresses"],
+                                         response.json()["rows"][0]["elements"])]
+    stations = sorted(stations, key=lambda station: station["duration"])
+    return stations[:nearest_k]
