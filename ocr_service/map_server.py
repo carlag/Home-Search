@@ -61,6 +61,7 @@ def get_stations_information(origin: Location) -> List[Dict[str, Any]]:
     uri = "https://maps.googleapis.com/maps/api/distancematrix/json"
     params = {
         "units": "metric",
+        "mode": "walking",
         "origins": f"{origin}",
         "destinations": "|".join(f"{dest}" for dest in nearby_station_locations(origin)),
         "key": API_KEY,
