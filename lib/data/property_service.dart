@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/models/property.dart';
-import 'package:proper_house_search/data/secret.dart';
 
 class PropertyService {
   static final client = http.Client();
@@ -32,7 +31,8 @@ class PropertyService {
   }
 
   Future<String> _fetchPropertiesRequest() async {
-    final secret = await SecretLoader(secretPath: "secrets.json").load();
+//    final secret = await SecretLoader(secretPath: "secrets.json").load();
+    final apiKey = const String.fromEnvironment("zoopla_api_key");
     final listingsURL = 'https://api.zoopla.co.uk/api/v1/property_listings.js';
     final url = '$listingsURL?'
         'postcode=nw36hf'
@@ -44,7 +44,7 @@ class PropertyService {
         '&minimum_beds=2'
         '&property_type=houses'
         '&page_size=100'
-        '&api_key=${secret.apiKey}';
+        '&api_key=$apiKey';
     return url;
   }
 }
