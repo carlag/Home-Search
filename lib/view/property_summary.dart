@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:proper_house_search/data/models/property.dart';
+import 'package:proper_house_search/view/stations.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'ocr_size.dart';
 import 'property_map.dart';
+
+const _rowHeight = 400.0;
 
 class PropertySummary extends StatelessWidget {
   PropertySummary({required Key key, required this.property}) : super(key: key);
@@ -12,7 +16,6 @@ class PropertySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(property);
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =
@@ -43,15 +46,16 @@ Widget _body(Key key, Property property, TextStyle style) => Column(
           '${property.status}, ${property.propertyType}',
           style: style,
         ),
-        Text(
-          'Floor Area: ${property.size?.toString() ?? 'Unknown'}',
-          style: style,
-        ),
         OcrSize(
-          key: key,
+          key: Key('ocr_${key.hashCode}'),
           floorPlanUrl: property.floorPlan?[0],
           style: style,
         ),
+        if (property.latitude != null && property.longitude != null)
+          Stations(
+            key: Key('station_${key.hashCode}'),
+            origin: LatLng(property.latitude, property.longitude),
+          ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -71,19 +75,20 @@ Widget _body(Key key, Property property, TextStyle style) => Column(
 Widget _floorPlan(Property property) => FlatButton(
       onPressed: () => html.window.open('${property.floorPlan?[0] ?? ''}',
           '${property.floorPlan?[0] ?? ''}'), // handle your image tap here
-      child: Image.network('${property.floorPlan?[0] ?? ''}', height: 300),
+      child:
+          Image.network('${property.floorPlan?[0] ?? ''}', height: _rowHeight),
     );
 
 Widget _image(Property property) => FlatButton(
       onPressed: () => html.window
           .open('${property.imageURL ?? ''}', '${property.imageURL ?? ''}'),
-      child: Image.network('${property.imageURL}', height: 300),
+      child: Image.network('${property.imageURL}', height: _rowHeight),
     );
 
 Widget _map(Property property) => Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-          height: 300,
+          height: _rowHeight,
           child: PropertyMap(
             longitude: property.longitude!,
             latitude: property.latitude!,
