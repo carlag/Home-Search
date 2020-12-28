@@ -18,7 +18,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ## OCR service
 
-ou can either deploy is via docker or manually
+You can either deploy is via docker or manually
 
 ### Deploy with Docker
 
@@ -40,6 +40,7 @@ docker build . -f OCRDockerfile -t home_search_ocr:$TAG
 Run the container:
 ```bash
 docker run -d --env MAPSAPIKEY --name ocr -p 80:80 home_search_ocr:$TAG
+docker run -d --name web -p 5001:5001 home_search_web:$TAG
 ```
 
 Test it
@@ -79,3 +80,11 @@ If you haven't already:
   - `curl localhost/image/a64beb115ca989474d2589b96043fcf663ba3207.png`
 - no area
   - https://lc.zoocdn.com/db1074144fdc6bf06d02224d09fa588ba1545fb1.gif
+
+
+### Building the Flutter app on docker
+
+1. `export TAG=0.1` or whichever version you are on
+1. `export ZOOPLAAPIKEY=<your key>`
+1. `docker build . --build-arg ZOOPLAAPIKEY=$ZOOPLAAPIKEY -f FlutterDockerfile -t home_search_web:$TAG`
+1. `docker run -d --name web -p 5001:5001 home_search_web:$TAG`

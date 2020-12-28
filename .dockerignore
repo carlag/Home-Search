@@ -4,5 +4,4 @@ ios/
 test/
 .gitignore
 -langs.txt
-pubspec.lock
 README.md
