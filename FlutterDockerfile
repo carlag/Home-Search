@@ -31,14 +31,12 @@ COPY ./flutter_server.sh /usr/local/bin/app/server/flutter_server.sh
 # Set the working directory to the app files within the container
 WORKDIR /usr/local/bin/app
 
-RUN flutter create --project-name proper_house_search . && \
-    flutter pub get && \
-    flutter build web --no-sound-null-safety --dart-define zoopla_api_key=${ZOOPLAAPIKEY}
+RUN flutter build web --no-sound-null-safety --dart-define zoopla_api_key=${ZOOPLAAPIKEY}
 
 EXPOSE 5001
 
 # Set the server startup script as executable
 RUN ["chmod", "+x", "/usr/local/bin/app/server/flutter_server.sh"]
 
-# Start the web server
+# Start the web serverC
 ENTRYPOINT [ "/usr/local/bin/app/server/flutter_server.sh" ]
