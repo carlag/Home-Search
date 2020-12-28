@@ -44,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('Number of results: $propertiesCount'),
           Expanded(
             child: ListView.builder(
+              shrinkWrap: true,
               itemCount: propertiesCount,
               itemBuilder: (context, index) {
                 return PropertySummary(

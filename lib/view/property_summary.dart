@@ -56,15 +56,7 @@ Widget _body(Key key, Property property, TextStyle style) => Column(
             key: Key('station_${key.hashCode}'),
             origin: LatLng(property.latitude, property.longitude),
           ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _floorPlan(property),
-            _image(property),
-            if (property.longitude != null && property.latitude != null)
-              Expanded(child: _map(property)),
-          ],
-        ),
+        _details(property),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Divider(height: 2.0),
@@ -72,25 +64,46 @@ Widget _body(Key key, Property property, TextStyle style) => Column(
       ],
     );
 
+Widget _details(Property property) => Column(
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _floorPlan(property),
+              _image(property),
+              if (property.longitude != null && property.latitude != null)
+                _map(property),
+            ],
+          ),
+        ),
+      ],
+    );
+
 Widget _floorPlan(Property property) => FlatButton(
       onPressed: () => html.window.open('${property.floorPlan?[0] ?? ''}',
           '${property.floorPlan?[0] ?? ''}'), // handle your image tap here
-      child:
-          Image.network('${property.floorPlan?[0] ?? ''}', height: _rowHeight),
+      child: Image.network(
+        '${property.floorPlan?[0] ?? ''}',
+        height: _rowHeight,
+      ),
     );
 
 Widget _image(Property property) => FlatButton(
       onPressed: () => html.window
           .open('${property.imageURL ?? ''}', '${property.imageURL ?? ''}'),
-      child: Image.network('${property.imageURL}', height: _rowHeight),
+      child: Image.network(
+        '${property.imageURL}',
+        height: _rowHeight,
+      ),
     );
 
-Widget _map(Property property) => Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-          height: _rowHeight,
-          child: PropertyMap(
-            longitude: property.longitude!,
-            latitude: property.latitude!,
-          )),
+Widget _map(Property property) => SizedBox(
+      height: _rowHeight,
+      width: _rowHeight,
+      child: PropertyMap(
+        longitude: property.longitude!,
+        latitude: property.latitude!,
+      ),
     );
