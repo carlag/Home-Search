@@ -22,7 +22,7 @@ class PropertyService {
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
-      throw Exception('Failed to load property');
+      throw Exception('Failed to load property: ${response.body}');
     }
   }
 

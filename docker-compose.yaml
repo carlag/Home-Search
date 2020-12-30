@@ -1,0 +1,20 @@
+version: "3.0"
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: ./docker/FrontEndDockerfile
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - ZOOPLAAPIKEY=${ZOOPLAAPIKEY}
+      - GOOGLEMAPSAPIKEY=${GOOGLEMAPSAPIKEY}
+  backend:
+    build:
+      context: .
+      dockerfile: ./docker/BackEndDockerfile
+    ports:
+      - "80:80"
+    environment:
+      - GOOGLEMAPSAPIKEY=${GOOGLEMAPSAPIKEY}

@@ -4,7 +4,7 @@ from typing import NamedTuple, List, Any, Dict
 import os
 import requests
 
-API_KEY = os.environ.get("MAPSAPIKEY")
+API_KEY = os.environ.get("GOOGLEMAPSAPIKEY")
 
 class Location(NamedTuple):
     lat: str

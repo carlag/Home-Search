@@ -1,7 +1,7 @@
 .env/
-android/
-ios/
-test/
+frontend/android/
+frontend/ios/
+frontend/test/
+frontend/-langs.txt
 .gitignore
--langs.txt
 README.md

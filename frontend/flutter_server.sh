@@ -13,7 +13,7 @@ fuser -k 5001/tcp
 # Change directories to the release folder
 cd build/web/
 
-sed -i '.bkp' "s/<GOOGLEMAPSAPIKEY>/$GOOGLEMAPSAPIKEY/" index.html
+sed -i.bkp "s/<GOOGLEMAPSAPIKEY>/$GOOGLEMAPSAPIKEY/" index.html
 
 # Start the server
 echo 'Starting server on port' $PORT '...'

@@ -1,7 +1,8 @@
 # Install dependencies
 FROM debian:latest AS build-env
 
-ARG ZOOPLAAPIKEY
+ENV GOOGLEMAPSAPIKEY=$GOOGLEMAPSAPIKEY
+ENV ZOOPLAAPIKEY=$ZOOPLAAPIKEY
 
 RUN apt-get update && \
     apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback lib32stdc++6 python3 psmisc && \
@@ -22,11 +23,12 @@ RUN flutter channel beta && \
 # Run flutter doctor
 RUN flutter doctor -v
 
-COPY ./lib /usr/local/bin/app/lib
-COPY ./pubspec.lock /usr/local/bin/app/pubspec.lock
-COPY ./pubspec.yaml /usr/local/bin/app/pubspec.yaml
-COPY ./.metadata /usr/local/bin/app/.metadata
-COPY ./flutter_server.sh /usr/local/bin/app/server/flutter_server.sh
+COPY ./frontend/lib /usr/local/bin/app/lib
+COPY ./frontend/web /usr/local/bin/app/web
+COPY ./frontend/pubspec.lock /usr/local/bin/app/pubspec.lock
+COPY ./frontend/pubspec.yaml /usr/local/bin/app/pubspec.yaml
+COPY ./frontend/.metadata /usr/local/bin/app/.metadata
+COPY ./frontend/flutter_server.sh /usr/local/bin/app/server/flutter_server.sh
 
 # Set the working directory to the app files within the container
 WORKDIR /usr/local/bin/app
@@ -39,4 +41,4 @@ EXPOSE 5001
 RUN ["chmod", "+x", "/usr/local/bin/app/server/flutter_server.sh"]
 
 # Start the web serverC
-ENTRYPOINT [ "/usr/local/bin/app/server/flutter_server.sh" ]
+CMD [ "/usr/local/bin/app/server/flutter_server.sh" ]

@@ -6,10 +6,10 @@ RUN apt-get update && \
     apt-get install -y tesseract-ocr-all poppler-utils && \
     apt-get clean
 
-COPY requirements.txt .
+COPY ./backend/requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY ./ocr_service /app
+COPY ./backend /app
 
 EXPOSE 80
 

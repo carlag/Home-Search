@@ -16,6 +16,42 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 
+## Deployment
+
+This project consists of a frontend (web) application written in Flutter, and a backend service written in Python. The
+simplest way to deploy it is to use docker:
+
+1. Start in the project root directory
+1. Set environment variables for API keys:
+   ```
+   export GOOGLEMAPSAPIKEY=<your google maps API key>
+   export ZOOPLAAPIKEY=<your Zoopla API key>
+   ```
+1. Build and run:
+   ```
+   docker compose up
+   ```
+1. Test the backend:
+   ```
+   curl localhost:80/pdf/acf057f7f02b0cf3552e149de5772640bf0bfd2c.pdf
+   ```
+   This can take around 10s but should return `{"area":442.6}`
+1. The front end should be available at:
+   ```
+   localhost:5001
+   ```
+
+If you need to force a rebuild of the containers, try:
+
+   ```
+   docker-compose build --no-cache
+   ```
+
+
+----
+# Old readme - needs to be cleaned up
+
+
 ## OCR service
 
 You can either deploy is via docker or manually
