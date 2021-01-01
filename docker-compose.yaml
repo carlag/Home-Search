@@ -18,3 +18,7 @@ services:
       - "80:80"
     environment:
       - GOOGLEMAPSAPIKEY=${GOOGLEMAPSAPIKEY}
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"

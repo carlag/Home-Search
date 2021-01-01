@@ -47,7 +47,7 @@ If you need to force a rebuild of the containers, try:
    docker-compose build --no-cache
    ```
 
-
+https://lc.zoocdn.com/beab1b66c04a52e4f8d74c5688e047cd8c5eb332.jpg
 ----
 # Old readme - needs to be cleaned up
 

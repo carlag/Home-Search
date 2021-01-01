@@ -1,5 +1,7 @@
 FROM python:3.7
 
+ENV GOOGLEMAPSAPIKEY=$GOOGLEMAPSAPIKEY
+
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:alex-p/tesseract-ocr && \

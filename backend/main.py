@@ -1,6 +1,7 @@
 import logging
 from typing import Dict, Any, Callable, List
 
+import redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from map_server import get_stations_information, Location
@@ -22,7 +23,9 @@ app.add_middleware(
 )
 
 
-floorplan_reader = Ocr()
+db = redis.Redis()
+
+floorplan_reader = Ocr(db)
 
 
 @app.get("/stations/origin/{lat},{lng}")
