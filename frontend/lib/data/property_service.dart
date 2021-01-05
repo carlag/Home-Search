@@ -32,6 +32,9 @@ class PropertyService {
 
   Future<String> _fetchPropertiesRequest() async {
     final apiKey = const String.fromEnvironment("zoopla_api_key");
+    if (apiKey == null || apiKey.isEmpty) {
+      throw ('No zoopla_api_key');
+    }
     final listingsURL = 'https://api.zoopla.co.uk/api/v1/property_listings.js';
     final url = '$listingsURL?'
         'postcode=NW36HF'

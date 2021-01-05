@@ -23,7 +23,8 @@ app.add_middleware(
 )
 
 
-db = redis.Redis()
+db = redis.Redis(host='redis', port=6379)
+LOGGER.info(f"Connected to DB: {db}")
 
 floorplan_reader = Ocr(db)
 
@@ -52,6 +53,10 @@ def _get_area(image_file: str, area_function: Callable[[str], Dict[str, Any]]) -
         LOGGER.info(f"Area for request '{url}': '{area}'")
         return {"area": area}
     except ValueError as err:
-        raise HTTPException(status_code=500, detail=f"Unable to find area in OCR text: {err}")
+        detail = f"Unable to find area in OCR text: {err}"
+        LOGGER.error(detail)
+        raise HTTPException(status_code=500, detail=detail)
     except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Unable to get area: {err}")
+        detail = f"Unable to get area: {err}"
+        LOGGER.error(detail)
+        raise HTTPException(status_code=500, detail=detail)

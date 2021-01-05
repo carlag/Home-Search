@@ -4,12 +4,13 @@ services:
     build:
       context: .
       dockerfile: ./docker/FrontEndDockerfile
+      args:
+        ZOOPLAAPIKEY: $ZOOPLAAPIKEY
     restart: always
     ports:
       - "5001:5001"
     environment:
-      - ZOOPLAAPIKEY=${ZOOPLAAPIKEY}
-      - GOOGLEMAPSAPIKEY=${GOOGLEMAPSAPIKEY}
+      - GOOGLEMAPSAPIKEY
   backend:
     build:
       context: .
@@ -17,7 +18,7 @@ services:
     ports:
       - "80:80"
     environment:
-      - GOOGLEMAPSAPIKEY=${GOOGLEMAPSAPIKEY}
+      - GOOGLEMAPSAPIKEY
   redis:
     image: redis:alpine
     ports:

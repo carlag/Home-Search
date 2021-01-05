@@ -59,8 +59,14 @@ class Ocr:
         raise ValueError("No regex matches found.")
 
     def _check_for_cached_area(self, floorplan_url: str) -> Optional[float]:
-        return self.db.get("floorplans", floorplan_url)
+        area = self.db.hget("floorplans", floorplan_url)
+        if area:
+            LOGGER.info(f"Retrieved area for {floorplan_url} from cache. Area: {area}")
+            return float(area)
+        else:
+            LOGGER.info(f"Area for {floorplan_url} is not yet cached.")
+            return None
 
     def _cache_area(self, floorplan_url: str, area: float) -> None:
-        self.db.hset({"floorplans": {floorplan_url: area}})
-
+        LOGGER.info(f"Caching area of {area} for {floorplan_url}")
+        self.db.hset(name="floorplans", key=floorplan_url, value=area)

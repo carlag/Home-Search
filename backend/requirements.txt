@@ -4,3 +4,4 @@ pillow
 fastapi
 uvicorn[standard]
 pdf2image
+redis
