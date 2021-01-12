@@ -7,7 +7,12 @@ class PostCodeService {
 
   loadAsset() async {
     output = await rootBundle.loadString('assets/london_stations.csv');
-    print(output);
+  }
+
+  List<StationPostcode> getSuggestions(String pattern) {
+    return stationPostcodes()
+        .where((element) => element.name.contains(pattern))
+        .toList();
   }
 
   List<StationPostcode> stationPostcodes() {
@@ -26,7 +31,6 @@ class PostCodeService {
           ),
         )
         .toList();
-    print(postcodes);
     return postcodes;
   }
 }

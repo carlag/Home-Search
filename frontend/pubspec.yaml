@@ -36,6 +36,8 @@ dependencies:
   google_maps_flutter_web: ^0.1.0
   csv: ^4.1.0
   test: ^1.15.7
+  flutter_typeahead: ^2.0.0
+
 
 dev_dependencies:
   flutter_test:
