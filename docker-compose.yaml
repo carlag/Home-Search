@@ -19,6 +19,7 @@ services:
       - "80:80"
     environment:
       - GOOGLEMAPSAPIKEY
+      - ZOOPLAAPIKEY
   redis:
     image: redis:alpine
     ports:

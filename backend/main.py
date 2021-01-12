@@ -4,8 +4,11 @@ from typing import Dict, Any, Callable, List
 import redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
 from map_server import get_stations_information, Location
 from ocr import Ocr
+from property_server import PostcodeList, PropertyList, send_request_to_zoopla
+
 
 LOGGER = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -45,8 +48,12 @@ async def get_floorplan_area(image_file: str) -> Dict[str, Any]:
 async def get_floorplan_area(image_file: str) -> Dict[str, Any]:
     return _get_area(image_file, floorplan_reader.get_area_pdf)
 
+@app.post("/properties/") #, response_model=Properties)
+async def get_properties(postcodes: PostcodeList) -> Dict[str, Any]:
+    return send_request_to_zoopla(postcodes.postcodes[0])
 
-def _get_area(image_file: str, area_function: Callable[[str], Dict[str, Any]]) -> Dict[str, Any]:
+
+def _get_area(image_file: str, area_function: Callable[[str], float]) -> Dict[str, Any]:
     try:
         url = f"https://lc.zoocdn.com/{image_file}"
         area = area_function(url)
