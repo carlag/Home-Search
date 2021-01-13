@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
           AutoComplete(
             key: _autoCompleteState,
             addedStations:
-                _autoCompleteState.currentState?.addedStations() ?? [],
+            _autoCompleteState.currentState?.addedStations() ?? [],
           ),
           Expanded(
             child: ListView.builder(

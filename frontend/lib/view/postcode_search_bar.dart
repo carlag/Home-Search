@@ -44,6 +44,7 @@ class AutoCompleteState extends State<AutoComplete> {
           children: [
             Text('Add stations to search nearby:'),
             if (widget.addedStations.isNotEmpty)
+<<<<<<< HEAD
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: widget.addedStations
@@ -62,6 +63,12 @@ class AutoCompleteState extends State<AutoComplete> {
                       ),
                     )
                     .toList(),
+=======
+              Row(children:
+                widget.addedStations
+                    .map((e) => Chip(label: Text(e.name)))
+                    .toList()
+>>>>>>> bb4cb660057332cbb11c341f62b798c8b76896e1
               )
             else
               Text('No stations'),
@@ -88,11 +95,17 @@ class AutoCompleteState extends State<AutoComplete> {
                   onSuggestionSelected: (suggestion) {
                     final station = suggestion as StationPostcode;
                     setState(() {
+<<<<<<< HEAD
                       if (!widget.addedStations.contains(station)) {
                         widget.addedStations.add(station);
                       }
                     });
                     this._typeAheadController.text = '';
+=======
+                      widget.addedStations.add(station);
+                    });
+                    this._typeAheadController.text = station.name;
+>>>>>>> bb4cb660057332cbb11c341f62b798c8b76896e1
                   }),
             ),
           ],
