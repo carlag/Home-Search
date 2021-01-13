@@ -1,10 +1,11 @@
 import logging
 import os
+from collections import defaultdict
 from typing import List, Optional, Any, Dict
 
 import redis as redis
 import requests
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from map_server import Station
 from ocr import Ocr
@@ -16,12 +17,13 @@ db = redis.Redis(host='redis', port=6379)
 LOGGER.info(f"Connected to DB: {db}")
 floorplan_reader = Ocr(db)
 
+
 class PostcodeList(BaseModel):
     postcodes: List[str]
 
 
 class Property(BaseModel):
-    listing_url: str
+    listing_url: str = Field(alias="details_url")
     ocr_size: Optional[float] = None
     longitude: float
     latitude: float
@@ -33,46 +35,57 @@ class Property(BaseModel):
     floor_plan: Optional[List[str]] = None
     stations: Optional[List[Station]] = None
 
-    @classmethod
-    def from_json(cls, json: Dict[str, Any]) -> "Property":
-        json["listing_url"] = json["details_url"]
-        return cls.parse_obj(json)
+    def __lt__(self, other: "Property"):
+        return self.ocr_size < other.ocr_size
 
 
 class PropertyList(BaseModel):
     properties: List[Property]
 
 
-def send_request_to_zoopla(postcode: str) -> PropertyList:
-    # Make this a generator over page_number
+class PropertyServer:
+    def __init__(self):
+        self.pages = defaultdict(int)
 
-    LOGGER.info(f"Sending request to Zoopla: {postcode}")
+    def get_property_information(self, postcodes: List[str]) -> PropertyList:
+        properties = []
+        for postcode in postcodes:
+            properties += self.get_property_info_from_postcode(postcode)
 
-    zoopla_listings_url = "https://api.zoopla.co.uk/api/v1/property_listings.js"
-    params = {
-        "postcode": postcode,
-        "keywords": "garden",
-        "radius": "1.5",
-        "listing_status": "sale",
-        "minimum_price": "500000",
-        "maximum_price": "850000",
-        "minimum_beds": "2",
-        "page_size": "10",
-        "api_key": ZOOPLA_API_KEY,
-    }
-    
-    response = requests.get(url=zoopla_listings_url, params=params)
-    response.raise_for_status()
+        return PropertyList(properties=sorted(properties, reverse=True))
 
-    properties = []
-    for property_json in response.json()["listing"]:
-        property_model = Property.from_json(property_json)
-        if property_model.floor_plan:
-            property_model.ocr_size = get_area(property_model.floor_plan[0])
-        properties.append(property_model)
+    def get_property_info_from_postcode(self, postcode: str) -> List[Property]:
 
-    return PropertyList(properties=[property_ for property_ in properties
-                                    if property_.ocr_size and property_.ocr_size > 90])
+        self.pages[postcode] += 1
+        page_number = self.pages[postcode]
+        LOGGER.info(f"Sending request to Zoopla for postcode '{postcode}', page {page_number}")
+
+        zoopla_listings_url = "https://api.zoopla.co.uk/api/v1/property_listings.js"
+        params = {
+            "postcode": postcode,
+            "keywords": "garden",
+            "radius": 0.6,  # 0.6 miles, so  ~1 km.
+            "listing_status": "sale",
+            "minimum_price": 500_000,
+            "maximum_price": 850_000,
+            "minimum_beds": 2,
+            "page_size": 10,
+            "page_number": page_number,
+            "api_key": ZOOPLA_API_KEY,
+        }
+
+        response = requests.get(url=zoopla_listings_url, params=params)
+        response.raise_for_status()
+
+        properties = []
+        for property_json in response.json()["listing"]:
+            property_model = Property.parse_obj(property_json)
+            if property_model.floor_plan:
+                property_model.ocr_size = get_area(property_model.floor_plan[0])
+            properties.append(property_model)
+
+        return [property_ for property_ in properties
+                if property_.ocr_size and property_.ocr_size > 90]
 
 
 def get_area(image_url: str) -> Optional[float]:
@@ -81,12 +94,8 @@ def get_area(image_url: str) -> Optional[float]:
         area = (floorplan_reader.get_area_pdf(image_url)
                 if filetype == "pdf" else
                 floorplan_reader.get_area_image(image_url))
-    except ValueError as err:
-        detail = f"Unable to find area in OCR text: {err}"
-        LOGGER.error(detail)
     except Exception as err:
-        detail = f"Unable to get area: {err}"
-        LOGGER.error(detail)
+        LOGGER.error(f"Unable to get area: {err}")
     else:
         return area
 

@@ -15,7 +15,7 @@ class Property {
       this.displayableAddress);
 
   Property.fromJson(Map<String, dynamic> json)
-      : listingURL = json['listing_url'] ?? 'No listing URL',
+      : listingURL = json['details_url'] ?? 'No listing URL',
         ocrSize = json['ocr_size'],
         status = json['status'] ?? 'No status',
         longitude = json['longitude'] ?? 'No longitude',

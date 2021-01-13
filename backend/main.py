@@ -5,15 +5,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from map_server import get_stations_information, Location, StationList
-from property_server import PostcodeList, send_request_to_zoopla, PropertyList, floorplan_reader
+from property_server import PostcodeList, PropertyList, floorplan_reader, PropertyServer
 
 LOGGER = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
-
 origins = ["*"]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -21,6 +19,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+property_server = PropertyServer()
 
 
 @app.get("/stations/origin/{lat},{lng}", response_model=StationList)
@@ -44,7 +44,7 @@ async def get_floorplan_area_pdf(pdf_file: str) -> Dict[str, Any]:
 
 @app.post("/properties/", response_model=PropertyList)
 async def get_properties(postcodes: PostcodeList) -> PropertyList:
-    return send_request_to_zoopla(postcodes.postcodes[0])
+    return property_server.get_property_information(postcodes.postcodes)
 
 
 def _get_area(image_file: str, area_function: Callable[[str], float]) -> Dict[str, Any]:

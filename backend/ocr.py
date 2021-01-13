@@ -28,6 +28,7 @@ class Ocr:
         image = requests.get(f"{floorplan_url}").content
         floorplan_text = pytesseract.image_to_string(Image.open(BytesIO(image)))
         LOGGER.debug(f"OCR text:\n\n{floorplan_text}")
+
         area = self._get_area_from_text(floorplan_text)
         self._cache_area(floorplan_url, area)
         return area
@@ -42,6 +43,7 @@ class Ocr:
         image = convert_from_bytes(pdf)[0]
         floorplan_text = pytesseract.image_to_string(image)
         LOGGER.debug(f"OCR text:\n\n{floorplan_text}")
+
         area = self._get_area_from_text(floorplan_text)
         self._cache_area(floorplan_url, area)
         return area
@@ -55,7 +57,7 @@ class Ocr:
         if result:
             return max(float(area) * 0.092903 for area in result)
 
-        raise ValueError("No regex matches found.")
+        return float("nan")
 
     def _check_for_cached_area(self, floorplan_url: str) -> Optional[float]:
         area = self.db.hget("floorplans", floorplan_url)

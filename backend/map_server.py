@@ -27,6 +27,9 @@ class Station(BaseModel):
     distance: float
     duration: float
 
+    def __lt__(self, other: "Station"):
+        return self.duration < other.duration
+
 
 class StationList(BaseModel):
     stations: List[Station]
@@ -83,5 +86,5 @@ def get_stations_information(origin: Location, nearest_k: int = 4) -> List[Stati
                         duration=info["duration"]["value"])
                 for address, info in zip(response.json()["destination_addresses"],
                                          response.json()["rows"][0]["elements"])]
-    stations = sorted(stations, key=lambda station: station.duration)
+    stations = sorted(stations)
     return stations[:nearest_k]
