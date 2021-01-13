@@ -28,7 +28,7 @@ COPY ./frontend/pubspec.lock /usr/local/bin/app/pubspec.lock
 COPY ./frontend/pubspec.yaml /usr/local/bin/app/pubspec.yaml
 COPY ./frontend/.metadata /usr/local/bin/app/.metadata
 COPY ./frontend/flutter_server.sh /usr/local/bin/app/server/flutter_server.sh
-COPY ./frontend/assets/london_stations.csv /usr/local/bin/app/server/assets/london_stations.csv
+COPY ./frontend/assets/london_stations.csv /usr/local/bin/app/assets/london_stations.csv
 
 # Set the working directory to the app files within the container
 WORKDIR /usr/local/bin/app
