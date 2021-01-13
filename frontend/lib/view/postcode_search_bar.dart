@@ -87,12 +87,12 @@ class AutoCompleteState extends State<AutoComplete> {
                   },
                   onSuggestionSelected: (suggestion) {
                     final station = suggestion as StationPostcode;
+                    this._typeAheadController.text = '';
                     setState(() {
                       if (!widget.addedStations.contains(station)) {
                         widget.addedStations.add(station);
                       }
                     });
-                    this._typeAheadController.text = '';
                   }),
             ),
           ],
