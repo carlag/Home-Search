@@ -9,11 +9,11 @@ const _endpoint = 'http://127.0.0.1:80/properties/';
 class PropertyService {
   static final client = http.Client();
 
-  Future<List<Property>> fetchProperties() async {
+  Future<List<Property>> fetchProperties(List<String> postcodes) async {
     final response = await client.post(
       _endpoint,
       headers: _headers(),
-      body: _body(),
+      body: _body(postcodes),
     );
 
     if (response.statusCode == 200) {
@@ -42,10 +42,10 @@ class PropertyService {
     return headers;
   }
 
-  String _body() {
+  String _body(List<String> postcodes) {
     final body = jsonEncode(
       <String, List<String>>{
-        'postcodes': ['NW3 6HF'],
+        'postcodes': postcodes,
       },
     );
     return body;

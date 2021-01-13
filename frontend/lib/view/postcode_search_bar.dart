@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/postcode_service.dart';
 
 class AutoComplete extends StatefulWidget {
+  List<StationPostcode> addedStations;
+
+  AutoComplete({required Key key, this.addedStations = const []})
+      : super(key: key);
+
   @override
-  _AutoCompleteState createState() => new _AutoCompleteState();
+  AutoCompleteState createState() => new AutoCompleteState();
 }
 
-class _AutoCompleteState extends State<AutoComplete> {
+class AutoCompleteState extends State<AutoComplete> {
   final TextEditingController _typeAheadController = TextEditingController();
   final service = PostCodeService();
-  final _addedStations = <StationPostcode>[];
 
   void _loadData() async {
     await service.loadAsset();
   }
 
+  List<StationPostcode> addedStations() => widget.addedStations;
+
   TextEditingController controller = new TextEditingController();
 
-  _AutoCompleteState();
+  AutoCompleteState();
 
   @override
   void initState() {
@@ -36,8 +43,26 @@ class _AutoCompleteState extends State<AutoComplete> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Add stations to search nearby:'),
-            if (_addedStations.isNotEmpty)
-              Row(children: _addedStations.map((e) => Text(e.name)).toList())
+            if (widget.addedStations.isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: widget.addedStations
+                    .map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Chip(
+                          label: Text(e.name),
+                          deleteIcon: Icon(Icons.close),
+                          onDeleted: () {
+                            setState(() {
+                              widget.addedStations.remove(e);
+                            });
+                          },
+                        ),
+                      ),
+                    )
+                    .toList(),
+              )
             else
               Text('No stations'),
             ListTile(
@@ -62,7 +87,12 @@ class _AutoCompleteState extends State<AutoComplete> {
                   },
                   onSuggestionSelected: (suggestion) {
                     final station = suggestion as StationPostcode;
-                    _addedStations.add(station);
+                    this._typeAheadController.text = '';
+                    setState(() {
+                      if (!widget.addedStations.contains(station)) {
+                        widget.addedStations.add(station);
+                      }
+                    });
                   }),
             ),
           ],
