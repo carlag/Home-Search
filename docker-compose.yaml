@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: ./docker/FrontEndDockerfile
-      args:
-        ZOOPLAAPIKEY: $ZOOPLAAPIKEY
     restart: always
     ports:
       - "5001:5001"

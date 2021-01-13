@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Text('Number of results: $propertiesCount'),
+          // AutoComplete(),
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
