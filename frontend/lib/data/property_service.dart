@@ -4,16 +4,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/models/property.dart';
 
+const _endpoint = 'http://127.0.0.1:80/properties/';
+
 class PropertyService {
   static final client = http.Client();
 
   Future<List<Property>> fetchProperties() async {
-    final request = await _fetchPropertiesRequest();
-    final response = await client.get(request);
+    final response = await client.post(
+      _endpoint,
+      headers: _headers(),
+      body: _body(),
+    );
 
     if (response.statusCode == 200) {
       final propertiesJSON =
-          jsonDecode(response.body)['listing'] as List<dynamic>;
+          jsonDecode(response.body)['properties'] as List<dynamic>;
       final properties = propertiesJSON
           .map((property) => Property.fromJson(property))
           .where((property) => property.floorPlan?.isNotEmpty ?? false)
@@ -30,23 +35,19 @@ class PropertyService {
     client.close();
   }
 
-  Future<String> _fetchPropertiesRequest() async {
-    final apiKey = const String.fromEnvironment("zoopla_api_key");
-    if (apiKey == null || apiKey.isEmpty) {
-      throw ('No zoopla_api_key');
-    }
-    final listingsURL = 'https://api.zoopla.co.uk/api/v1/property_listings.js';
-    final url = '$listingsURL?'
-        'postcode=NW36HF'
-        '&keywords=garden'
-        '&radius=5.0'
-        '&listing_status=sale'
-        '&minimum_price=500000'
-        '&maximum_price=800000'
-        '&minimum_beds=2'
-        // '&property_type=houses'
-        '&page_size=100'
-        '&api_key=$apiKey';
-    return url;
+  Map<String, String> _headers() {
+    final headers = <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+    return headers;
+  }
+
+  String _body() {
+    final body = jsonEncode(
+      <String, List<String>>{
+        'postcodes': ['NW3 6HF'],
+      },
+    );
+    return body;
   }
 }

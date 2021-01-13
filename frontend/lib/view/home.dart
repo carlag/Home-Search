@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/property_service.dart';
-import 'package:proper_house_search/view/postcode_search_bar.dart';
+import 'package:proper_house_search/view/property_summary.dart';
 
 import '../data/models/property.dart';
 
@@ -42,19 +42,19 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Text('Number of results: $propertiesCount'),
-          SizedBox(width: 600, height: 600, child: AutoComplete()),
-          // Expanded(
-          //   child: ListView.builder(
-          //     shrinkWrap: true,
-          //     itemCount: propertiesCount,
-          //     itemBuilder: (context, index) {
-          //       return PropertySummary(
-          //         property: _properties[index],
-          //         key: Key('property_$index'),
-          //       );
-          //     },
-          //   ),
-          // ),
+          // AutoComplete(),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: propertiesCount,
+              itemBuilder: (context, index) {
+                return PropertySummary(
+                  property: _properties[index],
+                  key: Key('property_$index'),
+                );
+              },
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

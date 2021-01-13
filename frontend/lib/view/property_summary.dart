@@ -99,11 +99,15 @@ Widget _image(Property property) => FlatButton(
       ),
     );
 
-Widget _map(Property property) => SizedBox(
-      height: _rowHeight,
-      width: _rowHeight,
-      child: PropertyMap(
-        longitude: property.longitude!,
-        latitude: property.latitude!,
-      ),
-    );
+Widget _map(Property property) {
+  print('Map: ${property.latitude!}, ${property.longitude!}');
+
+  return SizedBox(
+    height: _rowHeight,
+    width: _rowHeight,
+    child: PropertyMap(
+      longitude: property.longitude!,
+      latitude: property.latitude!,
+    ),
+  );
+}

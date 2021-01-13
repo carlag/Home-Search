@@ -48,7 +48,7 @@ async def get_floorplan_area(image_file: str) -> Dict[str, Any]:
 async def get_floorplan_area(image_file: str) -> Dict[str, Any]:
     return _get_area(image_file, floorplan_reader.get_area_pdf)
 
-@app.post("/properties/") #, response_model=Properties)
+@app.post("/properties/", response_model=PropertyList)
 async def get_properties(postcodes: PostcodeList) -> Dict[str, Any]:
     return send_request_to_zoopla(postcodes.postcodes[0])
 
