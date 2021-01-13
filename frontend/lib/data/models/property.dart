@@ -16,6 +16,7 @@ class Property {
 
   Property.fromJson(Map<String, dynamic> json)
       : listingURL = json['listing_url'] ?? 'No listing URL',
+        ocrSize = json['ocr_size'],
         status = json['status'] ?? 'No status',
         longitude = json['longitude'] ?? 'No longitude',
         latitude = json['latitude'] ?? 'No latitude',

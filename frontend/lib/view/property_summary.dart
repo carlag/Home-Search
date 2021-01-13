@@ -4,7 +4,6 @@ import 'package:proper_house_search/data/models/property.dart';
 import 'package:proper_house_search/view/stations.dart';
 import 'package:universal_html/html.dart' as html;
 
-import 'ocr_size.dart';
 import 'property_map.dart';
 
 const _rowHeight = 400.0;
@@ -46,14 +45,13 @@ Widget _body(Key key, Property property, TextStyle style) => Column(
           '${property.status}, ${property.propertyType}',
           style: style,
         ),
-        OcrSize(
-          key: Key('ocr_${key.hashCode}'),
-          floorPlanUrl: property.floorPlan?[0],
+        Text(
+          'Size: ${property.ocrSize ?? 'None'}',
           style: style,
         ),
         if (property.latitude != null && property.longitude != null)
           Stations(
-            key: Key('station_${key.hashCode}'),
+            key: Key('station_${key.hashCode}s'),
             origin: LatLng(property.latitude, property.longitude),
           ),
         _details(property),
