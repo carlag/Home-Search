@@ -5,11 +5,11 @@ import os
 import requests
 from pydantic import BaseModel
 
+from map_server import StationList
 
 LOGGER = logging.getLogger()
-
-
 ZOOPLA_API_KEY = os.environ["ZOOPLAAPIKEY"]
+
 
 class PostcodeList(BaseModel):
     postcodes: List[str]
@@ -26,6 +26,7 @@ class Property(BaseModel):
     price: Optional[int] = None
     displayable_address: Optional[str] = None
     floor_plan: Optional[List[str]] = None
+    stations: Optional[StationList] = None
 
     @classmethod
     def from_json(cls, json: Dict[str, Any]) -> "Property":
@@ -46,7 +47,7 @@ def send_request_to_zoopla(postcode: str) -> Dict[str, Any]:
     params = {
         "postcode": postcode,
         "keywords": "garden",
-        "radius": "5.0",
+        "radius": "1.5",
         "listing_status": "sale",
         "minimum_price": "500000",
         "maximum_price": "850000",
@@ -58,7 +59,7 @@ def send_request_to_zoopla(postcode: str) -> Dict[str, Any]:
     response = requests.get(url=zoopla_listings_url, params=params)
     response.raise_for_status()
 
-    properties: List[Property] = []
+    properties = []
     for property_ in response.json()["listing"]:
 
         properties.append(Property.from_json(property_))
