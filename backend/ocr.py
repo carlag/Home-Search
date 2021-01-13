@@ -4,11 +4,10 @@ from io import BytesIO
 from typing import Optional
 
 import pytesseract
-from redis import Redis
 import requests
 from PIL import Image
 from pdf2image import convert_from_bytes
-
+from redis import Redis
 
 LOGGER = logging.getLogger()
 

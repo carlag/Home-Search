@@ -1,10 +1,12 @@
+import os
 from enum import Enum
 from typing import NamedTuple, List, Any, Dict
 
-import os
 import requests
+from pydantic import BaseModel
 
 API_KEY = os.environ.get("GOOGLEMAPSAPIKEY")
+
 
 class Location(NamedTuple):
     lat: str
@@ -20,19 +22,14 @@ class Location(NamedTuple):
         }
 
 
-class Station(NamedTuple):
+class Station(BaseModel):
     address: str
     distance: float
     duration: float
-    origin: Location
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "address": self.address,
-            "distance": self.distance,
-            "duration": self.duration,
-            "origin": self.origin.to_dict(),
-        }
+
+class StationList(BaseModel):
+    stations: List[Station]
 
 
 class StationType(Enum):
@@ -60,7 +57,7 @@ def nearby_station_locations(location: Location, station_type: StationType) -> L
     return locations
 
 
-def get_stations_information(origin: Location, nearest_k: int = 4) -> List[Dict[str, Any]]:
+def get_stations_information(origin: Location, nearest_k: int = 4) -> List[Station]:
 
     if not API_KEY:
         raise KeyError("Maps API_KEY environment variable undefined.")
@@ -83,9 +80,8 @@ def get_stations_information(origin: Location, nearest_k: int = 4) -> List[Dict[
 
     stations = [Station(address=address,
                         distance=info["distance"]["value"],
-                        duration=info["duration"]["value"],
-                        origin=origin).to_dict()
+                        duration=info["duration"]["value"])
                 for address, info in zip(response.json()["destination_addresses"],
                                          response.json()["rows"][0]["elements"])]
-    stations = sorted(stations, key=lambda station: station["duration"])
+    stations = sorted(stations, key=lambda station: station.duration)
     return stations[:nearest_k]
