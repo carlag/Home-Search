@@ -11,7 +11,8 @@ class PostCodeService {
 
   List<StationPostcode> getSuggestions(String pattern) {
     return stationPostcodes()
-        .where((element) => element.name.contains(pattern))
+        .where((element) =>
+            element.name.toLowerCase().contains(pattern.toLowerCase()))
         .toList();
   }
 
