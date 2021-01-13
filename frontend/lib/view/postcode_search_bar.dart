@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/postcode_service.dart';
@@ -6,12 +7,12 @@ import 'package:proper_house_search/data/postcode_service.dart';
 class AutoComplete extends StatefulWidget {
   @override
   _AutoCompleteState createState() => new _AutoCompleteState();
+  final addedStations = <StationPostcode>[];
 }
 
 class _AutoCompleteState extends State<AutoComplete> {
   final TextEditingController _typeAheadController = TextEditingController();
   final service = PostCodeService();
-  final _addedStations = <StationPostcode>[];
 
   void _loadData() async {
     await service.loadAsset();
@@ -36,8 +37,12 @@ class _AutoCompleteState extends State<AutoComplete> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Add stations to search nearby:'),
-            if (_addedStations.isNotEmpty)
-              Row(children: _addedStations.map((e) => Text(e.name)).toList())
+            if (widget.addedStations.isNotEmpty)
+              Row(children:
+                widget.addedStations
+                    .map((e) => Chip(label: Text(e.name)))
+                    .toList()
+              )
             else
               Text('No stations'),
             ListTile(
@@ -62,7 +67,10 @@ class _AutoCompleteState extends State<AutoComplete> {
                   },
                   onSuggestionSelected: (suggestion) {
                     final station = suggestion as StationPostcode;
-                    _addedStations.add(station);
+                    setState(() {
+                      widget.addedStations.add(station);
+                    });
+                    this._typeAheadController.text = station.name;
                   }),
             ),
           ],
