@@ -24,10 +24,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final GlobalKey<AutoCompleteState> _autoCompleteState =
+      GlobalKey<AutoCompleteState>();
+
   List<Property> _properties = [];
 
   Future<void> _onPressed() async {
-    final properties = await PropertyService().fetchProperties();
+    final stations = _autoCompleteState.currentState?.addedStations() ?? [];
+    final postcodes = stations.map((e) => e.postcode).toList();
+    final properties = await PropertyService().fetchProperties(postcodes);
     setState(() {
       _properties = properties;
     });
@@ -43,7 +48,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           Text('Number of results: $propertiesCount'),
-          AutoComplete(),
+          AutoComplete(
+            key: _autoCompleteState,
+            addedStations:
+                _autoCompleteState.currentState?.addedStations() ?? [],
+          ),
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
