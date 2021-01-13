@@ -1,13 +1,11 @@
 import logging
 from typing import Dict, Any, Callable, List
 
-import redis
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from map_server import get_stations_information, Location, StationList
-from ocr import Ocr
-from property_server import PostcodeList, send_request_to_zoopla, PropertyList
+from property_server import PostcodeList, send_request_to_zoopla, PropertyList, floorplan_reader
 
 LOGGER = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -25,32 +23,27 @@ app.add_middleware(
 )
 
 
-db = redis.Redis(host='redis', port=6379)
-LOGGER.info(f"Connected to DB: {db}")
-
-floorplan_reader = Ocr(db)
-
-
 @app.get("/stations/origin/{lat},{lng}", response_model=StationList)
-async def get_stations(lat: str, lng: str) -> Dict[str, List[Dict[str, Any]]]:
+async def get_stations(lat: str, lng: str) -> StationList:
     try:
-        return get_stations_information(Location(lat, lng))
+        stations = StationList(stations=get_stations_information(Location(lat, lng)))
+        return stations
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Unable to get stations information: {err}")
 
 
 @app.get("/image/{image_file}")
-async def get_floorplan_area(image_file: str) -> Dict[str, Any]:
+async def get_floorplan_area_image(image_file: str) -> Dict[str, Any]:
     return _get_area(image_file, floorplan_reader.get_area_image)
 
 
-@app.get("/pdf/{image_file}")
-async def get_floorplan_area(image_file: str) -> Dict[str, Any]:
-    return _get_area(image_file, floorplan_reader.get_area_pdf)
+@app.get("/pdf/{pdf_file}")
+async def get_floorplan_area_pdf(pdf_file: str) -> Dict[str, Any]:
+    return _get_area(pdf_file, floorplan_reader.get_area_pdf)
 
 
 @app.post("/properties/", response_model=PropertyList)
-async def get_properties(postcodes: PostcodeList) -> Dict[str, Any]:
+async def get_properties(postcodes: PostcodeList) -> PropertyList:
     return send_request_to_zoopla(postcodes.postcodes[0])
 
 

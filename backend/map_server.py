@@ -57,7 +57,7 @@ def nearby_station_locations(location: Location, station_type: StationType) -> L
     return locations
 
 
-def get_stations_information(origin: Location, nearest_k: int = 4) -> StationList:
+def get_stations_information(origin: Location, nearest_k: int = 4) -> List[Station]:
 
     if not API_KEY:
         raise KeyError("Maps API_KEY environment variable undefined.")
@@ -84,4 +84,4 @@ def get_stations_information(origin: Location, nearest_k: int = 4) -> StationLis
                 for address, info in zip(response.json()["destination_addresses"],
                                          response.json()["rows"][0]["elements"])]
     stations = sorted(stations, key=lambda station: station.duration)
-    return StationList(statsions=stations[:nearest_k])
+    return stations[:nearest_k]
