@@ -19,7 +19,7 @@ class PropertySaver:
     def __init__(self, db: Redis):
         self.db = db
 
-    def check_if_property_marked(self, listing_url: str) -> Optional[float]:
+    def check_if_property_marked(self, listing_url: str) -> Optional[SaveMark]:
         clean_listing_url = _clean_listing_url(listing_url)
         save_mark = self.db.hget("properties", clean_listing_url)
         if save_mark:

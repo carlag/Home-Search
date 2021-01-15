@@ -1,12 +1,13 @@
 import logging
 import os
 from collections import defaultdict
-from typing import List, Optional, Any, Dict
+from typing import List, Optional
 
 import redis as redis
 import requests
 from pydantic import BaseModel, Field
 
+from like_reject_server import PropertySaver, SaveMark
 from map_server import Station
 from ocr import Ocr
 
@@ -16,6 +17,7 @@ ZOOPLA_API_KEY = os.environ["ZOOPLAAPIKEY"]
 db = redis.Redis(host='redis', port=6379, decode_responses=True)
 LOGGER.info(f"Connected to DB: {db}")
 floorplan_reader = Ocr(db)
+property_saver = PropertySaver(db)
 
 
 class PostcodeList(BaseModel):
@@ -52,7 +54,7 @@ class PropertyServer:
                  radius: float = 0.6,  # in miles
                  page_size: int = 10):
         if page_size > 100 or page_size < 1:
-            raise ValueError(f"{page_size} is an invaid value for page_size."
+            raise ValueError(f"{page_size} is an invalid value for page_size."
                              f" It must be between 1 and 100 inclusive.")
 
         self.pages = defaultdict(int)
@@ -95,6 +97,9 @@ class PropertyServer:
         properties = []
         for property_json in response.json()["listing"]:
             property_model = Property.parse_obj(property_json)
+            save_mark = property_saver.check_if_property_marked(property_model.listing_url)
+            if save_mark and save_mark == SaveMark.REJECT:
+                continue
             if property_model.floor_plan:
                 property_model.ocr_size = get_area(property_model.floor_plan[0])
             properties.append(property_model)
