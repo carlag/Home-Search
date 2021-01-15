@@ -13,7 +13,7 @@ from ocr import Ocr
 LOGGER = logging.getLogger()
 ZOOPLA_API_KEY = os.environ["ZOOPLAAPIKEY"]
 
-db = redis.Redis(host='redis', port=6379)
+db = redis.Redis(host='redis', port=6379, decode_responses=True)
 LOGGER.info(f"Connected to DB: {db}")
 floorplan_reader = Ocr(db)
 
@@ -44,8 +44,23 @@ class PropertyList(BaseModel):
 
 
 class PropertyServer:
-    def __init__(self):
+
+    def __init__(self,
+                 minimum_area: int = 90,
+                 minimum_price: int = 500_000,
+                 maximum_price: int = 850_000,
+                 radius: float = 0.6,  # in miles
+                 page_size: int = 10):
+        if page_size > 100 or page_size < 1:
+            raise ValueError(f"{page_size} is an invaid value for page_size."
+                             f" It must be between 1 and 100 inclusive.")
+
         self.pages = defaultdict(int)
+        self.minimum_area = minimum_area
+        self.minimum_price = minimum_price
+        self.maximum_price = maximum_price
+        self.radius = radius
+        self.page_size = page_size
 
     def get_property_information(self, postcodes: List[str]) -> PropertyList:
         properties = []
@@ -64,12 +79,12 @@ class PropertyServer:
         params = {
             "postcode": postcode,
             "keywords": "garden",
-            "radius": 0.6,  # 0.6 miles, so  ~1 km.
+            "radius": self.radius,
             "listing_status": "sale",
-            "minimum_price": 500_000,
-            "maximum_price": 850_000,
+            "minimum_price": self.minimum_price,
+            "maximum_price": self.maximum_price,
             "minimum_beds": 2,
-            "page_size": 10,
+            "page_size": self.page_size,
             "page_number": page_number,
             "api_key": ZOOPLA_API_KEY,
         }
@@ -85,7 +100,7 @@ class PropertyServer:
             properties.append(property_model)
 
         return [property_ for property_ in properties
-                if property_.ocr_size and property_.ocr_size > 90]
+                if property_.ocr_size and property_.ocr_size > self.minimum_area]
 
 
 def get_area(image_url: str) -> Optional[float]:

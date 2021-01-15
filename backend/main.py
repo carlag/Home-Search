@@ -4,8 +4,9 @@ from typing import Dict, Any, Callable, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from like_reject_server import SaveMark, PropertySaver
 from map_server import get_stations_information, Location, StationList
-from property_server import PostcodeList, PropertyList, floorplan_reader, PropertyServer
+from property_server import PostcodeList, PropertyList, floorplan_reader, PropertyServer, db
 
 LOGGER = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +22,7 @@ app.add_middleware(
 )
 
 property_server = PropertyServer()
-
+property_saver = PropertySaver(db)
 
 @app.get("/stations/origin/{lat},{lng}", response_model=StationList)
 async def get_stations(lat: str, lng: str) -> StationList:
@@ -42,9 +43,19 @@ async def get_floorplan_area_pdf(pdf_file: str) -> Dict[str, Any]:
     return _get_area(pdf_file, floorplan_reader.get_area_pdf)
 
 
-@app.post("/properties/", response_model=PropertyList)
+@app.post("/properties", response_model=PropertyList)
 async def get_properties(postcodes: PostcodeList) -> PropertyList:
     return property_server.get_property_information(postcodes.postcodes)
+
+
+@app.get("/mark/{listing_url:path}/as/{mark}")
+async def mark_property(listing_url: str, mark: SaveMark):
+    property_saver.mark_property(listing_url, mark)
+
+
+@app.get("/all_liked_properties")
+async def get_all_liked_properties() -> Dict[str, List[str]]:
+    return {"properties": property_saver.get_all_liked_properties()}
 
 
 def _get_area(image_file: str, area_function: Callable[[str], float]) -> Dict[str, Any]:

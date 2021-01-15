@@ -15,8 +15,9 @@ LOGGER = logging.getLogger()
 class Ocr:
 
     def __init__(self, db: Redis):
-        self.sqm_pattern= re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*m", re.IGNORECASE)
-        self.sqft_pattern= re.compile(r"(\d*.?\d*)[.\s]*sq[.\s]*ft", re.IGNORECASE)
+        #TODO: Example that regex pattern misses: https://lc.zoocdn.com/44db19bf436b7d86c247a60993676e758538df21.gif
+        self.sqm_pattern= re.compile(r"(\d*[.,\s]?\d*)[.\s]*sq[.\s]*m", re.IGNORECASE)
+        self.sqft_pattern= re.compile(r"(\d*[.,\s]?\d*)[.\s]*sq[.\s]*ft", re.IGNORECASE)
         self.db = db
 
     def get_area_image(self, floorplan_url: str) -> float:
