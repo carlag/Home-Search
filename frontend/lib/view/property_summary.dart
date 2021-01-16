@@ -27,9 +27,11 @@ class _PropertySummaryState extends State<PropertySummary> {
 
   @override
   Widget build(BuildContext context) {
-    _markType = widget.property.markType;
+    if (_markType == null) {
+      _markType = widget.property.markType;
+    }
     print('PROPERTY URL: ${widget.property.listingURL}');
-    print('MARKTYPE: ${widget.property.markType}');
+    print('MARKTYPE: ${_markType}');
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =
@@ -99,22 +101,20 @@ class _PropertySummaryState extends State<PropertySummary> {
   Widget _markButton(
       PropertyService service, Property property, MarkType type) {
     return FlatButton(
-      onPressed: () async {
-        if (_markType == null) {
-          final success = await service.markProperty(
-            property.listingURL!,
-            type,
-          );
-          if (success != null && success) {
-            setState(() {
-              _markType = type;
-            });
-          }
-        }
-      },
+      onPressed: (_markType != null)
+          ? null
+          : () async {
+              setState(() {
+                _markType = type;
+              });
+              await service.markProperty(
+                property.listingURL!,
+                type,
+              );
+            },
       child: Text(type.string.toUpperCase()),
       color: _markType == type ? Colors.blue : Colors.grey,
-      disabledColor: Colors.grey,
+      disabledColor: _markType == type ? Colors.blue : Colors.grey,
     );
   }
 }
@@ -155,8 +155,6 @@ Widget _image(Property property) => FlatButton(
     );
 
 Widget _map(Property property) {
-  print('Map: ${property.latitude!}, ${property.longitude!}');
-
   return SizedBox(
     height: _rowHeight,
     width: _rowHeight,

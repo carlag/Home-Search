@@ -87,8 +87,13 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: propertiesCount,
+              itemCount: propertiesCount + 1,
               itemBuilder: (context, index) {
+                // last item
+                if (index == propertiesCount) {
+                  return FlatButton(
+                      onPressed: () {}, child: Text('Fetch more'));
+                }
                 return PropertySummary(
                   property: _properties[index],
                   key: Key('property_$index'),
