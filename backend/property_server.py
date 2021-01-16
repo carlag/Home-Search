@@ -36,6 +36,7 @@ class Property(BaseModel):
     displayable_address: Optional[str] = None
     floor_plan: Optional[List[str]] = None
     stations: Optional[List[Station]] = None
+    mark: Optional[SaveMark] = None
 
     def __lt__(self, other: "Property"):
         return self.ocr_size < other.ocr_size
@@ -98,8 +99,10 @@ class PropertyServer:
         for property_json in response.json()["listing"]:
             property_model = Property.parse_obj(property_json)
             save_mark = property_saver.check_if_property_marked(property_model.listing_url)
-            if save_mark and save_mark == SaveMark.REJECT:
-                continue
+            if save_mark:
+                if save_mark == SaveMark.REJECT:
+                    continue
+                property_model.mark = save_mark
             if property_model.floor_plan:
                 property_model.ocr_size = get_area(property_model.floor_plan[0])
             properties.append(property_model)
