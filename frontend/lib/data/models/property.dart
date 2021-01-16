@@ -1,3 +1,5 @@
+import 'mark_type.dart';
+
 class Property {
   String? listingURL;
   dynamic? size;
@@ -10,6 +12,7 @@ class Property {
   dynamic? price;
   String? displayableAddress;
   List<dynamic>? floorPlan;
+  MarkType? markType;
 
   Property(this.listingURL, this.size, this.imageURL, this.price,
       this.displayableAddress);
@@ -24,5 +27,6 @@ class Property {
         imageURL = json['image_url'] ?? 'No image',
         price = json['price'] ?? 'No price',
         displayableAddress = json['displayable_address'] ?? 'No Address',
-        floorPlan = json['floor_plan'] ?? [];
+        floorPlan = json['floor_plan'] ?? [],
+  markType = markTypeFromJSON(json['mark']);
 }

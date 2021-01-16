@@ -18,3 +18,16 @@ extension MarkTypeString on MarkType {
     }
   }
 }
+
+MarkType? markTypeFromJSON(String markType) {
+  if (markType == MarkType.liked.string) {
+    return MarkType.liked;
+  }
+  if (markType == MarkType.rejected.string) {
+    return MarkType.rejected;
+  }
+  if (markType == MarkType.unsure.string) {
+    return MarkType.unsure;
+  }
+  return null;
+}
