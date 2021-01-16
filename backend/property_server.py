@@ -65,16 +65,19 @@ class PropertyServer:
         self.radius = radius
         self.page_size = page_size
 
-    def get_property_information(self, postcodes: List[str]) -> PropertyList:
+    def get_property_information(self, postcodes: List[str], reset: bool = False) -> PropertyList:
         properties = []
         for postcode in postcodes:
-            properties += self.get_property_info_from_postcode(postcode)
+            properties += self.get_property_info_from_postcode(postcode, reset)
 
         return PropertyList(properties=sorted(properties, reverse=True))
 
-    def get_property_info_from_postcode(self, postcode: str) -> List[Property]:
+    def get_property_info_from_postcode(self, postcode: str, reset: bool = False) -> List[Property]:
 
-        self.pages[postcode] += 1
+        if reset:
+            self.pages[postcode] = 1
+        else:
+            self.pages[postcode] += 1
         page_number = self.pages[postcode]
         LOGGER.info(f"Sending request to Zoopla for postcode '{postcode}', page {page_number}")
 
