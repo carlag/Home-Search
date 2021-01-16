@@ -34,7 +34,7 @@ class PropertyService {
     }
   }
 
-  void markProperty(String listingUrl, MarkType markType) async {
+  Future<bool?> markProperty(String listingUrl, MarkType markType) async {
     final encodedListingUrl = Uri.encodeComponent(listingUrl);
     final url = '$_markEndpoint/$encodedListingUrl/as/${markType.string}';
 
@@ -42,6 +42,9 @@ class PropertyService {
       url,
     );
 
+    if (response.statusCode == 200) {
+      return true;
+    }
     if (response.statusCode != 200) {
       // If the server did not return a 200 OK response,
       // then throw an exception.
