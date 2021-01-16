@@ -105,6 +105,7 @@ class _PropertySummaryState extends State<PropertySummary> {
           ? null
           : () async {
               setState(() {
+                widget.property.markType = type;
                 _markType = type;
               });
               await service.markProperty(
