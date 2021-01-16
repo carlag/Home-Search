@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/property_service.dart';
 import 'package:proper_house_search/view/postcode_search_bar.dart';
 import 'package:proper_house_search/view/property_summary.dart';
@@ -27,21 +28,50 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<AutoCompleteState> _autoCompleteState =
       GlobalKey<AutoCompleteState>();
 
-  List<Property> _properties = [];
-
   final service = PropertyService();
 
+  var _isLoading = false;
+  List<Property> _properties = [];
+  List<StationPostcode> _stations = [];
+
   Future<void> _onPressed() async {
+    setState(() {
+      _isLoading = true;
+      _properties = [];
+      _stations = _autoCompleteState.currentState?.addedStations() ?? [];
+    });
     final stations = _autoCompleteState.currentState?.addedStations() ?? [];
     final postcodes = stations.map((e) => e.postcode).toList();
     final properties = await service.fetchProperties(postcodes);
     setState(() {
+      _isLoading = false;
       _properties = properties;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return _loading();
+    }
+    return _loaded();
+  }
+
+  Widget _loading() {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Center(
+          child: LinearProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
+  Widget _loaded() {
     final propertiesCount = _properties.length;
     return Scaffold(
       appBar: AppBar(
@@ -52,8 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('Number of results: $propertiesCount'),
           AutoComplete(
             key: _autoCompleteState,
-            addedStations:
-                _autoCompleteState.currentState?.addedStations() ?? [],
+            addedStations: _stations,
           ),
           Expanded(
             child: ListView.builder(
