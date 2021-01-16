@@ -8,7 +8,7 @@ from redis import Redis
 LOGGER = logging.getLogger()
 
 
-class SaveMark(Enum):
+class SaveMark(str, Enum):
     LIKE = "liked"
     REJECT = "rejected"
     UNSURE = "unsure"

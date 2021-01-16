@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-property_server = PropertyServer()
+property_server = PropertyServer(page_size=10)
 property_saver = PropertySaver(db)
 
 @app.get("/stations/origin/{lat},{lng}", response_model=StationList)
@@ -46,6 +46,11 @@ async def get_floorplan_area_pdf(pdf_file: str) -> Dict[str, Any]:
 @app.post("/properties", response_model=PropertyList)
 async def get_properties(postcodes: PostcodeList) -> PropertyList:
     return property_server.get_property_information(postcodes.postcodes)
+
+
+@app.post("/properties/reset", response_model=PropertyList)
+async def get_properties(postcodes: PostcodeList) -> PropertyList:
+    return property_server.get_property_information(postcodes.postcodes, reset=True)
 
 
 @app.get("/mark/{listing_url:path}/as/{mark}")
