@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:proper_house_search/data/models/mark_type.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/property_service.dart';
 import 'package:proper_house_search/view/postcode_search_bar.dart';
@@ -49,6 +50,22 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _onMorePressed() async {
+    setState(() {
+      _isLoading = true;
+      _stations = _autoCompleteState.currentState?.addedStations() ?? [];
+    });
+    final stations = _autoCompleteState.currentState?.addedStations() ?? [];
+    final postcodes = stations.map((e) => e.postcode).toList();
+    final properties = await service.fetchMoreProperties(postcodes);
+    setState(() {
+      _isLoading = false;
+      _properties
+          .removeWhere((property) => property.markType == MarkType.rejected);
+      _properties.addAll(properties);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -92,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 // last item
                 if (index == propertiesCount) {
                   return FlatButton(
-                      onPressed: () {}, child: Text('Fetch more'));
+                      onPressed: _onMorePressed, child: Text('Fetch more'));
                 }
                 return PropertySummary(
                   property: _properties[index],

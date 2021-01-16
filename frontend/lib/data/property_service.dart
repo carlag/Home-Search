@@ -6,11 +6,35 @@ import 'package:proper_house_search/data/models/property.dart';
 
 import 'models/mark_type.dart';
 
+const _morePropertiesEndpoint = 'http://127.0.0.1:80/properties/';
 const _propertiesEndpoint = 'http://127.0.0.1:80/properties/reset/';
 const _markEndpoint = 'http://127.0.0.1:80/mark';
 
 class PropertyService {
   static final client = http.Client();
+
+  Future<List<Property>> fetchMoreProperties(List<String> postcodes) async {
+    final response = await client.post(
+      _morePropertiesEndpoint,
+      headers: _headers(),
+      body: _body(postcodes),
+    );
+
+    if (response.statusCode == 200) {
+      final propertiesJSON =
+          jsonDecode(response.body)['properties'] as List<dynamic>;
+      print(propertiesJSON);
+      final properties = propertiesJSON
+          .map((property) => Property.fromJson(property))
+          .where((property) => property.floorPlan?.isNotEmpty ?? false)
+          .toList();
+      return properties;
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load property: ${response.body}');
+    }
+  }
 
   Future<List<Property>> fetchProperties(List<String> postcodes) async {
     final response = await client.post(

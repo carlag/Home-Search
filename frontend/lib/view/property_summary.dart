@@ -86,9 +86,12 @@ class _PropertySummaryState extends State<PropertySummary> {
             style: style,
           ),
           if (property.latitude != null && property.longitude != null)
-            Stations(
-              key: Key('station_${key.hashCode}'),
-              origin: LatLng(property.latitude, property.longitude),
+            SizedBox(
+              height: 100,
+              child: Stations(
+                key: Key('station_${key.hashCode}'),
+                origin: LatLng(property.latitude, property.longitude),
+              ),
             ),
           _details(property),
           Padding(
@@ -105,6 +108,7 @@ class _PropertySummaryState extends State<PropertySummary> {
           ? null
           : () async {
               setState(() {
+                widget.property.markType = type;
                 _markType = type;
               });
               await service.markProperty(
