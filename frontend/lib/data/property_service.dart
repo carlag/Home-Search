@@ -6,7 +6,7 @@ import 'package:proper_house_search/data/models/property.dart';
 
 import 'models/mark_type.dart';
 
-const _propertiesEndpoint = 'http://127.0.0.1:80/properties/';
+const _propertiesEndpoint = 'http://127.0.0.1:80/properties/reset/';
 const _markEndpoint = 'http://127.0.0.1:80/mark';
 
 class PropertyService {
@@ -22,6 +22,7 @@ class PropertyService {
     if (response.statusCode == 200) {
       final propertiesJSON =
           jsonDecode(response.body)['properties'] as List<dynamic>;
+      print(propertiesJSON);
       final properties = propertiesJSON
           .map((property) => Property.fromJson(property))
           .where((property) => property.floorPlan?.isNotEmpty ?? false)

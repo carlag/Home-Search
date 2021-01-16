@@ -28,5 +28,5 @@ class Property {
         price = json['price'] ?? 'No price',
         displayableAddress = json['displayable_address'] ?? 'No Address',
         floorPlan = json['floor_plan'] ?? [],
-  markType = markTypeFromJSON(json['mark']);
+        markType = markTypeFromJSON(json['mark']);
 }

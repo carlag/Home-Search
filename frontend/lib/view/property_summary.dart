@@ -28,6 +28,8 @@ class _PropertySummaryState extends State<PropertySummary> {
   @override
   Widget build(BuildContext context) {
     _markType = widget.property.markType;
+    print('PROPERTY URL: ${widget.property.listingURL}');
+    print('MARKTYPE: ${widget.property.markType}');
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =
@@ -57,64 +59,15 @@ class _PropertySummaryState extends State<PropertySummary> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FlatButton(
-                  onPressed: () async {
-                    if (_markType == null) {
-                      await service.markProperty(
-                        property.listingURL!,
-                        MarkType.rejected,
-                      );
-                      setState(() {
-                        _markType = MarkType.rejected;
-                      });
-                    }
-                  },
-                  child: Text('Reject'),
-                  color: _markType == MarkType.rejected
-                      ? Colors.orange
-                      : Colors.grey,
-                  disabledColor: Colors.grey,
-                ),
+                child: _markButton(service, property, MarkType.rejected),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FlatButton(
-                    onPressed: () async {
-                      if (_markType == null) {
-                        await service.markProperty(
-                          property.listingURL!,
-                          MarkType.liked,
-                        );
-                        setState(() {
-                          _markType = MarkType.liked;
-                        });
-                      }
-                    },
-                    child: Text('Like'),
-                    color: _markType == MarkType.liked
-                        ? Colors.green
-                        : Colors.grey,
-                    disabledColor: Colors.grey),
+                child: _markButton(service, property, MarkType.liked),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FlatButton(
-                    onPressed: () async {
-                      if (_markType == null) {
-                        await service.markProperty(
-                          property.listingURL!,
-                          MarkType.unsure,
-                        );
-                        setState(() {
-                          _markType = MarkType.unsure;
-                        });
-                      }
-                    },
-                    child: Text('Unsure'),
-                    color: _markType == MarkType.unsure
-                        ? Colors.blue
-                        : Colors.grey,
-                    disabledColor: Colors.grey),
+                child: _markButton(service, property, MarkType.unsure),
               ),
             ],
           ),
@@ -142,6 +95,28 @@ class _PropertySummaryState extends State<PropertySummary> {
           ),
         ],
       );
+
+  Widget _markButton(
+      PropertyService service, Property property, MarkType type) {
+    return FlatButton(
+      onPressed: () async {
+        if (_markType == null) {
+          final success = await service.markProperty(
+            property.listingURL!,
+            type,
+          );
+          if (success != null && success) {
+            setState(() {
+              _markType = type;
+            });
+          }
+        }
+      },
+      child: Text(type.string.toUpperCase()),
+      color: _markType == type ? Colors.blue : Colors.grey,
+      disabledColor: Colors.grey,
+    );
+  }
 }
 
 Widget _details(Property property) => Column(
