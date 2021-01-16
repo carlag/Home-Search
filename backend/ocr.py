@@ -52,11 +52,11 @@ class Ocr:
     def _get_area_from_text(self, text: str) -> float:
         result = self.sqm_pattern.findall(text)
         if result:
-            return max(float(area) for area in result)
+            return max(float(area.replace(",", ".")) for area in result)
 
         result = self.sqft_pattern.findall(text)
         if result:
-            return max(float(area) * 0.092903 for area in result)
+            return max(float(area.replace(",", ".")) * 0.092903 for area in result)
 
         return float("nan")
 
