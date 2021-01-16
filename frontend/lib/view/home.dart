@@ -29,10 +29,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Property> _properties = [];
 
+  final service = PropertyService();
+
   Future<void> _onPressed() async {
     final stations = _autoCompleteState.currentState?.addedStations() ?? [];
     final postcodes = stations.map((e) => e.postcode).toList();
-    final properties = await PropertyService().fetchProperties(postcodes);
+    final properties = await service.fetchProperties(postcodes);
     setState(() {
       _properties = properties;
     });
@@ -51,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
           AutoComplete(
             key: _autoCompleteState,
             addedStations:
-            _autoCompleteState.currentState?.addedStations() ?? [],
+                _autoCompleteState.currentState?.addedStations() ?? [],
           ),
           Expanded(
             child: ListView.builder(
@@ -61,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 return PropertySummary(
                   property: _properties[index],
                   key: Key('property_$index'),
+                  service: service,
                 );
               },
             ),
