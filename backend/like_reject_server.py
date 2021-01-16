@@ -34,7 +34,7 @@ class PropertySaver:
 
         clean_listing_url = _clean_listing_url(listing_url)
         LOGGER.info(f"Marking property {clean_listing_url} as {save_mark.value}")
-        self.db.hset(name="properties", key=listing_url, value=save_mark.value)
+        self.db.hset(name="properties", key=clean_listing_url, value=save_mark.value)
         self.db.lpush(save_mark.value, clean_listing_url)
 
     def get_all_liked_properties(self) -> List[str]:
