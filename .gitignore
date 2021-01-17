@@ -192,3 +192,4 @@ cython_debug/
 -langs.txt
 /frontend/assets/secrets.json
 /frontend/lib/generated_plugin_registrant.dart
+/frontend/web/index.html

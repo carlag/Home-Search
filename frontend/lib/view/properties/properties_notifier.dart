@@ -9,7 +9,7 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
   final service = PropertyService();
 
   List<StationPostcode> _postCodes = [];
-  List<Property> _listProperties = [];
+  List<Property> listProperties = [];
   bool _loading = false;
 
   @override
@@ -22,10 +22,10 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
   }
 
   Future<void> reload(List<StationPostcode> newPostCodes) async {
-    _listProperties = <Property>[];
+    listProperties = <Property>[];
     _postCodes = newPostCodes; //newPostCodes.map((e) => e.postcode).toList();
-    _listProperties = await service.fetchProperties(_postCodes);
-    value = _listProperties;
+    listProperties = await service.fetchProperties(_postCodes);
+    value = listProperties;
   }
 
   Future<void> getMore() async {
@@ -33,9 +33,9 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
       _loading = true;
       final moreProperties = await service.fetchMoreProperties(_postCodes);
       print("MORE PROPERTIES: ${moreProperties.length}");
-      _listProperties.addAll(moreProperties);
+      listProperties.addAll(moreProperties);
       _loading = false;
-      value = _listProperties;
+      value = listProperties;
     }
   }
 }

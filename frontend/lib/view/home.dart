@@ -26,12 +26,23 @@ class MyHomePageState extends State<MyHomePage> {
   final GlobalKey<AutoCompleteState> _autoCompleteState =
       GlobalKey<AutoCompleteState>();
 
+  final GlobalKey<PropertiesListViewState> _propertyListState =
+      GlobalKey<PropertiesListViewState>();
+
   final service = PropertyService();
+  var _isLoading = false;
 
   List<StationPostcode> selectedStations = [];
 
   Future<void> _onPressed() async {
     setState(() {
+      _propertyListState.currentState?.notifier.listProperties = [];
+      _propertyListState.currentState?.notifier.value = [];
+      _isLoading = true;
+    });
+    await _propertyListState.currentState?.notifier.reload(selectedStations);
+    setState(() {
+      _isLoading = false;
       selectedStations = _autoCompleteState.currentState?.addedStations() ?? [];
     });
   }
@@ -41,19 +52,12 @@ class MyHomePageState extends State<MyHomePage> {
     return _loaded();
   }
 
-  // Widget _loading() {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: Text(widget.title),
-  //     ),
-  //     body: Padding(
-  //       padding: const EdgeInsets.all(20.0),
-  //       child: Center(
-  //         child: LinearProgressIndicator(),
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget _loading() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: LinearProgressIndicator(),
+    );
+  }
 
   Widget _loaded() {
     return Scaffold(
@@ -66,9 +70,10 @@ class MyHomePageState extends State<MyHomePage> {
             key: _autoCompleteState,
             addedStations: selectedStations,
           ),
+          if (_isLoading) _loading(),
           Expanded(
             child: PropertiesListView(
-              key: Key('PropertiesListView'),
+              key: _propertyListState,
               parent: this,
             ),
           ),

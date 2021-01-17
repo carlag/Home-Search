@@ -12,11 +12,12 @@ class PropertiesListView extends StatefulWidget {
   final MyHomePageState parent;
 
   @override
-  _PropertiesListViewState createState() => _PropertiesListViewState();
+  PropertiesListViewState createState() => PropertiesListViewState();
 }
 
-class _PropertiesListViewState extends State<PropertiesListView> {
+class PropertiesListViewState extends State<PropertiesListView> {
   late PropertiesNotifier notifier;
+  var isLoading = false;
 
   @override
   void initState() {
@@ -34,49 +35,68 @@ class _PropertiesListViewState extends State<PropertiesListView> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<List<Property>>(
-        valueListenable: notifier,
-        builder: (BuildContext context, List<Property>? value, Widget? child) {
-          return value != null
-              ? RefreshIndicator(
-                  onRefresh: () async {
-                    return await notifier
-                        .reload(widget.parent.selectedStations);
-                  },
-                  child: value.isEmpty
-                      ? ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: 1,
-                          itemBuilder: (BuildContext context, int index) {
-                            return const Center(child: Text('No Properties!'));
-                          })
-                      : NotificationListener<ScrollNotification>(
-                          onNotification: (ScrollNotification scrollInfo) {
-                            if (scrollInfo is ScrollEndNotification &&
-                                scrollInfo.metrics.extentAfter == 0) {
-                              notifier.getMore();
-                              return true;
-                            }
-                            return false;
-                          },
-                          child: ListView.separated(
-                              separatorBuilder: (context, index) => Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Divider(),
-                                  ),
-                              padding: EdgeInsets.only(top: 20),
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: value.length,
-                              // cacheExtent: 5,
-                              itemBuilder: (BuildContext context, int index) {
-                                return PropertySummary(
-                                  property: value[index],
-                                  key: Key('property_$index'),
-                                  service: PropertyService(),
-                                );
-                              }),
+      valueListenable: notifier,
+      builder: (BuildContext context, List<Property>? value, Widget? child) {
+        return value != null
+            ? _propertyList(value)
+            : Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _propertyList(List<Property> value) {
+    return value.isEmpty
+        ? ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: 1,
+            itemBuilder: (BuildContext context, int index) {
+              return const Center(child: Text('No Properties!'));
+            },
+          )
+        : NotificationListener<ScrollNotification>(
+            child: ListView.separated(
+                separatorBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Divider(),
+                    ),
+                padding: EdgeInsets.only(top: 20),
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: value.length + 1,
+                // cacheExtent: 5,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == value.length) {
+                    if (isLoading) {
+                      return Center(
+                          child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(),
+                      ));
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FlatButton(
+                          onPressed: () => _moreButtonPressed(),
+                          child: Text('View more'),
                         ),
-                )
-              : Center(child: CircularProgressIndicator());
-        });
+                      );
+                    }
+                  }
+                  return PropertySummary(
+                    property: value[index],
+                    key: Key('property_$index'),
+                    service: PropertyService(),
+                  );
+                }),
+          );
+  }
+
+  Future<void> _moreButtonPressed() async {
+    setState(() {
+      isLoading = true;
+    });
+    await notifier.getMore();
+    setState(() {
+      isLoading = false;
+    });
   }
 }
