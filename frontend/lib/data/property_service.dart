@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/models/property.dart';
+import 'package:proper_house_search/data/models/station_postcode.dart';
 
 import 'models/mark_type.dart';
 
@@ -13,7 +14,9 @@ const _markEndpoint = 'http://127.0.0.1:80/mark';
 class PropertyService {
   static final client = http.Client();
 
-  Future<List<Property>> fetchMoreProperties(List<String> postcodes) async {
+  Future<List<Property>> fetchMoreProperties(
+      List<StationPostcode> stations) async {
+    final postcodes = stations.map((e) => e.postcode).toList();
     final response = await client.post(
       _morePropertiesEndpoint,
       headers: _headers(),
@@ -23,7 +26,6 @@ class PropertyService {
     if (response.statusCode == 200) {
       final propertiesJSON =
           jsonDecode(response.body)['properties'] as List<dynamic>;
-      print(propertiesJSON);
       final properties = propertiesJSON
           .map((property) => Property.fromJson(property))
           .where((property) => property.floorPlan?.isNotEmpty ?? false)
@@ -36,7 +38,8 @@ class PropertyService {
     }
   }
 
-  Future<List<Property>> fetchProperties(List<String> postcodes) async {
+  Future<List<Property>> fetchProperties(List<StationPostcode> stations) async {
+    final postcodes = stations.map((e) => e.postcode).toList();
     final response = await client.post(
       _propertiesEndpoint,
       headers: _headers(),
@@ -46,7 +49,6 @@ class PropertyService {
     if (response.statusCode == 200) {
       final propertiesJSON =
           jsonDecode(response.body)['properties'] as List<dynamic>;
-      print(propertiesJSON);
       final properties = propertiesJSON
           .map((property) => Property.fromJson(property))
           .where((property) => property.floorPlan?.isNotEmpty ?? false)
