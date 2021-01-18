@@ -3,7 +3,7 @@ from urllib.parse import urljoin, urlparse, unquote
 from enum import Enum
 from typing import Optional, List
 
-from redis import Redis
+from database import DB
 
 LOGGER = logging.getLogger()
 
@@ -16,12 +16,12 @@ class SaveMark(str, Enum):
 
 class PropertySaver:
 
-    def __init__(self, db: Redis):
+    def __init__(self, db: DB):
         self.db = db
 
     def check_if_property_marked(self, listing_url: str) -> Optional[SaveMark]:
         listing_id = _extract_listing_id_from_listing_url(listing_url)
-        save_mark = self.db.hget("properties", listing_id)
+        save_mark = self.db.get_property_mark(listing_id)
         if save_mark:
             LOGGER.info(f"Property {listing_id} already marked as {save_mark}")
             return SaveMark(save_mark)
@@ -34,12 +34,10 @@ class PropertySaver:
 
         listing_id = _extract_listing_id_from_listing_url(listing_url)
         LOGGER.info(f"Marking property {listing_id} as {save_mark.value}")
-        self.db.hset(name="properties", key=listing_id, value=save_mark.value)
-        self.db.lpush(save_mark.value, listing_id)
+        self.db.mark_property(listing_id, save_mark.value)
 
     def get_all_liked_property_ids(self) -> List[str]:
-        return [self.db.rpoplpush(SaveMark.LIKE.value, SaveMark.LIKE.value)
-                for _ in range(self.db.llen(SaveMark.LIKE.value))]
+        return self.db.get_all_property_ids_with_mark(SaveMark.LIKE.value)
 
 
 def _extract_listing_id_from_listing_url(listing_url: str) -> str:

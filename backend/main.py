@@ -4,9 +4,10 @@ from typing import Dict, Any, Callable, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from database import db
 from like_reject_server import SaveMark, PropertySaver
 from map_server import get_stations_information, Location, StationList
-from property_server import PostcodeList, PropertyList, floorplan_reader, PropertyServer, db
+from property_server import PostcodeList, PropertyList, PropertyServer
 
 LOGGER = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -21,8 +22,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-property_server = PropertyServer(page_size=10)
+property_server = PropertyServer(db, page_size=10)
 property_saver = PropertySaver(db)
+
 
 @app.get("/stations/origin/{lat},{lng}", response_model=StationList)
 async def get_stations(lat: str, lng: str) -> StationList:
@@ -35,12 +37,12 @@ async def get_stations(lat: str, lng: str) -> StationList:
 
 @app.get("/image/{image_file}")
 async def get_floorplan_area_image(image_file: str) -> Dict[str, Any]:
-    return _get_area(image_file, floorplan_reader.get_area_image)
+    return _get_area(image_file, property_server.floorplan_reader.get_area_image)
 
 
 @app.get("/pdf/{pdf_file}")
 async def get_floorplan_area_pdf(pdf_file: str) -> Dict[str, Any]:
-    return _get_area(pdf_file, floorplan_reader.get_area_pdf)
+    return _get_area(pdf_file, property_server.floorplan_reader.get_area_pdf)
 
 
 @app.post("/properties", response_model=PropertyList)

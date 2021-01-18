@@ -7,14 +7,15 @@ import pytesseract
 import requests
 from PIL import Image
 from pdf2image import convert_from_bytes
-from redis import Redis
+
+from database import DB
 
 LOGGER = logging.getLogger()
 
 
 class Ocr:
 
-    def __init__(self, db: Redis):
+    def __init__(self, db: DB):
         #TODO: Example that regex pattern misses: https://lc.zoocdn.com/44db19bf436b7d86c247a60993676e758538df21.gif
         self.sqm_pattern= re.compile(r"(\d*[.,\s]?\d*)[.\s]*sq[.\s]*m", re.IGNORECASE)
         self.sqft_pattern= re.compile(r"(\d*[.,\s]?\d*)[.\s]*sq[.\s]*ft", re.IGNORECASE)
@@ -61,7 +62,7 @@ class Ocr:
         return float("nan")
 
     def _check_for_cached_area(self, floorplan_url: str) -> Optional[float]:
-        area = self.db.hget("floorplans", floorplan_url)
+        area = self.db.get_cached_area(floorplan_url)
         if area:
             LOGGER.info(f"Retrieved area for {floorplan_url} from cache. Area: {area}")
             return float(area)
@@ -71,4 +72,4 @@ class Ocr:
 
     def _cache_area(self, floorplan_url: str, area: float) -> None:
         LOGGER.info(f"Caching area of {area} for {floorplan_url}")
-        self.db.hset(name="floorplans", key=floorplan_url, value=area)
+        self.db.cache_area(floorplan_url, area)

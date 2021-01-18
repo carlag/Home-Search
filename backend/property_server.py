@@ -7,17 +7,13 @@ import redis as redis
 import requests
 from pydantic import BaseModel, Field
 
+from database import db, DB
 from like_reject_server import PropertySaver, SaveMark
 from map_server import Station
 from ocr import Ocr
 
 LOGGER = logging.getLogger()
 ZOOPLA_API_KEY = os.environ["ZOOPLAAPIKEY"]
-
-db = redis.Redis(host='redis', port=6379, decode_responses=True)
-LOGGER.info(f"Connected to DB: {db}")
-floorplan_reader = Ocr(db)
-property_saver = PropertySaver(db)
 
 
 class PostcodeList(BaseModel):
@@ -49,6 +45,7 @@ class PropertyList(BaseModel):
 class PropertyServer:
 
     def __init__(self,
+                 db: DB,
                  minimum_area: int = 90,
                  minimum_price: int = 500_000,
                  maximum_price: int = 850_000,
@@ -66,6 +63,9 @@ class PropertyServer:
         self.page_size = page_size
 
         self.zoopla_listings_url = "https://api.zoopla.co.uk/api/v1/property_listings.js"
+
+        self.floorplan_reader = Ocr(db)
+        self.property_saver = PropertySaver(db)
 
     def get_property_information(self, postcodes: List[str], reset: bool = False) -> PropertyList:
         properties = []
@@ -102,13 +102,13 @@ class PropertyServer:
         properties = []
         for property_json in response.json()["listing"]:
             property_model = Property.parse_obj(property_json)
-            save_mark = property_saver.check_if_property_marked(property_model.listing_url)
+            save_mark = self.property_saver.check_if_property_marked(property_model.listing_url)
             if save_mark:
                 if save_mark == SaveMark.REJECT:
                     continue
                 property_model.mark = save_mark
             if property_model.floor_plan:
-                property_model.ocr_size = get_area(property_model.floor_plan[0])
+                property_model.ocr_size = self.get_area(property_model.floor_plan[0])
             properties.append(property_model)
 
         return [property_ for property_ in properties
@@ -125,27 +125,27 @@ class PropertyServer:
         properties = []
         for property_json in response.json()["listing"]:
             property_model = Property.parse_obj(property_json)
-            property_model.mark = property_saver.check_if_property_marked(property_model.listing_url)
+            property_model.mark = self.property_saver.check_if_property_marked(
+                property_model.listing_url)
             if property_model.floor_plan:
-                property_model.ocr_size = get_area(property_model.floor_plan[0])
+                property_model.ocr_size = self.get_area(property_model.floor_plan[0])
             properties.append(property_model)
 
         return properties
 
     def get_all_like_properties(self) -> PropertyList:
-        listing_ids = property_saver.get_all_liked_property_ids()
+        listing_ids = self.property_saver.get_all_liked_property_ids()
         return PropertyList(properties=self._get_properties_from_listing_ids(listing_ids))
 
+    def get_area(self, image_url: str) -> Optional[float]:
+        filetype = image_url.rsplit(".", 1)[1]
+        try:
+            area = (self.floorplan_reader.get_area_pdf(image_url)
+                    if filetype == "pdf" else
+                    self.floorplan_reader.get_area_image(image_url))
+        except Exception as err:
+            LOGGER.error(f"Unable to get area: {err}")
+        else:
+            return area
 
-def get_area(image_url: str) -> Optional[float]:
-    filetype = image_url.rsplit(".", 1)[1]
-    try:
-        area = (floorplan_reader.get_area_pdf(image_url)
-                if filetype == "pdf" else
-                floorplan_reader.get_area_image(image_url))
-    except Exception as err:
-        LOGGER.error(f"Unable to get area: {err}")
-    else:
-        return area
-
-    return None
+        return None
