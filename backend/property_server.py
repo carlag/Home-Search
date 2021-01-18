@@ -65,6 +65,8 @@ class PropertyServer:
         self.radius = radius
         self.page_size = page_size
 
+        self.zoopla_listings_url = "https://api.zoopla.co.uk/api/v1/property_listings.js"
+
     def get_property_information(self, postcodes: List[str], reset: bool = False) -> PropertyList:
         properties = []
         for postcode in postcodes:
@@ -81,7 +83,6 @@ class PropertyServer:
         page_number = self.pages[postcode]
         LOGGER.info(f"Sending request to Zoopla for postcode '{postcode}', page {page_number}")
 
-        zoopla_listings_url = "https://api.zoopla.co.uk/api/v1/property_listings.js"
         params = {
             "postcode": postcode,
             "keywords": "garden",
@@ -95,7 +96,7 @@ class PropertyServer:
             "api_key": ZOOPLA_API_KEY,
         }
 
-        response = requests.get(url=zoopla_listings_url, params=params)
+        response = requests.get(url=self.zoopla_listings_url, params=params)
         response.raise_for_status()
 
         properties = []
@@ -112,6 +113,28 @@ class PropertyServer:
 
         return [property_ for property_ in properties
                 if property_.ocr_size and property_.ocr_size > self.minimum_area]
+
+    def _get_properties_from_listing_ids(self, listing_ids: List[str]) -> List[Property]:
+        params = {
+            "listing_id": listing_ids,
+            "api_key": ZOOPLA_API_KEY,
+        }
+        response = requests.get(self.zoopla_listings_url, params=params)
+        response.raise_for_status()
+
+        properties = []
+        for property_json in response.json()["listing"]:
+            property_model = Property.parse_obj(property_json)
+            property_model.mark = property_saver.check_if_property_marked(property_model.listing_url)
+            if property_model.floor_plan:
+                property_model.ocr_size = get_area(property_model.floor_plan[0])
+            properties.append(property_model)
+
+        return properties
+
+    def get_all_like_properties(self) -> PropertyList:
+        listing_ids = property_saver.get_all_liked_property_ids()
+        return PropertyList(properties=self._get_properties_from_listing_ids(listing_ids))
 
 
 def get_area(image_url: str) -> Optional[float]:

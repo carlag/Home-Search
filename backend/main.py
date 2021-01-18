@@ -58,9 +58,9 @@ async def mark_property(listing_url: str, mark: SaveMark):
     property_saver.mark_property(listing_url, mark)
 
 
-@app.get("/all_liked_properties")
-async def get_all_liked_properties() -> Dict[str, List[str]]:
-    return {"properties": property_saver.get_all_liked_properties()}
+@app.get("/all_liked_properties", response_model=PropertyList)
+async def get_all_liked_properties() -> PropertyList:
+    return property_server.get_all_like_properties()
 
 
 def _get_area(image_file: str, area_function: Callable[[str], float]) -> Dict[str, Any]:
