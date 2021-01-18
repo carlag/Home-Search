@@ -3,11 +3,10 @@ import os
 from collections import defaultdict
 from typing import List, Optional
 
-import redis as redis
 import requests
 from pydantic import BaseModel, Field
 
-from database import db, DB
+from database import DB
 from like_reject_server import PropertySaver, SaveMark
 from map_server import Station
 from ocr import Ocr

@@ -3,7 +3,6 @@ from typing import Optional, List
 
 from redis import Redis
 
-
 LOGGER = logging.getLogger()
 
 

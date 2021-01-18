@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any, Callable, List
+from typing import Dict, Any, Callable
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
