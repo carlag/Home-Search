@@ -13,6 +13,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/BackEndDockerfile
+    restart: always
     ports:
       - "80:80"
     environment:
@@ -24,5 +25,14 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+  database:
+    build:
+      context: .
+      dockerfile: ./docker/DatabaseDockerfile
+    ports:
+      - 5432:5432
+    volumes:
+      - database-data:/data
 volumes:
   redis_data:
+  database-data:

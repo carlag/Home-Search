@@ -3,7 +3,8 @@ from enum import Enum
 from typing import NamedTuple, List, Any, Dict
 
 import requests
-from pydantic import BaseModel
+
+from app.schemas.station import Station
 
 API_KEY = os.environ.get("GOOGLEMAPSAPIKEY")
 
@@ -20,19 +21,6 @@ class Location(NamedTuple):
             "lat": self.lat,
             "lng": self.lng
         }
-
-
-class Station(BaseModel):
-    address: str
-    distance: float
-    duration: float
-
-    def __lt__(self, other: "Station"):
-        return self.duration < other.duration
-
-
-class StationList(BaseModel):
-    stations: List[Station]
 
 
 class StationType(Enum):

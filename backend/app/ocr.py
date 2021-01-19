@@ -1,14 +1,13 @@
 import logging
 import re
 from io import BytesIO
-from typing import Optional
 
 import pytesseract
 import requests
 from PIL import Image
 from pdf2image import convert_from_bytes
 
-from database import DB
+from app.database.redis_database import DB
 
 LOGGER = logging.getLogger()
 
@@ -23,7 +22,7 @@ class Ocr:
 
     def get_area_image(self, floorplan_url: str) -> float:
 
-        area = self._check_for_cached_area(floorplan_url)
+        area = self.db.get_cached_area(floorplan_url)
         if area:
             return area
 
@@ -32,12 +31,12 @@ class Ocr:
         LOGGER.debug(f"OCR text:\n\n{floorplan_text}")
 
         area = self._get_area_from_text(floorplan_text)
-        self._cache_area(floorplan_url, area)
+        self.db.cache_area(floorplan_url, area)
         return area
 
     def get_area_pdf(self, floorplan_url: str) -> float:
 
-        area = self._check_for_cached_area(floorplan_url)
+        area = self.db.get_cached_area(floorplan_url)
         if area:
             return area
 
@@ -47,7 +46,7 @@ class Ocr:
         LOGGER.debug(f"OCR text:\n\n{floorplan_text}")
 
         area = self._get_area_from_text(floorplan_text)
-        self._cache_area(floorplan_url, area)
+        self.db.cache_area(floorplan_url, area)
         return area
 
     def _get_area_from_text(self, text: str) -> float:
@@ -60,16 +59,3 @@ class Ocr:
             return max(float(area.replace(",", ".")) * 0.092903 for area in result)
 
         return float("nan")
-
-    def _check_for_cached_area(self, floorplan_url: str) -> Optional[float]:
-        area = self.db.get_cached_area(floorplan_url)
-        if area:
-            LOGGER.info(f"Retrieved area for {floorplan_url} from cache. Area: {area}")
-            return float(area)
-        else:
-            LOGGER.info(f"Area for {floorplan_url} is not yet cached.")
-            return None
-
-    def _cache_area(self, floorplan_url: str, area: float) -> None:
-        LOGGER.info(f"Caching area of {area} for {floorplan_url}")
-        self.db.cache_area(floorplan_url, area)

@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional, List
 from urllib.parse import urljoin, urlparse, unquote
 
-from database import DB
+from app.database.redis_database import DB
 
 LOGGER = logging.getLogger()
 
