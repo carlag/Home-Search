@@ -14,7 +14,7 @@ LOGGER = logging.getLogger()
 
 def init_db() -> None:
     LOGGER.info("Creating initial data")
-    wait = 10
+    wait = 5
     message = ""
     for retry in range(5):
         try:
@@ -25,7 +25,7 @@ def init_db() -> None:
             message = err
             LOGGER.warning(f"Failed to connect to DB on retry {retry}. Waiting for {wait}s before trying again.")
             sleep(wait)
-            wait = max(wait * 2, 300)
+            wait = max(wait * 2, 60)  # Exponential backoff with a plateau at 1 minute
     else:
         LOGGER.error(f"Failed to connect to DB after max retries:\n{message}")
 

@@ -22,3 +22,11 @@ class PropertyModel(Base):
     ocr_size = Column(Float)
     floorplan_url = Column(String)
     mark = Column(SqlEnum(SaveMark))
+
+    def __repr__(self):
+        return (f"PropertyModel("
+                f"listing_id={self.listing_id}"
+                f", listing_url={self.listing_url}"
+                f", floorplan_url={self.floorplan_url}"
+                f", ocr_size={self.ocr_size}"
+                f", mark={self.mark})")

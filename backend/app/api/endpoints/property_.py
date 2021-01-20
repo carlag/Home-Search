@@ -5,7 +5,7 @@ from app.api.deps import get_db
 from app.like_reject_server import save_property_mark
 from app.models.property_ import SaveMark
 from app.property_server import PropertyServer
-from app.schemas.property_ import PropertyList, PostcodeList
+from app.schemas.property_ import PropertyList, PostcodeList, extract_listing_id_from_listing_url
 
 router = APIRouter()
 property_server = PropertyServer(page_size=10)
@@ -23,7 +23,8 @@ async def get_properties(*, db: Session = Depends(get_db), postcodes: PostcodeLi
 
 @router.get("/mark/{listing_url:path}/as/{mark}")
 async def mark_property(*, db: Session = Depends(get_db), listing_url: str, mark: SaveMark):
-    save_property_mark(db, listing_url, mark)
+    listing_id = extract_listing_id_from_listing_url(listing_url)
+    save_property_mark(db, listing_id, mark)
 
 
 @router.get("/all_liked_properties", response_model=PropertyList)

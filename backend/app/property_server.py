@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.like_reject_server import SaveMark, check_if_property_marked, get_all_liked_property_ids
+from app.models.property_ import PropertyModel
 from app.ocr import Ocr
 from app.schemas.property_ import PropertyList, Property
 
@@ -52,6 +53,79 @@ class PropertyServer:
                                         postcode: str,
                                         reset: bool = False) -> List[Property]:
 
+        properties_json = self._get_property_listing(postcode, reset)
+        properties_schema = []
+        for property_json in properties_json:
+            property_schema = Property.parse_obj(property_json)
+            property_model = property_schema.to_orm()
+            LOGGER.info(f"Working on property {property_model}:")
+            if not _is_property_in_db(db, property_model.listing_id):
+                db.add(property_model)
+                db.flush()
+                LOGGER.info(f"Added property to DB")
+            save_mark = check_if_property_marked(db, property_model.listing_id)
+            if save_mark:
+                if save_mark == SaveMark.REJECT:
+                    continue
+                property_schema.mark = save_mark
+            if property_schema.floor_plan:
+                property_schema.ocr_size = self.get_area(db=db,
+                                                         image_url= property_model.floorplan_url,
+                                                         listing_id=property_model.listing_id)
+            properties_schema.append(property_schema)
+
+        filtered_properties_schema = [property_ for property_ in properties_schema
+                                      if property_.ocr_size and property_.ocr_size > self.minimum_area]
+        db.commit()
+        return filtered_properties_schema
+
+    def _get_properties_from_listing_ids(self, db: Session, listing_ids: List[str]) -> List[Property]:
+        if not listing_ids:
+            LOGGER.warning(f"Unable to get properties as no listing ids were passed.")
+            return []
+
+        params = {
+            "listing_id": listing_ids,
+            "api_key": ZOOPLA_API_KEY,
+        }
+        response = requests.get(self.zoopla_listings_url, params=params)
+        response.raise_for_status()
+
+        property_schemas = []
+        for property_json in response.json()["listing"]:
+            property_schema = Property.parse_obj(property_json)
+            property_model = property_schema.to_orm()
+            property_schema.mark = check_if_property_marked(db, property_model.listing_id)
+            if property_schema.floor_plan:
+                property_schema.ocr_size = self.get_area(db,
+                                                         property_model.floorplan_url,
+                                                         property_model.listing_id)
+            property_schemas.append(property_schema)
+
+        return property_schemas
+
+    def get_all_liked_properties(self, db: Session) -> PropertyList:
+        listing_ids = get_all_liked_property_ids(db)
+        return PropertyList(properties=self._get_properties_from_listing_ids(db, listing_ids))
+
+    def get_area(self, db: Session, image_url: str, listing_id: str) -> Optional[float]:
+        cached_area = _get_cached_area(db, listing_id)
+        if cached_area:
+            return cached_area
+
+        filetype = image_url.rsplit(".", 1)[1]
+        try:
+            area = (self.floorplan_reader.get_area_pdf(image_url)
+                    if filetype == "pdf" else
+                    self.floorplan_reader.get_area_image(image_url))
+        except Exception as err:
+            LOGGER.error(f"Unable to get area: {err}")
+            area = float("nan")
+
+        _cache_area(db, listing_id, area)
+        return area
+
+    def _get_property_listing(self, postcode: str, reset: bool):
         if reset:
             self.pages[postcode] = 1
         else:
@@ -74,53 +148,35 @@ class PropertyServer:
 
         response = requests.get(url=self.zoopla_listings_url, params=params)
         response.raise_for_status()
+        return response.json()["listing"]
 
-        properties = []
-        for property_json in response.json()["listing"]:
-            property_model = Property.parse_obj(property_json)
-            save_mark = check_if_property_marked(db, property_model.listing_url)
-            if save_mark:
-                if save_mark == SaveMark.REJECT:
-                    continue
-                property_model.mark = save_mark
-            if property_model.floor_plan:
-                property_model.ocr_size = self.get_area(db, property_model.floor_plan[0])
-            properties.append(property_model)
 
-        return [property_ for property_ in properties
-                if property_.ocr_size and property_.ocr_size > self.minimum_area]
+def _is_property_in_db(db: Session, listing_id: str) -> bool:
+    result = db.query(PropertyModel).filter_by(listing_id=listing_id).first()
+    if result:
+        LOGGER.info(f"Found property {listing_id} in DB")
+        return True
+    else:
+        LOGGER.info(f"Property {listing_id} is not yet in the DB.")
+        return False
 
-    def _get_properties_from_listing_ids(self, db: Session, listing_ids: List[str]) -> List[Property]:
-        params = {
-            "listing_id": listing_ids,
-            "api_key": ZOOPLA_API_KEY,
-        }
-        response = requests.get(self.zoopla_listings_url, params=params)
-        response.raise_for_status()
 
-        properties = []
-        for property_json in response.json()["listing"]:
-            property_model = Property.parse_obj(property_json)
-            property_model.mark = check_if_property_marked(db, property_model.listing_url)
-            if property_model.floor_plan:
-                property_model.ocr_size = self.get_area(db, property_model.floor_plan[0])
-            properties.append(property_model)
-
-        return properties
-
-    def get_all_liked_properties(self, db: Session) -> PropertyList:
-        listing_ids = get_all_liked_property_ids(db)
-        return PropertyList(properties=self._get_properties_from_listing_ids(db, listing_ids))
-
-    def get_area(self, db: Session, image_url: str) -> Optional[float]:
-        filetype = image_url.rsplit(".", 1)[1]
-        try:
-            area = (self.floorplan_reader.get_area_pdf(db, image_url)
-                    if filetype == "pdf" else
-                    self.floorplan_reader.get_area_image(db, image_url))
-        except Exception as err:
-            LOGGER.error(f"Unable to get area: {err}")
-        else:
-            return area
-
+def _get_cached_area(db: Session, listing_id: str) -> Optional[float]:
+    property_ = db.query(PropertyModel).filter_by(listing_id=listing_id).first()
+    try:
+        area = property_.ocr_size
+    except AttributeError:
+        LOGGER.info(f"Area for property {listing_id} is not yet cached.")
         return None
+    if area:
+        LOGGER.info(f"Retrieved area of {area} for property {listing_id} from cache.")
+        return float(area)
+    else:
+        LOGGER.info(f"Area for property {listing_id} is not yet cached.")
+        return None
+
+
+def _cache_area(db: Session, listing_id: str, area: Optional[float]) -> None:
+    LOGGER.info(f"Caching area of {area} for {listing_id}")
+    property_ = db.query(PropertyModel).filter_by(listing_id=listing_id).first()
+    property_.ocr_size = area
