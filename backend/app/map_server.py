@@ -1,12 +1,12 @@
-import os
 from enum import Enum
 from typing import NamedTuple, List, Any, Dict
 
 import requests
 
+from app.config import settings
 from app.schemas.station import Station
 
-API_KEY = os.environ.get("GOOGLEMAPSAPIKEY")
+API_KEY = settings.GOOGLE_MAPS_API_KEY
 
 
 class Location(NamedTuple):

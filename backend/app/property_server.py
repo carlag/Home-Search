@@ -1,23 +1,22 @@
 import logging
-import os
 from collections import defaultdict
 from typing import List, Optional
 
 import requests
+from sqlalchemy.orm import Session
 
-from app.database.redis_database import DB
-from app.like_reject_server import PropertySaver, SaveMark
+from app.config import settings
+from app.like_reject_server import SaveMark, check_if_property_marked, get_all_liked_property_ids
 from app.ocr import Ocr
 from app.schemas.property_ import PropertyList, Property
 
 LOGGER = logging.getLogger()
-ZOOPLA_API_KEY = os.environ["ZOOPLAAPIKEY"]
+ZOOPLA_API_KEY = settings.ZOOPLA_API_KEY
 
 
 class PropertyServer:
 
     def __init__(self,
-                 db: DB,
                  minimum_area: int = 90,
                  minimum_price: int = 500_000,
                  maximum_price: int = 850_000,
@@ -36,17 +35,22 @@ class PropertyServer:
 
         self.zoopla_listings_url = "https://api.zoopla.co.uk/api/v1/property_listings.js"
 
-        self.floorplan_reader = Ocr(db)
-        self.property_saver = PropertySaver(db)
+        self.floorplan_reader = Ocr()
 
-    def get_property_information(self, postcodes: List[str], reset: bool = False) -> PropertyList:
+    def get_property_information(self,
+                                 db: Session,
+                                 postcodes: List[str],
+                                 reset: bool = False) -> PropertyList:
         properties = []
         for postcode in postcodes:
-            properties += self.get_property_info_from_postcode(postcode, reset)
+            properties += self.get_property_info_from_postcode(db, postcode, reset)
 
         return PropertyList(properties=sorted(properties, reverse=True))
 
-    def get_property_info_from_postcode(self, postcode: str, reset: bool = False) -> List[Property]:
+    def get_property_info_from_postcode(self,
+                                        db: Session,
+                                        postcode: str,
+                                        reset: bool = False) -> List[Property]:
 
         if reset:
             self.pages[postcode] = 1
@@ -74,19 +78,19 @@ class PropertyServer:
         properties = []
         for property_json in response.json()["listing"]:
             property_model = Property.parse_obj(property_json)
-            save_mark = self.property_saver.check_if_property_marked(property_model.listing_url)
+            save_mark = check_if_property_marked(db, property_model.listing_url)
             if save_mark:
                 if save_mark == SaveMark.REJECT:
                     continue
                 property_model.mark = save_mark
             if property_model.floor_plan:
-                property_model.ocr_size = self.get_area(property_model.floor_plan[0])
+                property_model.ocr_size = self.get_area(db, property_model.floor_plan[0])
             properties.append(property_model)
 
         return [property_ for property_ in properties
                 if property_.ocr_size and property_.ocr_size > self.minimum_area]
 
-    def _get_properties_from_listing_ids(self, listing_ids: List[str]) -> List[Property]:
+    def _get_properties_from_listing_ids(self, db: Session, listing_ids: List[str]) -> List[Property]:
         params = {
             "listing_id": listing_ids,
             "api_key": ZOOPLA_API_KEY,
@@ -97,24 +101,23 @@ class PropertyServer:
         properties = []
         for property_json in response.json()["listing"]:
             property_model = Property.parse_obj(property_json)
-            property_model.mark = self.property_saver.check_if_property_marked(
-                property_model.listing_url)
+            property_model.mark = check_if_property_marked(db, property_model.listing_url)
             if property_model.floor_plan:
-                property_model.ocr_size = self.get_area(property_model.floor_plan[0])
+                property_model.ocr_size = self.get_area(db, property_model.floor_plan[0])
             properties.append(property_model)
 
         return properties
 
-    def get_all_like_properties(self) -> PropertyList:
-        listing_ids = self.property_saver.get_all_liked_property_ids()
-        return PropertyList(properties=self._get_properties_from_listing_ids(listing_ids))
+    def get_all_liked_properties(self, db: Session) -> PropertyList:
+        listing_ids = get_all_liked_property_ids(db)
+        return PropertyList(properties=self._get_properties_from_listing_ids(db, listing_ids))
 
-    def get_area(self, image_url: str) -> Optional[float]:
+    def get_area(self, db: Session, image_url: str) -> Optional[float]:
         filetype = image_url.rsplit(".", 1)[1]
         try:
-            area = (self.floorplan_reader.get_area_pdf(image_url)
+            area = (self.floorplan_reader.get_area_pdf(db, image_url)
                     if filetype == "pdf" else
-                    self.floorplan_reader.get_area_image(image_url))
+                    self.floorplan_reader.get_area_image(db, image_url))
         except Exception as err:
             LOGGER.error(f"Unable to get area: {err}")
         else:

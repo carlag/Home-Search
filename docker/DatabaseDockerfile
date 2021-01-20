@@ -1,5 +1,0 @@
-FROM postgres:latest
-ENV POSTGRES_PASSWORD=secret
-ENV POSTGRES_USER=admin
-ENV POSTGRES_DB=homesearch
-COPY ./backend/app/database/init_db.sql /docker-entrypoint-initdb.d/init_db.sql

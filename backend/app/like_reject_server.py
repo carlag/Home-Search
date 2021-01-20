@@ -1,43 +1,37 @@
 import logging
-from enum import Enum
 from typing import Optional, List
 from urllib.parse import urljoin, urlparse, unquote
 
-from app.database.redis_database import DB
+from sqlalchemy.orm import Session
+
+from app.models.property_ import PropertyModel, SaveMark
 
 LOGGER = logging.getLogger()
 
 
-class SaveMark(str, Enum):
-    LIKE = "liked"
-    REJECT = "rejected"
-    UNSURE = "unsure"
-
-
-class PropertySaver:
-
-    def __init__(self, db: DB):
-        self.db = db
-
-    def check_if_property_marked(self, listing_url: str) -> Optional[SaveMark]:
-        listing_id = _extract_listing_id_from_listing_url(listing_url)
-        save_mark = self.db.get_property_mark(listing_id)
+def check_if_property_marked(db: Session, listing_url: str) -> Optional[SaveMark]:
+    listing_id = _extract_listing_id_from_listing_url(listing_url)
+    property_ = db.query(PropertyModel).filter_by(listing_id=listing_id).first()
+    if property_:
+        save_mark = property_.mark
         if save_mark:
             LOGGER.info(f"Property {listing_id} already marked as {save_mark}")
             return SaveMark(save_mark)
-        else:
-            return None
+    return None
 
-    def mark_property(self, listing_url: str, save_mark: SaveMark) -> None:
-        # TODO: If it is already cached with a different mark, need to pop it from the
-        #       save_mark hash list...
 
-        listing_id = _extract_listing_id_from_listing_url(listing_url)
-        LOGGER.info(f"Marking property {listing_id} as {save_mark.value}")
-        self.db.mark_property(listing_id, save_mark.value)
+def save_property_mark(db: Session, listing_url: str, save_mark: SaveMark) -> None:
 
-    def get_all_liked_property_ids(self) -> List[str]:
-        return self.db.get_all_property_ids_with_mark(SaveMark.LIKE.value)
+    listing_id = _extract_listing_id_from_listing_url(listing_url)
+    LOGGER.info(f"Marking property {listing_id} as {save_mark.value}")
+    property_ = db.query(PropertyModel).filter_by(listing_id=listing_id).first()
+    property_.mark = save_mark
+    db.commit()
+
+
+def get_all_liked_property_ids(db: Session) -> List[str]:
+    properties = db.query(PropertyModel).filter_by(mark=SaveMark.LIKE).all()
+    return [property_.listing_id for property_ in properties]
 
 
 def _extract_listing_id_from_listing_url(listing_url: str) -> str:

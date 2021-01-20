@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from app.like_reject_server import SaveMark
+from app.models.property_ import SaveMark
 from app.schemas.station import Station
 
 
@@ -21,7 +21,7 @@ class Property(BaseModel):
     price: Optional[int] = None
     displayable_address: Optional[str] = None
     floor_plan: Optional[List[str]] = None
-    stations: Optional[List[Station]] = None
+    # stations: Optional[List[Station]] = None
     mark: Optional[SaveMark] = None
 
     def __lt__(self, other: "Property"):

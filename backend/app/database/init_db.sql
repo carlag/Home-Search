@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS properties (
     latitude FLOAT NOT NULL,
     price FLOAT,
     ocr_size FLOAT,
-    floor_plan TEXT,
+    floorplan_url TEXT,
     mark save_mark,
     PRIMARY KEY(listing_id)
 );

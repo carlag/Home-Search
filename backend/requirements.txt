@@ -4,6 +4,6 @@ pillow
 fastapi
 uvicorn[standard]
 pdf2image
-redis
 pydantic
 sqlalchemy
+psycopg2

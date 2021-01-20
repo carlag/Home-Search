@@ -1,5 +1,16 @@
 version: "3.0"
 services:
+  db:
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: homesearch
+#      PGDATA: /tmp/pgdata
+    volumes:
+      - postgres_data:/data
   frontend:
     build:
       context: .
@@ -13,26 +24,14 @@ services:
     build:
       context: .
       dockerfile: ./docker/BackEndDockerfile
+    depends_on:
+      - db
     restart: always
     ports:
       - "80:80"
     environment:
       - GOOGLEMAPSAPIKEY
       - ZOOPLAAPIKEY
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-  database:
-    build:
-      context: .
-      dockerfile: ./docker/DatabaseDockerfile
-    ports:
-      - 5432:5432
-    volumes:
-      - database-data:/data
+      - POSTGRES_PASSWORD
 volumes:
-  redis_data:
-  database-data:
+  postgres_data:
