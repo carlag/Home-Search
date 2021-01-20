@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD:
       POSTGRES_DB: homesearch
-#      PGDATA: /tmp/pgdata
+      PGDATA: /data
     volumes:
       - postgres_data:/data
   frontend:

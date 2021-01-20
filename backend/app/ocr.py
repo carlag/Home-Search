@@ -14,8 +14,8 @@ class Ocr:
 
     def __init__(self):
         #TODO: Example that regex pattern misses: https://lc.zoocdn.com/44db19bf436b7d86c247a60993676e758538df21.gif
-        self.sqm_pattern= re.compile(r"(\d*[.,\s]?\d*)[.\s]*sq[.\s]*m", re.IGNORECASE)
-        self.sqft_pattern= re.compile(r"(\d*[.,\s]?\d*)[.\s]*sq[.\s]*ft", re.IGNORECASE)
+        self.sqm_pattern = re.compile(r"(\d*[.,\s]?\d*)[.\s]*(?:sq[.\s]*m|m[.\s]*[2|7])", re.IGNORECASE)
+        self.sqft_pattern = re.compile(r"(\d*[.,\s]?\d*)[.\s]*(?:sq[.\s]*ft|ft[.\s]*[2|7])", re.IGNORECASE)
 
     def get_area_image(self, floorplan_url: str) -> float:
         image = requests.get(f"{floorplan_url}").content
@@ -36,11 +36,18 @@ class Ocr:
 
     def _get_area_from_text(self, text: str) -> float:
         result = self.sqm_pattern.findall(text)
+        LOGGER.debug(f"sqm regex: {result}")
         if result:
-            return max(float(area.replace(",", ".")) for area in result)
+            try:
+                max_area = max(float(area.replace(",", ".")) for area in result if area)
+            except ValueError:
+                pass
+            else:
+                return max_area
 
         result = self.sqft_pattern.findall(text)
+        LOGGER.debug(f"sqft regex: {result}")
         if result:
-            return max(float(area.replace(",", ".")) * 0.092903 for area in result)
+            return max(float(area.replace(",", ".")) * 0.092903 for area in result if area)
 
         return float("nan")

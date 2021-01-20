@@ -13,9 +13,7 @@ def check_if_property_marked(db: Session, listing_id: str) -> Optional[SaveMark]
     if property_:
         save_mark = property_.mark
         if save_mark:
-            LOGGER.info(f"Property {listing_id} already marked as {save_mark}")
             return SaveMark(save_mark)
-    LOGGER.info(f"Property {listing_id} is not yet marked.")
     return None
 
 

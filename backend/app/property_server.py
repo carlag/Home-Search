@@ -62,12 +62,12 @@ class PropertyServer:
             if not _is_property_in_db(db, property_model.listing_id):
                 db.add(property_model)
                 db.flush()
-                LOGGER.info(f"Added property to DB")
-            save_mark = check_if_property_marked(db, property_model.listing_id)
-            if save_mark:
-                if save_mark == SaveMark.REJECT:
-                    continue
-                property_schema.mark = save_mark
+            else:
+                save_mark = check_if_property_marked(db, property_model.listing_id)
+                if save_mark:
+                    if save_mark == SaveMark.REJECT:
+                        continue
+                    property_schema.mark = save_mark
             if property_schema.floor_plan:
                 property_schema.ocr_size = self.get_area(db=db,
                                                          image_url= property_model.floorplan_url,
@@ -166,13 +166,11 @@ def _get_cached_area(db: Session, listing_id: str) -> Optional[float]:
     try:
         area = property_.ocr_size
     except AttributeError:
-        LOGGER.info(f"Area for property {listing_id} is not yet cached.")
         return None
     if area:
         LOGGER.info(f"Retrieved area of {area} for property {listing_id} from cache.")
         return float(area)
     else:
-        LOGGER.info(f"Area for property {listing_id} is not yet cached.")
         return None
 
 

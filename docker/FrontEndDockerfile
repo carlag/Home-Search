@@ -40,5 +40,5 @@ EXPOSE 5001
 # Set the server startup script as executable
 RUN ["chmod", "+x", "/usr/local/bin/app/server/flutter_server.sh"]
 
-# Start the web serverC
+# Start the web server
 CMD [ "/usr/local/bin/app/server/flutter_server.sh" ]
