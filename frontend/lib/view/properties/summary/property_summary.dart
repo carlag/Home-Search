@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:proper_house_search/data/models/mark_type.dart';
 import 'package:proper_house_search/data/models/property.dart';
-import 'package:proper_house_search/data/property_service.dart';
-import 'package:proper_house_search/view/stations.dart';
+import 'package:proper_house_search/data/services/property_service.dart';
+import 'package:proper_house_search/view/properties/summary/stations.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'property_map.dart';

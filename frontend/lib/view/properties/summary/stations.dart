@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/station.dart';
-import 'package:proper_house_search/data/station_service.dart';
+import 'package:proper_house_search/data/services/station_service.dart';
 
 class Stations extends StatelessWidget {
   final origin;

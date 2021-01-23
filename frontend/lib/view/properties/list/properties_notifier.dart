@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/property.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
-import 'package:proper_house_search/data/property_service.dart';
+import 'package:proper_house_search/data/services/property_service.dart';
 
 class PropertiesNotifier extends ValueNotifier<List<Property>> {
   PropertiesNotifier() : super([]);

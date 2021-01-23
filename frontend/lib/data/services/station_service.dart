@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
-import 'models/station.dart';
+import '../models/station.dart';
 
 const _endpoint = 'http://127.0.0.1:80/stations/origin';
 

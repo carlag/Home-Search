@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
-import 'package:proper_house_search/data/postcode_service.dart';
+import 'package:proper_house_search/data/services/postcode_service.dart';
 
 void main() {
   group(PostCodeService, () {
