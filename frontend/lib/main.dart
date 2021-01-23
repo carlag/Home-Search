@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:proper_house_search/view/home.dart';
+import 'package:proper_house_search/view/login/login.dart';
 
 void main() {
   runZonedGuarded(
@@ -18,14 +18,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Home Search',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(
-        title: 'Proper-ty Search',
-        key: Key('homepage'),
-      ),
+      home: SignInDemo(),
     );
   }
 }
