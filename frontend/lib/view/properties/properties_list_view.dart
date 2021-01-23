@@ -50,7 +50,8 @@ class PropertiesListViewState extends State<PropertiesListView> {
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: 1,
             itemBuilder: (BuildContext context, int index) {
-              return const Center(child: Text('No Properties!'));
+              return const Center(
+                  child: Text('Add stations to view properties'));
             },
           )
         : NotificationListener<ScrollNotification>(
@@ -67,10 +68,11 @@ class PropertiesListViewState extends State<PropertiesListView> {
                   if (index == value.length) {
                     if (isLoading) {
                       return Center(
-                          child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(),
-                      ));
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
                     } else {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
