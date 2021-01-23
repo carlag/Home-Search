@@ -2,7 +2,7 @@ from enum import Enum
 
 from sqlalchemy import Column, Enum as SqlEnum, String, Float
 
-from app.database.base_class import Base
+from app.database.session import Base
 
 
 class SaveMark(str, Enum):
