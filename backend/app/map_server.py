@@ -51,12 +51,10 @@ def nearby_station_locations(location: Location, station_type: StationType) -> L
 def get_stations_information(origin: Location, nearest_k: int = 4) -> List[Station]:
 
     if not API_KEY:
-        raise KeyError("Maps API_KEY environment variable undefined.")
+        raise KeyError("GOOGLEMAPSAPIKEY environment variable undefined.")
 
     nearby_stations = (nearby_station_locations(origin, StationType.TRAIN)[:nearest_k]
                        + nearby_station_locations(origin, StationType.SUBWAY)[:nearest_k])
-
-    print(nearby_stations)
 
     uri = "https://maps.googleapis.com/maps/api/distancematrix/json"
     params = {

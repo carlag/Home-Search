@@ -2,12 +2,9 @@ import logging
 from time import sleep
 
 import sqlalchemy
-from sqlalchemy.ext.declarative import declarative_base
 
-from app.database.base_class import Base
-from app.database.session import engine
 from app.database import base  # noqa: F401
-
+from app.database.session import engine, Base
 
 LOGGER = logging.getLogger()
 
