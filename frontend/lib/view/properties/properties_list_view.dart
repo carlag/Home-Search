@@ -68,10 +68,11 @@ class PropertiesListViewState extends State<PropertiesListView> {
                   if (index == value.length) {
                     if (isLoading) {
                       return Center(
-                          child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(),
-                      ));
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
                     } else {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
