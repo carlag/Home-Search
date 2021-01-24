@@ -15,13 +15,13 @@ def check_if_property_marked(db: Session, listing_id: str, user_email: str) -> O
               .filter(PropertyModel.listing_id == listing_id,
                       SavedModel.user_email == user_email)
               .first())
-    if result or not type(result) == PropertyModel:
+    if result or type(result) == PropertyModel:
+        return None
+    else:
         LOGGER.info(f"result: {result}")
         LOGGER.info(f"result __dir__: {result.__dir__()}")
         property_, saved = result
         SaveMark(saved.mark)
-    else:
-        return None
 
 
 def save_property_mark(db: Session, listing_id: str, user_email: str, save_mark: SaveMark) -> None:
