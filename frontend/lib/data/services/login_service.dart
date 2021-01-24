@@ -19,7 +19,9 @@ class LoginService {
     if (response.statusCode == 200) {
       print('Received token');
       print(response);
-      final accessTokenJSON = jsonDecode(response.body) as Map<String, String>;
+      print(response.body);
+      final accessTokenJSON = jsonDecode(response.body);
+      print(accessTokenJSON);
       final accessToken = AccessToken.fromJson(accessTokenJSON);
       return accessToken;
     } else {
