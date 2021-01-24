@@ -4,9 +4,9 @@ import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/services/property_service.dart';
 
 class PropertiesNotifier extends ValueNotifier<List<Property>> {
-  PropertiesNotifier() : super([]);
+  PropertiesNotifier(this.propertyService) : super([]);
 
-  final service = PropertyService();
+  final PropertyService propertyService;
 
   List<StationPostcode> _postCodes = [];
   List<Property> listProperties = [];
@@ -24,14 +24,15 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
   Future<void> reload(List<StationPostcode> newPostCodes) async {
     listProperties = <Property>[];
     _postCodes = newPostCodes; //newPostCodes.map((e) => e.postcode).toList();
-    listProperties = await service.fetchProperties(_postCodes);
+    listProperties = await propertyService.fetchProperties(_postCodes);
     value = listProperties;
   }
 
   Future<void> getMore() async {
     if (!_loading) {
       _loading = true;
-      final moreProperties = await service.fetchMoreProperties(_postCodes);
+      final moreProperties =
+          await propertyService.fetchMoreProperties(_postCodes);
       print("MORE PROPERTIES: ${moreProperties.length}");
       listProperties.addAll(moreProperties);
       _loading = false;

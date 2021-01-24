@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:proper_house_search/data/services/login_service.dart';
 
+import '../../data/services/property_service.dart';
 import '../home.dart';
 
 enum UserState {
@@ -26,6 +27,7 @@ class SignInDemoState extends State<SignInDemo> {
   String? _contactText;
   final service = LoginService();
   var _state = UserState.unknown;
+  var _accessToken;
 
   @override
   void initState() {
@@ -33,9 +35,9 @@ class SignInDemoState extends State<SignInDemo> {
     _googleSignIn.onCurrentUserChanged
         .listen((GoogleSignInAccount account) async {
       final authentication = await account.authentication;
-      final authenticated = await service.swapTokens(authentication.idToken);
+      _accessToken = await service.swapTokens(authentication.idToken);
       setState(() {
-        if (authenticated != null) {
+        if (_accessToken != null) {
           _currentUser = account;
           _state = UserState.authenticated;
         } else {
@@ -66,6 +68,7 @@ class SignInDemoState extends State<SignInDemo> {
             child: MyHomePage(
               title: 'Proper-ty Search',
               key: Key('homepage'),
+              propertyService: PropertyService(_accessToken),
             ),
           ),
         ],

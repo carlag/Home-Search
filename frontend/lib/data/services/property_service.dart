@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/models/property.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 
+import '../models/access_token.dart';
 import '../models/mark_type.dart';
 
 const _morePropertiesEndpoint = 'http://127.0.0.1:80/properties/';
@@ -13,6 +14,9 @@ const _markEndpoint = 'http://127.0.0.1:80/mark';
 
 class PropertyService {
   static final client = http.Client();
+  final AccessToken accessToken;
+
+  PropertyService(this.accessToken);
 
   Future<List<Property>> fetchMoreProperties(
       List<StationPostcode> stations) async {
@@ -45,6 +49,10 @@ class PropertyService {
       headers: _headers(),
       body: _body(postcodes),
     );
+
+    print(response.statusCode);
+    print(response.headers);
+    print(response.request.headers);
 
     if (response.statusCode == 200) {
       final propertiesJSON =
@@ -85,7 +93,8 @@ class PropertyService {
 
   Map<String, String> _headers() {
     final headers = <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${accessToken.token}',
     };
     return headers;
   }
