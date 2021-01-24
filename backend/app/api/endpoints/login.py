@@ -14,13 +14,13 @@ router = APIRouter()
 
 
 @router.post("/login/swap-tokens", response_model=Token)
-def login_access_token(*, db: Session = Depends(get_db), request: Request = None) -> Dict[str, Any]:
+async def login_access_token(*, db: Session = Depends(get_db), request: Request = None) -> Dict[str, Any]:
     """
     Authenticate a Google token, and return an access token for future requests
     """
     LOGGER.info("Swapping tokens")
     body_bytes = await request.body()
-    LOGGER.info(f"Reuest body bytes: {body_bytes}")
+    LOGGER.info(f"Request body bytes: {body_bytes}")
     auth_code = jsonable_encoder(body_bytes)
     LOGGER.info(f"Auth code: {auth_code}")
     user_email = get_email_from_google_token(auth_code)
