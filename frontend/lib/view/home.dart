@@ -41,45 +41,41 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return _loaded();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AutoComplete(
+          key: _autoCompleteState,
+          addedStations: selectedStations,
+        ),
+        if (_isLoading) _loading(),
+        Expanded(
+          child: PropertiesListView(
+            key: _propertyListState,
+            parent: this,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Image.network(
+              "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
+            ),
+            FloatingActionButton(
+              onPressed: _onPressed,
+              tooltip: 'Search',
+              child: Icon(Icons.house_outlined),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   Widget _loading() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: LinearProgressIndicator(),
-    );
-  }
-
-  Widget _loaded() {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AutoComplete(
-            key: _autoCompleteState,
-            addedStations: selectedStations,
-          ),
-          if (_isLoading) _loading(),
-          Expanded(
-            child: PropertiesListView(
-              key: _propertyListState,
-              parent: this,
-            ),
-          ),
-          Image.network(
-            "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onPressed,
-        tooltip: 'Search',
-        child: Icon(Icons.house_outlined),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

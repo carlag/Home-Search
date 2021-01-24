@@ -35,6 +35,9 @@ dependencies:
   csv: ^4.1.0
   test: ^1.15.7
   flutter_typeahead: ^2.0.0
+  google_sign_in_web: ^0.9.2
+  google_sign_in: ^4.5.9
+
 
 
 dev_dependencies:
