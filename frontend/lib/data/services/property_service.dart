@@ -75,6 +75,7 @@ class PropertyService {
 
     final response = await client.get(
       url,
+      headers: _headers(),
     );
 
     if (response.statusCode == 200) {
