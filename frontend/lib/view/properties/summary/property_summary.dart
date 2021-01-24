@@ -12,11 +12,11 @@ const _rowHeight = 400.0;
 
 class PropertySummary extends StatefulWidget {
   PropertySummary(
-      {required Key key, required this.property, required this.service})
+      {required Key key, required this.property, required this.propertyService})
       : super(key: key);
 
   final Property property;
-  final PropertyService service;
+  final PropertyService propertyService;
 
   @override
   _PropertySummaryState createState() => _PropertySummaryState();
@@ -38,8 +38,8 @@ class _PropertySummaryState extends State<PropertySummary> {
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.2);
     return ListTile(
       title: _title(widget.property, titleStyle),
-      subtitle:
-          _body(widget.key!, widget.property, subTitleStyle, widget.service),
+      subtitle: _body(
+          widget.key!, widget.property, subTitleStyle, widget.propertyService),
     );
   }
 

@@ -7,10 +7,12 @@ import 'package:proper_house_search/view/properties/summary/property_summary.dar
 import 'properties_notifier.dart';
 
 class PropertiesListView extends StatefulWidget {
-  const PropertiesListView({required Key key, required this.parent})
+  const PropertiesListView(
+      {required Key key, required this.parent, required this.propertyService})
       : super(key: key);
 
   final MyHomePageState parent;
+  final PropertyService propertyService;
 
   @override
   PropertiesListViewState createState() => PropertiesListViewState();
@@ -23,7 +25,7 @@ class PropertiesListViewState extends State<PropertiesListView> {
   @override
   void initState() {
     super.initState();
-    notifier = PropertiesNotifier();
+    notifier = PropertiesNotifier(widget.propertyService);
     notifier.getMore();
   }
 
@@ -87,7 +89,7 @@ class PropertiesListViewState extends State<PropertiesListView> {
                   return PropertySummary(
                     property: value[index],
                     key: Key('property_$index'),
-                    service: PropertyService(),
+                    propertyService: widget.propertyService,
                   );
                 }),
           );

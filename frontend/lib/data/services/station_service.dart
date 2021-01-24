@@ -44,4 +44,11 @@ class StationService {
     final url = '$_endpoint/$originString';
     return url;
   }
+
+  Map<String, String> _headers() {
+    final headers = <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
+    return headers;
+  }
 }

@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/services/property_service.dart';
 
+import '../data/services/property_service.dart';
 import 'properties/list/properties_list_view.dart';
 import 'search/postcode_search_bar.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({required Key key, required this.title}) : super(key: key);
+  MyHomePage(
+      {required Key key, required this.title, required this.propertyService})
+      : super(key: key);
 
   final String title;
+  final PropertyService propertyService;
 
   @override
   MyHomePageState createState() => MyHomePageState();
@@ -21,7 +25,6 @@ class MyHomePageState extends State<MyHomePage> {
   final GlobalKey<PropertiesListViewState> _propertyListState =
       GlobalKey<PropertiesListViewState>();
 
-  final service = PropertyService();
   var _isLoading = false;
 
   List<StationPostcode> selectedStations = [];
@@ -51,9 +54,9 @@ class MyHomePageState extends State<MyHomePage> {
         if (_isLoading) _loading(),
         Expanded(
           child: PropertiesListView(
-            key: _propertyListState,
-            parent: this,
-          ),
+              key: _propertyListState,
+              parent: this,
+              propertyService: widget.propertyService),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
