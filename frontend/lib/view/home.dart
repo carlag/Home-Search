@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
-import 'package:proper_house_search/data/property_service.dart';
-import 'package:proper_house_search/view/postcode_search_bar.dart';
-import 'package:proper_house_search/view/properties/properties_list_view.dart';
+import 'package:proper_house_search/data/services/property_service.dart';
+
+import 'properties/list/properties_list_view.dart';
+import 'search/postcode_search_bar.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({required Key key, required this.title}) : super(key: key);

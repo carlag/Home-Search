@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/models/property.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 
-import 'models/mark_type.dart';
+import '../models/mark_type.dart';
 
 const _morePropertiesEndpoint = 'http://127.0.0.1:80/properties/';
 const _propertiesEndpoint = 'http://127.0.0.1:80/properties/reset/';

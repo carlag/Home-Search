@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/property.dart';
-import 'package:proper_house_search/data/property_service.dart';
+import 'package:proper_house_search/data/services/property_service.dart';
 import 'package:proper_house_search/view/home.dart';
-import 'package:proper_house_search/view/properties/properties_notifier.dart';
-import 'package:proper_house_search/view/property_summary.dart';
+import 'package:proper_house_search/view/properties/summary/property_summary.dart';
+
+import 'properties_notifier.dart';
 
 class PropertiesListView extends StatefulWidget {
   const PropertiesListView({required Key key, required this.parent})

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
-import 'package:proper_house_search/data/postcode_service.dart';
+import 'package:proper_house_search/data/services/postcode_service.dart';
 
 class AutoComplete extends StatefulWidget {
   List<StationPostcode> addedStations;
