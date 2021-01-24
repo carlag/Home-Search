@@ -7,3 +7,5 @@ pdf2image
 pydantic
 sqlalchemy
 psycopg2
+jose
+passlib

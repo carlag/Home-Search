@@ -41,16 +41,18 @@ class PropertyServer:
     def get_property_information(self,
                                  db: Session,
                                  postcodes: List[str],
+                                 user_email: str,
                                  reset: bool = False) -> PropertyList:
         properties = []
         for postcode in postcodes:
-            properties += self.get_property_info_from_postcode(db, postcode, reset)
+            properties += self.get_property_info_from_postcode(db, postcode, user_email, reset)
 
         return PropertyList(properties=sorted(properties, reverse=True))
 
     def get_property_info_from_postcode(self,
                                         db: Session,
                                         postcode: str,
+                                        user_email: str,
                                         reset: bool = False) -> List[Property]:
 
         properties_json = self._get_property_listing(postcode, reset)
@@ -63,14 +65,14 @@ class PropertyServer:
                 db.add(property_model)
                 db.flush()
             else:
-                save_mark = check_if_property_marked(db, property_model.listing_id)
+                save_mark = check_if_property_marked(db, property_model.listing_id, user_email)
                 if save_mark:
                     if save_mark == SaveMark.REJECT:
                         continue
                     property_schema.mark = save_mark
             if property_schema.floor_plan:
                 property_schema.ocr_size = self.get_area(db=db,
-                                                         image_url= property_model.floorplan_url,
+                                                         image_url=property_model.floorplan_url,
                                                          listing_id=property_model.listing_id)
             properties_schema.append(property_schema)
 
@@ -79,7 +81,8 @@ class PropertyServer:
         db.commit()
         return filtered_properties_schema
 
-    def _get_properties_from_listing_ids(self, db: Session, listing_ids: List[str]) -> List[Property]:
+    def _get_properties_from_listing_ids(
+            self, db: Session, user_email: str, listing_ids: List[str]) -> List[Property]:
         if not listing_ids:
             LOGGER.warning(f"Unable to get properties as no listing ids were passed.")
             return []
@@ -95,7 +98,7 @@ class PropertyServer:
         for property_json in response.json()["listing"]:
             property_schema = Property.parse_obj(property_json)
             property_model = property_schema.to_orm()
-            property_schema.mark = check_if_property_marked(db, property_model.listing_id)
+            property_schema.mark = check_if_property_marked(db, property_model.listing_id, user_email)
             if property_schema.floor_plan:
                 property_schema.ocr_size = self.get_area(db,
                                                          property_model.floorplan_url,
@@ -104,9 +107,9 @@ class PropertyServer:
 
         return property_schemas
 
-    def get_all_liked_properties(self, db: Session) -> PropertyList:
-        listing_ids = get_all_liked_property_ids(db)
-        return PropertyList(properties=self._get_properties_from_listing_ids(db, listing_ids))
+    def get_all_liked_properties(self, db: Session, user_email: str) -> PropertyList:
+        listing_ids = get_all_liked_property_ids(db, user_email)
+        return PropertyList(properties=self._get_properties_from_listing_ids(db, user_email, listing_ids))
 
     def get_area(self, db: Session, image_url: str, listing_id: str) -> Optional[float]:
         cached_area = _get_cached_area(db, listing_id)

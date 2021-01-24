@@ -1,6 +1,6 @@
 from enum import Enum
 
-from sqlalchemy import Column, Enum as SqlEnum, String, Float
+from sqlalchemy import Column, Enum as SqlEnum, String, Float, ForeignKey
 
 from app.database.session import Base
 
@@ -21,7 +21,6 @@ class PropertyModel(Base):
     price = Column(Float)
     ocr_size = Column(Float)
     floorplan_url = Column(String)
-    mark = Column(SqlEnum(SaveMark))
 
     def __repr__(self):
         return (f"PropertyModel("
@@ -30,3 +29,9 @@ class PropertyModel(Base):
                 f", floorplan_url={self.floorplan_url}"
                 f", ocr_size={self.ocr_size}"
                 f", mark={self.mark})")
+
+
+class SavedModel(Base):
+    user_email = Column(String, ForeignKey("users.user_email"), primary_key=True, nullable=False)
+    listing_id = Column(String, ForeignKey("properties.listing_id"), primary_key=True, nullable=False)
+    mark = Column(SqlEnum(SaveMark), nullable=False)
