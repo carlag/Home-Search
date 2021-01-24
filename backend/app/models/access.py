@@ -4,6 +4,6 @@ from app.database.session import Base
 
 
 class UserModel(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
-    user_email: Column(String, nullable=False)
+    email = Column(String, primary_key=True, nullable=False)

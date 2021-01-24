@@ -17,7 +17,7 @@ async def get_properties(*,
                          db: Session = Depends(get_db),
                          current_user: UserModel = Depends(get_current_user),
                          postcodes: PostcodeList) -> PropertyList:
-    return property_server.get_property_information(db, postcodes.postcodes, current_user.user_email)
+    return property_server.get_property_information(db, postcodes.postcodes, current_user.email)
 
 
 @router.post("/properties/reset", response_model=PropertyList)
@@ -26,7 +26,7 @@ async def get_properties(*,
                          current_user: UserModel = Depends(get_current_user),
                          postcodes: PostcodeList) -> PropertyList:
     return property_server.get_property_information(
-        db, postcodes.postcodes, current_user.user_email, reset=True)
+        db, postcodes.postcodes, current_user.email, reset=True)
 
 
 @router.get("/mark/{listing_url:path}/as/{mark}")
@@ -36,10 +36,10 @@ async def mark_property(*,
                         listing_url: str,
                         mark: SaveMark):
     listing_id = extract_listing_id_from_listing_url(listing_url)
-    save_property_mark(db, listing_id, current_user.user_email, mark)
+    save_property_mark(db, listing_id, current_user.email, mark)
 
 
 @router.get("/all_liked_properties", response_model=PropertyList)
 async def get_all_liked_properties(db: Session = Depends(get_db),
                                    current_user: UserModel = Depends(get_current_user)) -> PropertyList:
-    return property_server.get_all_liked_properties(db, current_user.user_email)
+    return property_server.get_all_liked_properties(db, current_user.email)

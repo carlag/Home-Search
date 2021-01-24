@@ -7,6 +7,6 @@ pdf2image
 pydantic
 sqlalchemy
 psycopg2
-jose
+python-jose[cryptography]
 passlib
-google
+google-auth

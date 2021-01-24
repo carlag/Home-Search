@@ -12,7 +12,7 @@ class SaveMark(str, Enum):
 
 
 class PropertyModel(Base):
-    __tablename__ = "properties"
+    __tablename__ = "property"
 
     listing_id = Column(String, primary_key=True, nullable=False)  # TODO: Is index=True needed here? Or is that for an auto incrementing index only?
     listing_url = Column(String, nullable=False)
@@ -32,6 +32,8 @@ class PropertyModel(Base):
 
 
 class SavedModel(Base):
-    user_email = Column(String, ForeignKey("users.user_email"), primary_key=True, nullable=False)
-    listing_id = Column(String, ForeignKey("properties.listing_id"), primary_key=True, nullable=False)
+    __tablename__ = "saved"
+
+    user_email = Column(String, ForeignKey("user.email"), primary_key=True, nullable=False)
+    listing_id = Column(String, ForeignKey("property.listing_id"), primary_key=True, nullable=False)
     mark = Column(SqlEnum(SaveMark), nullable=False)
