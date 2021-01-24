@@ -1,6 +1,7 @@
 from enum import Enum
 
 from sqlalchemy import Column, Enum as SqlEnum, String, Float, ForeignKey
+from sqlalchemy.orm import relationship
 
 from app.database.session import Base
 
@@ -21,6 +22,7 @@ class PropertyModel(Base):
     price = Column(Float)
     ocr_size = Column(Float)
     floorplan_url = Column(String)
+    marks = relationship("SavedModel")
 
     def __repr__(self):
         return (f"PropertyModel("

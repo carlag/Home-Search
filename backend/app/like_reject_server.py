@@ -9,19 +9,19 @@ LOGGER = logging.getLogger()
 
 
 def check_if_property_marked(db: Session, listing_id: str, user_email: str) -> Optional[SaveMark]:
-    result = (db
-              .query(PropertyModel)
-              .join(SavedModel)
-              .filter(PropertyModel.listing_id == listing_id,
-                      SavedModel.user_email == user_email)
-              .first())
-    if not result or type(result) == PropertyModel:
-        return None
+    property_ = (db
+                 .query(PropertyModel)
+                 .join(SavedModel)
+                 .filter(PropertyModel.listing_id == listing_id,
+                         SavedModel.user_email == user_email)
+                 .first())
+    if property_:
+        LOGGER.info(f"property_: {property_}")
+        LOGGER.info(f"property_.marks: {property_.marks}")
+        LOGGER.info(f"property_ __dir__: {property_.__dir__()}")
+        SaveMark(property_.marks.mark)
     else:
-        LOGGER.info(f"result: {result}")
-        LOGGER.info(f"result __dir__: {result.__dir__()}")
-        property_, saved = result
-        SaveMark(saved.mark)
+        return None
 
 
 def save_property_mark(db: Session, listing_id: str, user_email: str, save_mark: SaveMark) -> None:
@@ -36,10 +36,10 @@ def save_property_mark(db: Session, listing_id: str, user_email: str, save_mark:
 
 
 def get_all_liked_property_ids(db: Session, user_email: str) -> List[str]:
-    properties, saved = (db
-                         .query(PropertyModel)
-                         .join(SavedModel)
-                         .filter(SavedModel.mark == SaveMark.LIKE,
-                                 SavedModel.user_email == user_email)
-                         .all())
+    properties = (db
+                  .query(PropertyModel)
+                  .join(SavedModel)
+                  .filter(SavedModel.mark == SaveMark.LIKE,
+                          SavedModel.user_email == user_email)
+                  .all())
     return [property_.listing_id for property_ in properties] if properties else []
