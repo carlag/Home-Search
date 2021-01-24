@@ -23,7 +23,7 @@ def save_property_mark(db: Session, listing_id: str, user_email: str, save_mark:
     LOGGER.info(f"Marking property {listing_id} as {save_mark.value} for user {user_email}")
     property_ = db.query(PropertyModel).filter_by(listing_id=listing_id).first()
     if property_:
-        saved_model = SavedModel(user_email=user_email, listing_id=listing_id, save_mark=save_mark)
+        saved_model = SavedModel(user_email=user_email, listing_id=listing_id, mark=save_mark)
         db.add(saved_model)
         db.commit()
     else:
