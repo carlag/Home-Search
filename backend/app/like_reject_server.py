@@ -10,14 +10,16 @@ LOGGER = logging.getLogger()
 
 def check_if_property_marked(db: Session, listing_id: str, user_email: str) -> Optional[SaveMark]:
     result = (db
-                        .query(PropertyModel)
-                        .join(SavedModel)
-                        .filter(PropertyModel.listing_id == listing_id,
-                                SavedModel.user_email == user_email)
-                        .first())
+              .query(PropertyModel)
+              .join(SavedModel)
+              .filter(PropertyModel.listing_id == listing_id,
+                      SavedModel.user_email == user_email)
+              .first())
     if result:
-        property_, saved = result
-        SaveMark(saved.mark)
+        LOGGER.info(f"result: {result}")
+        LOGGER.info(f"result __dir__: {result.__dir__()}")
+        # property_, saved = result
+        SaveMark(result.saved.mark)
     else:
         return None
 
