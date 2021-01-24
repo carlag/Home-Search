@@ -36,8 +36,7 @@ class Property(BaseModel):
                              latitude=self.latitude,
                              price=self.price,
                              ocr_size=self.ocr_size,
-                             floorplan_url=floorplan_url,
-                             mark=self.mark)
+                             floorplan_url=floorplan_url)
 
 
 class PropertyList(BaseModel):
