@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from fastapi import HTTPException, status
 from google.oauth2 import id_token
-from google.auth.transport import requests
+from google.auth.transport.requests import Request
 from jose import jwt
 from passlib.context import CryptContext
 
@@ -34,7 +34,7 @@ def get_email_from_google_token(google_token: str) -> str:
     idinfo = None
     try:
         # Specify the CLIENT_ID of the app that accesses the backend:
-        idinfo = id_token.verify_oauth2_token(google_token, requests.Request(), settings.CLIENT_ID)
+        idinfo = id_token.verify_oauth2_token(google_token, Request(), settings.CLIENT_ID)
         LOGGER.info(f"idinfo: {idinfo}")
         if idinfo['email'] and idinfo['email_verified']:
             user_email = idinfo.get('email')
