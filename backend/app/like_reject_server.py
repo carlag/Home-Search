@@ -15,7 +15,7 @@ def check_if_property_marked(db: Session, listing_id: str, user_email: str) -> O
               .filter(PropertyModel.listing_id == listing_id,
                       SavedModel.user_email == user_email)
               .first())
-    if result or type(result) == PropertyModel:
+    if not result or type(result) == PropertyModel:
         return None
     else:
         LOGGER.info(f"result: {result}")
