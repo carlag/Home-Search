@@ -12,8 +12,8 @@ def check_if_property_marked(db: Session, listing_id: str, user_email: str) -> O
     property_, saved = (db
                         .query(PropertyModel)
                         .join(SavedModel)
-                        .filter_by(PropertyModel.listing_id == listing_id,
-                                   SavedModel.user_email == user_email)
+                        .filter(PropertyModel.listing_id == listing_id,
+                                SavedModel.user_email == user_email)
                         .first())
 
     return SaveMark(saved.mark) if saved else None
@@ -34,7 +34,7 @@ def get_all_liked_property_ids(db: Session, user_email: str) -> List[str]:
     properties, saved = (db
                          .query(PropertyModel)
                          .join(SavedModel)
-                         .filter_by(mark=SaveMark.LIKE,
-                                    user_email=user_email)
+                         .filter(SavedModel.mark == SaveMark.LIKE,
+                                 SavedModel.user_email == user_email)
                          .all())
     return [property_.listing_id for property_ in properties] if properties else []
