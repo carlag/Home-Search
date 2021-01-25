@@ -38,3 +38,9 @@ class SavedModel(Base):
     user_email = Column(String, ForeignKey("user.email"), primary_key=True, nullable=False)
     listing_id = Column(String, ForeignKey("property.listing_id"), primary_key=True, nullable=False)
     mark = Column(SqlEnum(SaveMark), nullable=False)
+
+    def __repr__(self):
+        return (f"SavedModel("
+                f"user_email={self.user_email}"
+                f", listing_id={self.listing_id}"
+                f", mark={self.mark})")

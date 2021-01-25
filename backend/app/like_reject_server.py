@@ -16,10 +16,8 @@ def check_if_property_marked(db: Session, listing_id: str, user_email: str) -> O
                          SavedModel.user_email == user_email)
                  .first())
     if property_:
-        LOGGER.info(f"property_: {property_}")
-        LOGGER.info(f"property_.marks: {property_.marks[0]}")
-        LOGGER.info(f"property_ __dir__: {property_.__dir__()}")
-        SaveMark(property_.marks[0].mark)
+        LOGGER.debug(f"Property: {property_}\nproperty_.marks: {property_.marks[0]}")
+        return SaveMark(property_.marks[0].mark)
     else:
         return None
 
