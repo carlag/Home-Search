@@ -19,9 +19,10 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "admin"
     POSTGRES_PASSWORD: str  # Note this is an environment variable
     POSTGRES_DB: str = "homesearch"
-    SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
+    DATABASE_URL: Optional[PostgresDsn]  # Heroku sets this as an env var,
+                                         # for local dev set the password above instead
 
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
+    @validator("DATABASE_URL", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v

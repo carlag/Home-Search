@@ -22,7 +22,7 @@ def init_db() -> None:
             message = err
             LOGGER.warning(f"Failed to connect to DB on retry {retry}. Waiting for {wait}s before trying again.")
             sleep(wait)
-            wait = max(wait * 2, 60)  # Exponential backoff with a plateau at 1 minute
+            wait = min(wait * 2, 60)  # Exponential backoff with a plateau at 1 minute
     else:
         LOGGER.error(f"Failed to connect to DB after max retries:\n{message}")
 

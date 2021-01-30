@@ -4,11 +4,11 @@
 echo 'Server start script initialized...'
 
 # Set the port
-PORT=5001
+# PORT=5001
 
 # Kill anything that is already running on that port
 echo 'Cleaning port' $PORT '...'
-fuser -k 5001/tcp
+fuser -k $PORT/tcp
 
 # Change directories to the release folder
 cd build/web/

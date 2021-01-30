@@ -1,4 +1,4 @@
-version: "3.0"
+version: "0.1"
 services:
   db:
     image: postgres:alpine
@@ -20,6 +20,7 @@ services:
       - "5001:5001"
     environment:
       - GOOGLEMAPSAPIKEY
+      - PORT=5001
   backend:
     build:
       context: .
@@ -33,5 +34,6 @@ services:
       - GOOGLEMAPSAPIKEY
       - ZOOPLAAPIKEY
       - POSTGRES_PASSWORD
+      - PORT=80
 volumes:
   postgres_data:
