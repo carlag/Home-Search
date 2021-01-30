@@ -135,19 +135,16 @@ If you haven't already:
 1. Build the images locally. This builds three images: `home-search_backend`, `home-search_frontend`, `postgres`
 `docker compose up`
 
-1. Get version number:
-`export TAG=\`cat docker-compose.yaml | grep version | awk -F '"' '{print $2}'`\`
-
 1. Tag the images:
    ```bash
-   docker tag home-search_backend registry.heroku.com/homesearch2021/api:$TAG
-   docker tag home-search_frontend registry.heroku.com/homesearch2021/web:$TAG
+   docker tag home-search_backend registry.heroku.com/homesearch2021/api
+   docker tag home-search_frontend registry.heroku.com/homesearch2021/web
    ```
 
 1. Push to Heroku (wait for first to complete):
    ```bash
-   docker push registry.heroku.com/homesearch2021/api:$TAG
-   docker push registry.heroku.com/homesearch2021/web:$TAG
+   docker push registry.heroku.com/homesearch2021/api
+   docker push registry.heroku.com/homesearch2021/web
    ```
 
 1. Release the image
