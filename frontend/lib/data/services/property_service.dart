@@ -7,10 +7,7 @@ import 'package:proper_house_search/data/models/station_postcode.dart';
 
 import '../models/access_token.dart';
 import '../models/mark_type.dart';
-
-const _morePropertiesEndpoint = 'http://127.0.0.1:80/properties/';
-const _propertiesEndpoint = 'http://127.0.0.1:80/properties/reset/';
-const _markEndpoint = 'http://127.0.0.1:80/mark';
+import 'endpoints.dart';
 
 class PropertyService {
   static final client = http.Client();
@@ -22,7 +19,7 @@ class PropertyService {
       List<StationPostcode> stations) async {
     final postcodes = stations.map((e) => e.postcode).toList();
     final response = await client.post(
-      _morePropertiesEndpoint,
+      morePropertiesEndpoint,
       headers: _headers(),
       body: _body(postcodes),
     );
@@ -45,7 +42,7 @@ class PropertyService {
   Future<List<Property>> fetchProperties(List<StationPostcode> stations) async {
     final postcodes = stations.map((e) => e.postcode).toList();
     final response = await client.post(
-      _propertiesEndpoint,
+      propertiesEndpoint,
       headers: _headers(),
       body: _body(postcodes),
     );
@@ -71,7 +68,7 @@ class PropertyService {
 
   Future<bool?> markProperty(String listingUrl, MarkType markType) async {
     final encodedListingUrl = Uri.encodeComponent(listingUrl);
-    final url = '$_markEndpoint/$encodedListingUrl/as/${markType.string}';
+    final url = '$markEndpoint/$encodedListingUrl/as/${markType.string}';
 
     final response = await client.get(
       url,

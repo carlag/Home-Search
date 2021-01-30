@@ -4,14 +4,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/models/access_token.dart';
 
-const _swapTokensEndpoint = 'http://127.0.0.1:80/login/swap-tokens/';
+import 'endpoints.dart';
 
 class LoginService {
   static final client = http.Client();
 
   Future<AccessToken> swapTokens(String idToken) async {
+    print(swapTokensEndpoint);
     final response = await client.post(
-      _swapTokensEndpoint,
+      swapTokensEndpoint,
       headers: _headers(),
       body: idToken,
     );

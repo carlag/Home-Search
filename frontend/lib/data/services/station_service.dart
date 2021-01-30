@@ -5,8 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/station.dart';
-
-const _endpoint = 'http://127.0.0.1:80/stations/origin';
+import 'endpoints.dart';
 
 class StationService {
   static final client = http.Client();
@@ -41,7 +40,7 @@ class StationService {
 
   Future<String> _fetchStationsRequest(LatLng origin) async {
     final originString = '${origin.latitude},${origin.longitude}';
-    final url = '$_endpoint/$originString';
+    final url = '$stationsEndpoint/$originString';
     return url;
   }
 
