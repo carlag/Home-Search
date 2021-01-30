@@ -11,7 +11,7 @@ The simplest way to deploy it locally is to use docker:
 
 1. From the project root directory:
 1. [Create a Google Maps API key](https://developers.google.com/maps/documentation/javascript/get-api-key) if you don't have one.
-1. [Create a Google Signin Client ID](https://developers.google.com/identity/sign-in/web/sign-in) if you don't have one.
+1. [Create a Google Sign-in Client ID](https://developers.google.com/identity/sign-in/web/sign-in) if you don't have one.
 1. [Create a Zoopla API key](https://developer.zoopla.co.uk/) if you don't have one.
 1. Set environment variables for API keys:
    ```
@@ -23,7 +23,7 @@ The simplest way to deploy it locally is to use docker:
 
    ```
    - `SECRET_KEY` is used for auth and should be a random 32 digit hex value. The `openssl` command above is a simple way to generate this, but you can use whatever key you like.
-   -
+   - If you want to connect to an existing database, instead of `POSTGRES_PASSWORD`, set an environment variable called `DATABASE_URL` with the full connection string. This is the environment variable name used by Heroku.
 1. Build and run:
    ```
    docker compose up
@@ -60,6 +60,12 @@ docker volume prune
    ```bash
    heroku create $APP_NAME
    ```
+1. Set the following config variables in Heroku 
+   - `GOOGLEMAPSAPIKEY`: your Google Maps API key
+   - `ZOOPLAAPIKEY`: your Zoopla API key
+   - `SECRET_KEY`: A random key generated using`openssl rand -hex 32` or something similar.
+   - `CLIENT_ID`: Your OAuth2.0 client ID. In GCP API & Services -> Credentials.
+1. Add the postgres add-on to your Heroku app.
 1. Log in to the Heroku container registery:
    ```bash
     heroku container:login
