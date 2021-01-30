@@ -11,6 +11,7 @@ fuser -k $PORT/tcp
 cd build/web/
 
 sed -i.bkp "s/<GOOGLEMAPSAPIKEY>/$GOOGLEMAPSAPIKEY/" index.html
+sed -i.bkp "s/<CLIENT_ID>/$CLIENT_ID/" index.html
 
 # Start the server
 echo 'Starting server on port' $PORT '...'
