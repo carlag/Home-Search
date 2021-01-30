@@ -11,6 +11,7 @@ The simplest way to deploy it locally is to use docker:
 
 1. From the project root directory:
 1. [Create a Google Maps API key](https://developers.google.com/maps/documentation/javascript/get-api-key) if you don't have one.
+1. [Create a Google Signin Client ID](https://developers.google.com/identity/sign-in/web/sign-in) if you don't have one.
 1. [Create a Zoopla API key](https://developer.zoopla.co.uk/) if you don't have one.
 1. Set environment variables for API keys:
    ```
