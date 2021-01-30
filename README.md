@@ -16,7 +16,7 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 
-## Deployment
+## Local Deployment
 
 This project consists of a frontend (web) application written in Flutter, and a backend service written in Python. The
 simplest way to deploy it is to use docker:
@@ -124,3 +124,37 @@ If you haven't already:
 1. `export ZOOPLAAPIKEY=<your key>`
 1. `docker build . --build-arg ZOOPLAAPIKEY=$ZOOPLAAPIKEY -f FlutterDockerfile -t home_search_web:$TAG`
 1. `docker run -d --name web -p 5001:5001 home_search_web:$TAG`
+
+## Server Deployment (Heroku)
+1. Create an app
+`heroku create homesearch2021`
+
+1. Log into heroku:
+`heroku container:login`
+
+1. Build the images locally. This builds three images: `home-search_backend`, `home-search_frontend`, `postgres`
+`docker compose up`
+
+1. Get version number:
+`export TAG=\`cat docker-compose.yaml | grep version | awk -F '"' '{print $2}'`\`
+
+1. Tag the images:
+   ```bash
+   docker tag home-search_backend registry.heroku.com/homesearch2021/api:$TAG
+   docker tag home-search_frontend registry.heroku.com/homesearch2021/web:$TAG
+   ```
+
+1. Push to Heroku (wait for first to complete):
+   ```bash
+   docker push registry.heroku.com/homesearch2021/api:$TAG
+   docker push registry.heroku.com/homesearch2021/web:$TAG
+   ```
+
+1. Release the image
+   ```bash
+   heroku container:release --app homesearch2021 api
+   heroku container:release --app homesearch2021 web
+   ```
+
+1. open the app
+`heroku open --app homesearch2021`
