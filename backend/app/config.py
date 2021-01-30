@@ -10,9 +10,8 @@ class Settings(BaseSettings):
 
     # Auth settings
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 90
-    CLIENT_ID = "549789804729-s97gvsa0cu8k7kup7v65rp9quqafob51.apps.googleusercontent.com"
-    # SECRET_KEY created using `openssl rand -hex 32`
-    SECRET_KEY = "0f5bcfd8eaa37181983f87753cedee1ec027568282cb13e53c14ce294b30cbd8"
+    CLIENT_ID: str  # OAuth2.0 client ID, in GCP API & Services -> Credentials
+    SECRET_KEY: str  # Create SECRET_KEY using `openssl rand -hex 32`
 
     # SQL settings
     POSTGRES_SERVER: str = "db"

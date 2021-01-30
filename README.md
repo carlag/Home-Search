@@ -1,32 +1,26 @@
-# proper_house_search
+# Home Search
 
-Proper House Search
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+An app to search for properties on Zoopla and filter on the properties total area. The area is scraped off the floorplan image using OCR.
 
 
 ## Local Deployment
 
-This project consists of a frontend (web) application written in Flutter, and a backend service written in Python. The
-simplest way to deploy it is to use docker:
+This project consists of a frontend (web) application written in Flutter, and a backend service written in Python. The backend requires access to a postgres database. The simplest way to deploy it locally is to use docker:
 
-1. Start in the project root directory
+1. From the project root directory:
+1. [Create a Google Maps API key](https://developers.google.com/maps/documentation/javascript/get-api-key) if you don't have one.
+1. [Create a Zoopla API key](https://developer.zoopla.co.uk/) if you don't have one.
 1. Set environment variables for API keys:
    ```
    export GOOGLEMAPSAPIKEY=<your google maps API key>
    export ZOOPLAAPIKEY=<your Zoopla API key>
+   export POSTGRES_PASSWORD=<make up a password for the DB user 'admin'>
+   export SECRET_KEY=`openssl rand -hex 32`
+   export CLIENT_ID=<OAuth2.0 client ID, in GCP API & Services -> Credentials>
+
    ```
+   - `SECRET_KEY` is used for auth and should be a random 32 digit hex value. The `openssl` command above is a simple way to generate this, but you can use whatever key you like.
+   -
 1. Build and run:
    ```
    docker compose up

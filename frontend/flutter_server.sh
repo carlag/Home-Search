@@ -3,9 +3,6 @@
 # Welcome
 echo 'Server start script initialized...'
 
-# Set the port
-# PORT=5001
-
 # Kill anything that is already running on that port
 echo 'Cleaning port' $PORT '...'
 fuser -k $PORT/tcp
