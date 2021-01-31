@@ -33,7 +33,7 @@ COPY ./frontend/assets/london_stations.csv /usr/local/bin/app/assets/london_stat
 # Set the working directory to the app files within the container
 WORKDIR /usr/local/bin/app
 
-RUN flutter build web --no-sound-null-safety --dart-define url_base=https://homesearch2021server.herokuapp.com
+RUN flutter build web --no-sound-null-safety
 
 EXPOSE 5001
 
