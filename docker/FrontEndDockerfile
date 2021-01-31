@@ -2,6 +2,7 @@
 FROM debian:latest AS build-env
 
 ENV GOOGLEMAPSAPIKEY=$GOOGLEMAPSAPIKEY
+ARG URL_API
 ENV URL_API=$URL_API
 
 RUN apt-get update && \
