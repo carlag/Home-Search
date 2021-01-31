@@ -18,11 +18,12 @@ services:
     restart: always
     ports:
       - "5001:5001"
+    args:
+      URL_API: $URL_API
     environment:
       - GOOGLEMAPSAPIKEY
       - PORT=5001
       - CLIENT_ID
-      - URL_API
   backend:
     build:
       context: .

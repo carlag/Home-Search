@@ -65,7 +65,7 @@ docker volume prune
 1. Set the following config variables in Heroku:
    - `GOOGLEMAPSAPIKEY`: your Google Maps API key
    - `ZOOPLAAPIKEY`: your Zoopla API key
-   - `SECRET_KEY`: A random key generated using`openssl rand -hex 32` or something similar.
+   - `SECRET_KEY`: (Only for backend) A random key generated using`openssl rand -hex 32` or something similar.
    - `CLIENT_ID`: Your OAuth2.0 client ID. In GCP API & Services -> Credentials.
 1. Set the following environment variables:
    ```bash
