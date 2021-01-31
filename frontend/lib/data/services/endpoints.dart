@@ -1,4 +1,4 @@
-const urlBase = 'https://homesearch2021server.herokuapp.com';
+const urlBase = const String.fromEnvironment("url_base");
 const swapTokensEndpoint = '$urlBase/login/swap-tokens';
 const morePropertiesEndpoint = '$urlBase/properties';
 const propertiesEndpoint = '$urlBase/properties/reset';
