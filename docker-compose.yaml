@@ -22,6 +22,7 @@ services:
       - GOOGLEMAPSAPIKEY
       - PORT=5001
       - CLIENT_ID
+      - URL_API
   backend:
     build:
       context: .
