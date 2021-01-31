@@ -15,11 +15,11 @@ services:
     build:
       context: .
       dockerfile: ./docker/FrontEndDockerfile
+      args:
+        URL_API: $URL_API
     restart: always
     ports:
-      - "5001:5001"
-    args:
-      URL_API: $URL_API
+        - "5001:5001"
     environment:
       - GOOGLEMAPSAPIKEY
       - PORT=5001
