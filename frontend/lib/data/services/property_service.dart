@@ -93,6 +93,8 @@ class PropertyService {
     final headers = <String, String>{
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${accessToken.token}',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST,GET,DELETE,PUT,OPTIONS',
     };
     return headers;
   }
