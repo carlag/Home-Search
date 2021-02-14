@@ -48,7 +48,7 @@ async def get_properties_ws(*,
 
 
 @router.websocket("/ws/test")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(*, current_user: UserModel = Depends(get_current_user), websocket: WebSocket):
     await websocket.accept()
     while True:
         data = await websocket.receive_text()
