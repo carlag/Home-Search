@@ -9,7 +9,7 @@ from app.config import settings
 from app.like_reject_server import SaveMark, check_if_property_marked, get_all_liked_property_ids
 from app.models.property_ import PropertyModel
 from app.ocr import Ocr
-from app.schemas.property_ import PropertyList, Property
+from app.schemas.property_ import PropertyList, Property, PostcodeList
 
 LOGGER = logging.getLogger()
 ZOOPLA_API_KEY = settings.ZOOPLA_API_KEY
@@ -181,3 +181,8 @@ def _cache_area(db: Session, listing_id: str, area: Optional[float]) -> None:
     LOGGER.info(f"Caching area of {area} for {listing_id}")
     property_ = db.query(PropertyModel).filter_by(listing_id=listing_id).first()
     property_.ocr_size = area
+
+
+def parse_ws_data(data: str) -> List[str]:
+    postcodes = PostcodeList.parse_obj(data)
+    return postcodes.postcodes
