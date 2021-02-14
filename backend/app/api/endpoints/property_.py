@@ -33,7 +33,7 @@ async def get_properties(*,
         db, postcodes.postcodes, current_user.email, reset=True)
 
 
-@router.websocket("/properties_ws")
+@router.websocket("/ws/properties")
 async def get_properties_ws(*,
                             db: Session = Depends(get_db),
                             current_user: UserModel = Depends(get_current_user),
@@ -45,6 +45,14 @@ async def get_properties_ws(*,
     result = await loop.run_in_executor(
         None, lambda: property_server.get_property_information(db, postcodes, current_user.email))
     await websocket.send_text(result.json())
+
+
+@router.websocket("/ws/test")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Message text was: {data}")
 
 
 @router.get("/mark/{listing_url:path}/as/{mark}")
