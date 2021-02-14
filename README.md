@@ -71,6 +71,7 @@ docker volume prune
    ```bash
    export URL_API=https://${API_NAME}.herokuapp.com
    ```
+   note `URL_API` is a build arg for the FrontEndDockerfile, but you don't have to worry about this if you use `docker compose`.
 1. Add the postgres add-on to your backend Heroku app, i.e. the one name `$API_NAME` which should end in `server`. Note you should first check that you haven't already provisioned postgres by running `heroku addons --app $API_NAME`.
    ```bash
    heroku addons:create heroku-postgresql:hobby-dev --app $API_NAME
