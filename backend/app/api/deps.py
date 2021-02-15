@@ -1,7 +1,7 @@
 import logging
-from typing import Generator
+from typing import Generator, Optional
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, WebSocket, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
@@ -15,7 +15,27 @@ from app.schemas.access import TokenPayload
 
 
 LOGGER = logging.getLogger()
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"login/access-token")
+# reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"login/access-token")
+
+
+class JWTAuth(OAuth2PasswordBearer):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    async def __call__(self, request: Request=None, websocket: WebSocket=None) -> Optional[OAuth2PasswordBearer]:
+        request = request or websocket
+        if not request:
+            if self.auto_error:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Not authenticated"
+                )
+            return None
+        return await super().__call__(request)
+
+
+reusable_oauth2 = JWTAuth(tokenUrl=f"login/access-token")
 
 
 def get_db() -> Generator:
