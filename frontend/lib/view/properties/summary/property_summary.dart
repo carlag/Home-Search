@@ -146,6 +146,7 @@ Widget _floorPlan(Property property) => FlatButton(
       child: Image.network(
         '${property.floorPlan?[0] ?? ''}',
         height: _rowHeight,
+        headers: {'Access-Control-Allow-Origin': '*'},
       ),
     );
 
@@ -155,6 +156,7 @@ Widget _image(Property property) => FlatButton(
       child: Image.network(
         '${property.imageURL}',
         height: _rowHeight,
+        headers: {'Access-Control-Allow-Origin': '*'},
       ),
     );
 

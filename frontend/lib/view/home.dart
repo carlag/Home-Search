@@ -63,6 +63,7 @@ class MyHomePageState extends State<MyHomePage> {
           children: [
             Image.network(
               "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
+              headers: {'Access-Control-Allow-Origin': '*'},
             ),
             FloatingActionButton(
               onPressed: _onPressed,
