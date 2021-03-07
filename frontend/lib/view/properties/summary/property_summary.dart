@@ -78,11 +78,11 @@ class _PropertySummaryState extends State<PropertySummary> {
             style: style,
           ),
           Text(
-            '${property.status}, ${property.propertyType}',
+            '${property.propertyType}',
             style: style,
           ),
           Text(
-            'Size: ${property.ocrSize ?? 'None'}',
+            'Size: ${property.ocrSize != null ? '${property.ocrSize} sqm' : 'None'}',
             style: style,
           ),
           if (property.latitude != null && property.longitude != null)
