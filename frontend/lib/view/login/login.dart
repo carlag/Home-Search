@@ -75,7 +75,7 @@ class SignInDemoState extends State<SignInDemo> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Expanded(
-            child: MyHomePage(
+            child: Home(
               title: 'Proper-ty Search',
               key: Key('homepage'),
               propertyService: PropertyService(_accessToken),

@@ -11,7 +11,7 @@ class PropertiesListView extends StatefulWidget {
       {required Key key, required this.parent, required this.propertyService})
       : super(key: key);
 
-  final MyHomePageState parent;
+  final HomeState parent;
   final PropertyService propertyService;
 
   @override

@@ -5,20 +5,20 @@ import 'package:proper_house_search/data/services/property_service.dart';
 import '../data/services/property_service.dart';
 import 'properties/list/properties_list_view.dart';
 import 'search/postcode_search_bar.dart';
+import 'search/search_form.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage(
-      {required Key key, required this.title, required this.propertyService})
+class Home extends StatefulWidget {
+  Home({required Key key, required this.title, required this.propertyService})
       : super(key: key);
 
   final String title;
   final PropertyService propertyService;
 
   @override
-  MyHomePageState createState() => MyHomePageState();
+  HomeState createState() => HomeState();
 }
 
-class MyHomePageState extends State<MyHomePage> {
+class HomeState extends State<Home> {
   final GlobalKey<AutoCompleteState> _autoCompleteState =
       GlobalKey<AutoCompleteState>();
 
@@ -44,19 +44,48 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    const padding = 16.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AutoComplete(
-          key: _autoCompleteState,
-          addedStations: selectedStations,
+        ExpansionTile(
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          title: Text('Filters'),
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 300.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: padding,
+                        right: padding,
+                        bottom: padding,
+                      ),
+                      child: AutoComplete(
+                        key: _autoCompleteState,
+                        addedStations: selectedStations,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: padding),
+                      child: SearchForm(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
         if (_isLoading) _loading(),
         Expanded(
           child: PropertiesListView(
-              key: _propertyListState,
-              parent: this,
-              propertyService: widget.propertyService),
+            key: _propertyListState,
+            parent: this,
+            propertyService: widget.propertyService,
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -65,11 +94,9 @@ class MyHomePageState extends State<MyHomePage> {
               "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
               headers: {'Access-Control-Allow-Origin': '*'},
             ),
-            FloatingActionButton(
-              onPressed: _onPressed,
-              tooltip: 'Search',
-              child: Icon(Icons.house_outlined),
-            ),
+            // FloatingActionButton(
+            //   onPressed: _onPressed,
+            // ),
           ],
         ),
       ],

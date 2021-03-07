@@ -40,69 +40,78 @@ class AutoCompleteState extends State<AutoComplete> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Add stations to search nearby:'),
-            if (widget.addedStations.isNotEmpty)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: widget.addedStations
-                    .map(
-                      (e) => Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Chip(
-                          label: Text(e.name),
-                          deleteIcon: Icon(Icons.close),
-                          onDeleted: () {
-                            setState(() {
-                              widget.addedStations.remove(e);
-                            });
-                          },
-                        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.addedStations.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: SizedBox(
+                height: 50,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: widget.addedStations.length,
+                  itemBuilder: (_, index) {
+                    final item = widget.addedStations[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Chip(
+                        label: Text(item.name),
+                        deleteIcon: Icon(Icons.close),
+                        onDeleted: () {
+                          setState(() {
+                            widget.addedStations.remove(item);
+                          });
+                        },
                       ),
-                    )
-                    .toList(),
-              )
-            else
-              Text('No stations'),
-            ListTile(
-              title: TypeAheadField(
-                  textFieldConfiguration: TextFieldConfiguration(
-                    decoration: InputDecoration(labelText: 'Station'),
-                    controller: this._typeAheadController,
-                    onTap: () => _suggestionsBoxController.toggle(),
-                  ),
-                  suggestionsBoxController: _suggestionsBoxController,
-                  suggestionsBoxDecoration: SuggestionsBoxDecoration(),
-                  suggestionsCallback: (pattern) {
-                    print(pattern);
-                    return service.getSuggestions(pattern);
-                  },
-                  transitionBuilder: (context, suggestionsBox, controller) {
-                    return suggestionsBox;
-                  },
-                  itemBuilder: (context, suggestion) {
-                    final station = suggestion as StationPostcode;
-                    return ListTile(
-                      title: Text(station.name),
-                      subtitle: Text(station.postcode),
                     );
                   },
-                  onSuggestionSelected: (suggestion) {
-                    final station = suggestion as StationPostcode;
-                    this._typeAheadController.text = '';
-                    setState(() {
-                      if (!widget.addedStations.contains(station)) {
-                        widget.addedStations.add(station);
-                      }
-                    });
-                  }),
+                ),
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text('No stations added'),
             ),
-          ],
-        ),
+          ListTile(
+            title: TypeAheadField(
+                textFieldConfiguration: TextFieldConfiguration(
+                  decoration: InputDecoration(
+                    helperText: 'Stations to search nearby',
+                    hintText: 'e.g. West Hampstead',
+                    hintStyle: TextStyle(color: Colors.black26),
+                  ),
+                  controller: this._typeAheadController,
+                  onTap: () => _suggestionsBoxController.toggle(),
+                ),
+                suggestionsBoxController: _suggestionsBoxController,
+                suggestionsBoxDecoration: SuggestionsBoxDecoration(),
+                suggestionsCallback: (pattern) {
+                  print(pattern);
+                  return service.getSuggestions(pattern);
+                },
+                transitionBuilder: (context, suggestionsBox, controller) {
+                  return suggestionsBox;
+                },
+                itemBuilder: (context, suggestion) {
+                  final station = suggestion as StationPostcode;
+                  return ListTile(
+                    title: Text(station.name),
+                    subtitle: Text(station.postcode),
+                  );
+                },
+                onSuggestionSelected: (suggestion) {
+                  final station = suggestion as StationPostcode;
+                  this._typeAheadController.text = '';
+                  setState(() {
+                    if (!widget.addedStations.contains(station)) {
+                      widget.addedStations.add(station);
+                    }
+                  });
+                }),
+          ),
+        ],
       ),
     );
   }
