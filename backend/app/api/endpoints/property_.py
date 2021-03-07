@@ -1,14 +1,16 @@
 import asyncio
 import logging
+from typing import Optional
 
-from fastapi import APIRouter, Depends, WebSocket
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user
 from app.like_reject_server import save_property_mark
 from app.models.access import UserModel
 from app.models.property_ import SaveMark
-from app.property_server import PropertyServer, parse_ws_data
+from app.property_server import PropertyServer
+from app.request_queue import get_data_for_request, is_request_in_db
 from app.schemas.property_ import PropertyList, PostcodeList, extract_listing_id_from_listing_url
 
 router = APIRouter()
@@ -16,43 +18,35 @@ property_server = PropertyServer(page_size=10)
 LOGGER = logging.getLogger()
 
 
-@router.post("/properties", response_model=PropertyList)
+@router.post("/properties/", response_model=PropertyList)
 async def get_properties(*,
                          db: Session = Depends(get_db),
                          current_user: UserModel = Depends(get_current_user),
+                         page_number: int,
                          postcodes: PostcodeList) -> PropertyList:
-    return property_server.get_property_information(db, postcodes.postcodes, current_user.email)
+    return property_server.get_property_information(db,
+                                                    postcodes.postcodes,
+                                                    current_user.email,
+                                                    page_number)
 
 
-@router.post("/properties/reset", response_model=PropertyList)
+@router.post("/polling/properties/{request_id}", response_model=Optional[PropertyList], status_code=200)
 async def get_properties(*,
                          db: Session = Depends(get_db),
                          current_user: UserModel = Depends(get_current_user),
-                         postcodes: PostcodeList) -> PropertyList:
-    return property_server.get_property_information(
-        db, postcodes.postcodes, current_user.email, reset=True)
+                         response: Response,
+                         page_number: int,
+                         request_id: str,
+                         postcodes: PostcodeList) -> Optional[PropertyList]:
+    if is_request_in_db(db, request_id):
+        return get_data_for_request(db, request_id)
 
-
-@router.websocket("/ws/properties")
-async def get_properties_ws(*,
-                            db: Session = Depends(get_db),
-                            current_user: UserModel = Depends(get_current_user),
-                            websocket: WebSocket) -> None:
     loop = asyncio.get_running_loop()
-    await websocket.accept()
-    data = await websocket.receive_text()
-    postcodes = parse_ws_data(data)  # TODO or do nothing id just a ping... might need loop?
-    result = await loop.run_in_executor(
-        None, lambda: property_server.get_property_information(db, postcodes, current_user.email))
-    await websocket.send_text(result.json())
-
-
-@router.websocket("/ws/test")
-async def websocket_endpoint(*, current_user: UserModel = Depends(get_current_user), websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was: {data}")
+    loop.run_in_executor(None, lambda: property_server.get_property_information(
+        db, postcodes.postcodes, current_user.email, page_number
+    ))
+    response.status_code = status.HTTP_201_CREATED
+    return None
 
 
 @router.get("/mark/{listing_url:path}/as/{mark}")
@@ -69,3 +63,5 @@ async def mark_property(*,
 async def get_all_liked_properties(db: Session = Depends(get_db),
                                    current_user: UserModel = Depends(get_current_user)) -> PropertyList:
     return property_server.get_all_liked_properties(db, current_user.email)
+
+
