@@ -1,5 +1,4 @@
 import logging
-from collections import defaultdict
 from typing import List, Optional
 
 import requests
@@ -8,7 +7,9 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.like_reject_server import SaveMark, check_if_property_marked, get_all_liked_property_ids
 from app.models.property_ import PropertyModel
+from app.models.request import RequestModel
 from app.ocr import Ocr
+from app.request_queue import is_request_in_db
 from app.schemas.property_ import PropertyList, Property, PostcodeList
 
 LOGGER = logging.getLogger()
@@ -27,7 +28,6 @@ class PropertyServer:
             raise ValueError(f"{page_size} is an invalid value for page_size."
                              f" It must be between 1 and 100 inclusive.")
 
-        self.pages = defaultdict(int)
         self.minimum_area = minimum_area
         self.minimum_price = minimum_price
         self.maximum_price = maximum_price
@@ -38,14 +38,30 @@ class PropertyServer:
 
         self.floorplan_reader = Ocr()
 
+    def get_property_information_polling(self,
+                                         db: Session,
+                                         postcodes: List[str],
+                                         user_email: str,
+                                         request_id: str,
+                                         page_number: int) -> None:
+        if is_request_in_db(db, request_id):
+            raise RuntimeError(f"Attempting to poll but that id ({request_id}) is already in the DB.")
+        request_model = RequestModel(request_id=request_id, response=None)
+        db.add(request_model)
+        db.flush()
+
+        response = self.get_property_information(db, postcodes, user_email, page_number)
+        request_model.response = response
+        db.commit()
+
     def get_property_information(self,
                                  db: Session,
                                  postcodes: List[str],
                                  user_email: str,
-                                 reset: bool = False) -> PropertyList:
+                                 page_number: int) -> PropertyList:
         properties = []
         for postcode in postcodes:
-            properties += self.get_property_info_from_postcode(db, postcode, user_email, reset)
+            properties += self.get_property_info_from_postcode(db, postcode, user_email, page_number)
 
         return PropertyList(properties=sorted(properties, reverse=True))
 
@@ -53,9 +69,9 @@ class PropertyServer:
                                         db: Session,
                                         postcode: str,
                                         user_email: str,
-                                        reset: bool = False) -> List[Property]:
+                                        page_number: int) -> List[Property]:
 
-        properties_json = self._get_property_listing(postcode, reset)
+        properties_json = self._get_property_listing(postcode, page_number)
         properties_schema = []
         for property_json in properties_json:
             property_schema = Property.parse_obj(property_json)
@@ -128,12 +144,7 @@ class PropertyServer:
         _cache_area(db, listing_id, area)
         return area
 
-    def _get_property_listing(self, postcode: str, reset: bool):
-        if reset:
-            self.pages[postcode] = 1
-        else:
-            self.pages[postcode] += 1
-        page_number = self.pages[postcode]
+    def _get_property_listing(self, postcode: str, page_number: int = 1):
         LOGGER.info(f"Sending request to Zoopla for postcode '{postcode}', page {page_number}")
 
         params = {
@@ -157,7 +168,7 @@ class PropertyServer:
 def _is_property_in_db(db: Session, listing_id: str) -> bool:
     result = db.query(PropertyModel).filter_by(listing_id=listing_id).first()
     if result:
-        LOGGER.info(f"Found property {listing_id} in DB")
+        LOGGER.info(f"Found property {listing_id} in DB.")
         return True
     else:
         LOGGER.info(f"Property {listing_id} is not yet in the DB.")
