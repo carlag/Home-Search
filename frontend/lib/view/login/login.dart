@@ -34,17 +34,27 @@ class SignInDemoState extends State<SignInDemo> {
     super.initState();
     _googleSignIn.onCurrentUserChanged
         .listen((GoogleSignInAccount account) async {
-      final authentication = await account.authentication;
-      _accessToken = await service.swapTokens(authentication.idToken);
-      setState(() {
-        if (_accessToken != null) {
-          _currentUser = account;
-          _state = UserState.authenticated;
-        } else {
+      if (account == null) {
+        print('Sign out');
+        _accessToken = null;
+        setState(() {
           _currentUser = null;
-          _state = UserState.error;
-        }
-      });
+          _state = UserState.unknown;
+        });
+      } else {
+        print('Signed in');
+        final authentication = await account.authentication;
+        _accessToken = await service.swapTokens(authentication.idToken);
+        setState(() {
+          if (_accessToken != null) {
+            _currentUser = account;
+            _state = UserState.authenticated;
+          } else {
+            _currentUser = null;
+            _state = UserState.error;
+          }
+        });
+      }
     });
     _googleSignIn.signInSilently();
   }
@@ -94,10 +104,11 @@ class SignInDemoState extends State<SignInDemo> {
       appBar: AppBar(
         title: const Text('Home Search'),
         actions: <Widget>[
-          FlatButton(
-            child: const Text('SIGN OUT'),
-            onPressed: _handleSignOut,
-          ),
+          if (_currentUser != null && _state == UserState.authenticated)
+            FlatButton(
+              child: const Text('SIGN OUT'),
+              onPressed: _handleSignOut,
+            ),
         ],
       ),
       body: ConstrainedBox(
