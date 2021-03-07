@@ -16,6 +16,9 @@ class AutoComplete extends StatefulWidget {
 
 class AutoCompleteState extends State<AutoComplete> {
   final TextEditingController _typeAheadController = TextEditingController();
+  final SuggestionsBoxController _suggestionsBoxController =
+      SuggestionsBoxController();
+
   final service = PostCodeService();
 
   void _loadData() async {
@@ -70,7 +73,10 @@ class AutoCompleteState extends State<AutoComplete> {
                   textFieldConfiguration: TextFieldConfiguration(
                     decoration: InputDecoration(labelText: 'Station'),
                     controller: this._typeAheadController,
+                    onTap: () => _suggestionsBoxController.toggle(),
                   ),
+                  suggestionsBoxController: _suggestionsBoxController,
+                  suggestionsBoxDecoration: SuggestionsBoxDecoration(),
                   suggestionsCallback: (pattern) {
                     print(pattern);
                     return service.getSuggestions(pattern);
