@@ -43,7 +43,10 @@ class PropertyServer:
                                          postcodes: List[str],
                                          user_email: str,
                                          request_id: str,
-                                         page_number: int) -> None:
+                                         page_number: int,
+                                         min_area: Optional[int]) -> None:
+        if min_area:
+            self.minimum_area = min_area
         if is_request_in_db(db, request_id):
             raise RuntimeError(f"Attempting to poll but that id ({request_id}) is already in the DB.")
         request_model = RequestModel(request_id=request_id)

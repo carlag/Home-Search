@@ -31,20 +31,28 @@ async def get_properties(*,
 
 
 @router.post("/polling/properties/{request_id}", response_model=Optional[PropertyList], status_code=200)
-async def get_properties(*,
-                         db: Session = Depends(get_db),
-                         current_user: UserModel = Depends(get_current_user),
-                         response: Response,
-                         page_number: int,
-                         request_id: str,
-                         postcodes: PostcodeList) -> Optional[PropertyList]:
+async def get_properties(
+        *,
+        db: Session = Depends(get_db),
+        current_user: UserModel = Depends(get_current_user),
+        response: Response,
+        page_number: int,  # query param
+        min_area: Optional[int],  # query param
+        request_id: str,  # path param
+        postcodes: PostcodeList  # request body (post params)
+) -> Optional[PropertyList]:
     if is_request_in_db(db, request_id):
         return get_data_for_request(db, request_id)
 
     LOGGER.info(f"New request ID: '{request_id}'")
     loop = asyncio.get_running_loop()
     loop.run_in_executor(None, lambda: property_server.get_property_information_polling(
-        db, postcodes.postcodes, current_user.email, request_id, page_number
+        db,
+        postcodes.postcodes,
+        current_user.email,
+        request_id,
+        page_number,
+        min_area
     ))
     response.status_code = status.HTTP_201_CREATED
 
