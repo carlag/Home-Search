@@ -46,9 +46,14 @@ class PropertyServer:
                                          page_number: int) -> None:
         if is_request_in_db(db, request_id):
             raise RuntimeError(f"Attempting to poll but that id ({request_id}) is already in the DB.")
-        request_model = RequestModel(request_id=request_id, response=None)
+        request_model = RequestModel(request_id=request_id)
         db.add(request_model)
         db.flush()
+
+
+        LOGGER.info(f"Flushed: request ID '{request_id}'")
+        is_in = is_request_in_db(db, request_id)
+        LOGGER.info(f"Requset Id '{request_id}' IS IN DB: '{is_in}'")
 
         response = self.get_property_information(db, postcodes, user_email, page_number)
         request_model.response = response

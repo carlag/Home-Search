@@ -4,3 +4,4 @@ const morePropertiesEndpoint = '$urlBase/properties';
 const propertiesEndpoint = '$urlBase/properties/reset';
 const markEndpoint = '$urlBase/mark';
 const stationsEndpoint = '$urlBase/stations/origin';
+const propertiesPollPath = '/polling/properties';

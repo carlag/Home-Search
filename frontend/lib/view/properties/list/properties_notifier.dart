@@ -24,19 +24,20 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
   Future<void> reload(List<StationPostcode> newPostCodes) async {
     listProperties = <Property>[];
     _postCodes = newPostCodes; //newPostCodes.map((e) => e.postcode).toList();
-    listProperties = await propertyService.fetchProperties(_postCodes);
+    listProperties = await propertyService
+        .fetchPropertiesPoll(_postCodes); //fetchProperties(_postCodes);
     value = listProperties;
   }
 
   Future<void> getMore() async {
     if (!_loading) {
-      _loading = true;
-      final moreProperties =
-          await propertyService.fetchMoreProperties(_postCodes);
-      print("MORE PROPERTIES: ${moreProperties.length}");
-      listProperties.addAll(moreProperties);
-      _loading = false;
-      value = listProperties;
+      // _loading = true;
+      // final moreProperties =
+      //     await propertyService.fetchPropertiesPoll(_postCodes);
+      // print("MORE PROPERTIES: ${moreProperties.length}");
+      // listProperties.addAll(moreProperties);
+      // _loading = false;
+      // value = listProperties;
     }
   }
 }

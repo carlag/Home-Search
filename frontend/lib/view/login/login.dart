@@ -46,10 +46,13 @@ class SignInDemoState extends State<SignInDemo> {
         final authentication = await account.authentication;
         _accessToken = await service.swapTokens(authentication.idToken);
         setState(() {
+          print('Signed in');
           if (_accessToken != null) {
+            print('State updated 1');
             _currentUser = account;
             _state = UserState.authenticated;
           } else {
+            print('State updated 2');
             _currentUser = null;
             _state = UserState.error;
           }

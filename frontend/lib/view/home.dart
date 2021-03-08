@@ -5,7 +5,6 @@ import 'package:proper_house_search/data/services/property_service.dart';
 import '../data/services/property_service.dart';
 import 'properties/list/properties_list_view.dart';
 import 'search/postcode_search_bar.dart';
-import 'search/search_form.dart';
 
 class Home extends StatefulWidget {
   Home({required Key key, required this.title, required this.propertyService})
@@ -69,10 +68,10 @@ class HomeState extends State<Home> {
                         addedStations: selectedStations,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: padding),
-                      child: SearchForm(),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(left: padding),
+                    //   child: SearchForm(),
+                    // ),
                   ],
                 ),
               ),
@@ -94,9 +93,11 @@ class HomeState extends State<Home> {
               "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
               headers: {'Access-Control-Allow-Origin': '*'},
             ),
-            // FloatingActionButton(
-            //   onPressed: _onPressed,
-            // ),
+            FloatingActionButton.extended(
+              onPressed: _onPressed,
+              icon: Icon(Icons.home),
+              label: Text(''),
+            ),
           ],
         ),
       ],

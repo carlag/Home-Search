@@ -41,12 +41,12 @@ async def get_properties(*,
     if is_request_in_db(db, request_id):
         return get_data_for_request(db, request_id)
 
+    LOGGER.info(f"New request ID: '{request_id}'")
     loop = asyncio.get_running_loop()
-    loop.run_in_executor(None, lambda: property_server.get_property_information(
-        db, postcodes.postcodes, current_user.email, page_number
+    loop.run_in_executor(None, lambda: property_server.get_property_information_polling(
+        db, postcodes.postcodes, current_user.email, request_id, page_number
     ))
     response.status_code = status.HTTP_201_CREATED
-    return None
 
 
 @router.get("/mark/{listing_url:path}/as/{mark}")
