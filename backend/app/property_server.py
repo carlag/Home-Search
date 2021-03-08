@@ -55,7 +55,7 @@ class PropertyServer:
         LOGGER.info(f"Requset Id '{request_id}' IS IN DB: '{is_in}'")
 
         response = self.get_property_information(db, postcodes, user_email, page_number)
-        request_model.response = response.json()
+        request_model.response = response.json(by_alias=True)
         LOGGER.info(f"Saving the following property json to the DB:\n'{request_model.response}'")
         db.commit()
 
