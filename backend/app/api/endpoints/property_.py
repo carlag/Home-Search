@@ -38,6 +38,11 @@ async def get_properties(
         response: Response,
         page_number: int,  # query param
         min_area: Optional[int],  # query param
+        min_price: Optional[int],  # query param
+        max_price: Optional[int],  # query param
+        min_beds: Optional[int],  # query param
+        keywords: Optional[str],  # query param
+        listing_status: Optional[int],  # query param
         request_id: str,  # path param
         postcodes: PostcodeList  # request body (post params)
 ) -> Optional[PropertyList]:
@@ -52,7 +57,12 @@ async def get_properties(
         current_user.email,
         request_id,
         page_number,
-        min_area
+        min_area,
+        min_price,
+        max_price,
+        min_beds,
+        keywords,
+        listing_status,
     ))
     response.status_code = status.HTTP_201_CREATED
 

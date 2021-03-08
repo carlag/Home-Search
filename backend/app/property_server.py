@@ -23,7 +23,10 @@ class PropertyServer:
                  minimum_price: int = 500_000,
                  maximum_price: int = 850_000,
                  radius: float = 0.6,  # in miles
-                 page_size: int = 10):
+                 page_size: int = 10,
+                 listing_status: str = "sale",
+                 keywords: str = "garden",
+                 minimum_beds: int = 2):
         if page_size > 100 or page_size < 1:
             raise ValueError(f"{page_size} is an invalid value for page_size."
                              f" It must be between 1 and 100 inclusive.")
@@ -33,6 +36,9 @@ class PropertyServer:
         self.maximum_price = maximum_price
         self.radius = radius
         self.page_size = page_size
+        self.listing_status = listing_status
+        self.keywords = keywords
+        self.minimum_beds = minimum_beds
 
         self.zoopla_listings_url = "https://api.zoopla.co.uk/api/v1/property_listings.js"
 
@@ -44,22 +50,33 @@ class PropertyServer:
                                          user_email: str,
                                          request_id: str,
                                          page_number: int,
-                                         min_area: Optional[int]) -> None:
+                                         min_area: Optional[int],
+                                         min_price: Optional[int],
+                                         max_price: Optional[int],
+                                         min_beds: Optional[int],
+                                         keywords: Optional[str],
+                                         listing_status: Optional[int]) -> None:
         if min_area:
             self.minimum_area = min_area
+        if min_price:
+            self.minimum_price = min_price
+        if max_price:
+            self.maximum_price = max_price
+        if min_beds:
+            self.minimum_beds = min_beds
+        if keywords:
+            self.keywords = keywords
+        if listing_status:
+            self.listing_status = listing_status
         if is_request_in_db(db, request_id):
             raise RuntimeError(f"Attempting to poll but that id ({request_id}) is already in the DB.")
         request_model = RequestModel(request_id=request_id)
         db.add(request_model)
         db.flush()
 
-        LOGGER.info(f"Flushed: request ID '{request_id}'")
-        is_in = is_request_in_db(db, request_id)
-        LOGGER.info(f"Requset Id '{request_id}' IS IN DB: '{is_in}'")
-
         response = self.get_property_information(db, postcodes, user_email, page_number)
         request_model.response = response.json(by_alias=True)
-        LOGGER.info(f"Saving the following property json to the DB:\n'{request_model.response}'")
+        LOGGER.debug(f"Saving the following property json to the DB:\n'{request_model.response}'")
         db.commit()
 
     def get_property_information(self,
@@ -157,12 +174,12 @@ class PropertyServer:
 
         params = {
             "postcode": postcode,
-            "keywords": "garden",
+            "keywords": self.keywords,
             "radius": self.radius,
-            "listing_status": "sale",
+            "listing_status": self.listing_status,
             "minimum_price": self.minimum_price,
             "maximum_price": self.maximum_price,
-            "minimum_beds": 2,
+            "minimum_beds": self.minimum_beds,
             "page_size": self.page_size,
             "page_number": page_number,
             "api_key": ZOOPLA_API_KEY,
