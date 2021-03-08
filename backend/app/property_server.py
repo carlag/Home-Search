@@ -56,6 +56,7 @@ class PropertyServer:
 
         response = self.get_property_information(db, postcodes, user_email, page_number)
         request_model.response = response.json()
+        LOGGER.info(f"Saving the following property json to the DB:\n'{request_model.response}'")
         db.commit()
 
     def get_property_information(self,
