@@ -50,13 +50,12 @@ class PropertyServer:
         db.add(request_model)
         db.flush()
 
-
         LOGGER.info(f"Flushed: request ID '{request_id}'")
         is_in = is_request_in_db(db, request_id)
         LOGGER.info(f"Requset Id '{request_id}' IS IN DB: '{is_in}'")
 
         response = self.get_property_information(db, postcodes, user_email, page_number)
-        request_model.response = response
+        request_model.response = response.json()
         db.commit()
 
     def get_property_information(self,
