@@ -119,7 +119,7 @@ class PropertyService {
   }) async {
     print('REQUEST ID: $requestId');
     final uri = Uri.http(
-      'localhost',
+      urlBase,
       '$propertiesPollPath/$requestId',
       {
         'page_number': '$pageNumber',
