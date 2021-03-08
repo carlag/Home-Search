@@ -90,32 +90,25 @@ class PropertyService {
 
   Future<List<Property>> fetchPropertiesPoll(
       List<StationPostcode> stations) async {
-    print('POLL 1');
     final postcodes = stations.map((e) => e.postcode).toList();
 
     final requestId = shortHash(UniqueKey());
-    const retryDuration = const Duration(seconds: 10);
     var retryCount = 0;
     var maxRetryCount = 90;
     List<Property>? properties;
 
-    print('POLL 2');
     while (properties == null && retryCount <= maxRetryCount) {
-      print('POLL 2.$retryCount, ${DateTime.now()}');
+      print('Poll Count: $retryCount, ${DateTime.now()}');
 
       retryCount++;
       properties = await _poll(postcodes, requestId);
       await Future.delayed(const Duration(seconds: 10), () {});
     }
 
-    print('POLL 3');
-
     if (properties == null) {
-      print('POLL 4');
       throw Exception('Timed out');
     }
 
-    print('POLL 5');
     return properties;
   }
 
@@ -124,14 +117,14 @@ class PropertyService {
     String requestId, {
     int pageNumber = 1,
   }) async {
-    // final path = '$propertiesPollEndpoint/$requestId';
-    /// Uri.http("example.org", "/path", { "q" : "dart" });
-    /// // http://example.org/path?q=dart.
     print('REQUEST ID: $requestId');
     final uri = Uri.http(
       'localhost',
       '$propertiesPollPath/$requestId',
-      {'page_number': '$pageNumber'},
+      {
+        'page_number': '$pageNumber',
+        'min_area': '120',
+      },
     );
     print(uri);
     final response = await client.post(

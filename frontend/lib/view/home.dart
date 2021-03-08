@@ -93,10 +93,10 @@ class HomeState extends State<Home> {
               "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
               headers: {'Access-Control-Allow-Origin': '*'},
             ),
-            FloatingActionButton.extended(
+            FloatingActionButton(
               onPressed: _onPressed,
-              icon: Icon(Icons.home),
-              label: Text(''),
+              tooltip: 'Search',
+              child: Icon(Icons.house_outlined),
             ),
           ],
         ),
