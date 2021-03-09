@@ -68,6 +68,7 @@ class PropertyServer:
             self.keywords = keywords
         if listing_status:
             self.listing_status = listing_status
+
         if is_request_in_db(db, request_id):
             raise RuntimeError(f"Attempting to poll but that id ({request_id}) is already in the DB.")
         request_model = RequestModel(request_id=request_id)
@@ -98,10 +99,11 @@ class PropertyServer:
 
         properties_json = self._get_property_listing(postcode, page_number)
         properties_schema = []
-        for property_json in properties_json:
+        properties_count = len(properties_json)
+        for property_number, property_json in enumerate(properties_json):
             property_schema = Property.parse_obj(property_json)
             property_model = property_schema.to_orm()
-            LOGGER.info(f"Working on property {property_model}:")
+            LOGGER.info(f"Working on property {property_number}/{properties_count} - {property_model}:")
             if not _is_property_in_db(db, property_model.listing_id):
                 db.add(property_model)
                 db.flush()
@@ -116,6 +118,7 @@ class PropertyServer:
                                                          image_url=property_model.floorplan_url,
                                                          listing_id=property_model.listing_id)
             properties_schema.append(property_schema)
+            LOGGER.info(f"Complete working on property {property_model.listing_id}.")
 
         filtered_properties_schema = [property_ for property_ in properties_schema
                                       if property_.ocr_size and property_.ocr_size > self.minimum_area]
