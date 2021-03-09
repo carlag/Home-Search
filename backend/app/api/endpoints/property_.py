@@ -42,7 +42,7 @@ async def get_properties(
         max_price: Optional[int],  # query param
         min_beds: Optional[int],  # query param
         keywords: Optional[str],  # query param
-        listing_status: Optional[int],  # query param
+        listing_status: Optional[str],  # query param
         request_id: str,  # path param
         postcodes: PostcodeList  # request body (post params)
 ) -> Optional[PropertyList]:

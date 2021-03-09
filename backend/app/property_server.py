@@ -55,7 +55,7 @@ class PropertyServer:
                                          max_price: Optional[int],
                                          min_beds: Optional[int],
                                          keywords: Optional[str],
-                                         listing_status: Optional[int]) -> None:
+                                         listing_status: Optional[str]) -> None:
         if min_area:
             self.minimum_area = min_area
         if min_price:

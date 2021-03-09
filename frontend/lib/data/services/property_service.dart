@@ -118,13 +118,19 @@ class PropertyService {
     int pageNumber = 1,
   }) async {
     print('REQUEST ID: $requestId');
-    final uri = Uri.http(
-      urlBase,
-      '$propertiesPollPath/$requestId',
-      {
-        'page_number': '$pageNumber',
-        'min_area': '120',
-      },
+    final params = {
+      'page_number': '$pageNumber',
+      'min_area': '100',
+      'min_price': '600000',
+      'max_price': '900000',
+      'min_beds': '2',
+      'keywords': 'garden',
+      'listing_status': 'sale',
+    };
+    final path = '$propertiesPollPath/$requestId';
+    final uri = Uri.parse(urlBase).replace(
+      path: path,
+      queryParameters: params,
     );
     print(uri);
     final response = await client.post(
