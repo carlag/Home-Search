@@ -67,22 +67,22 @@ class SearchFormState extends State<SearchForm> {
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Validate returns true if the form is valid, otherwise false.
-                if (_formKey.currentState != null &&
-                    _formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text('Processing Data')));
-                }
-              },
-              child: Text('Search'),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(16.0),
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       // Validate returns true if the form is valid, otherwise false.
+          //       if (_formKey.currentState != null &&
+          //           _formKey.currentState!.validate()) {
+          //         // If the form is valid, display a snackbar. In the real world,
+          //         // you'd often call a server or save the information in a database.
+          //         ScaffoldMessenger.of(context)
+          //             .showSnackBar(SnackBar(content: Text('Processing Data')));
+          //       }
+          //     },
+          //     child: Text('Search'),
+          //   ),
+          // ),
         ],
       ),
     );

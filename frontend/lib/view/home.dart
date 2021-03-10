@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/services/property_service.dart';
+import 'package:proper_house_search/view/search/search_form.dart';
 
 import '../data/services/property_service.dart';
 import 'properties/list/properties_list_view.dart';
@@ -47,31 +48,30 @@ class HomeState extends State<Home> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+          child: AutoComplete(
+            key: _autoCompleteState,
+            addedStations: selectedStations,
+          ),
+        ),
         ExpansionTile(
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
           title: Text('Filters'),
           children: [
             ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 300.0),
+              constraints: BoxConstraints(
+                minHeight: 120.0,
+                maxHeight: MediaQuery.of(context).size.height * 0.50,
+              ),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(
-                        left: padding,
-                        right: padding,
-                        bottom: padding,
-                      ),
-                      child: AutoComplete(
-                        key: _autoCompleteState,
-                        addedStations: selectedStations,
-                      ),
+                      padding: const EdgeInsets.only(left: padding),
+                      child: SearchForm(),
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(left: padding),
-                    //   child: SearchForm(),
-                    // ),
                   ],
                 ),
               ),
@@ -93,10 +93,16 @@ class HomeState extends State<Home> {
               "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
               headers: {'Access-Control-Allow-Origin': '*'},
             ),
-            FloatingActionButton(
-              onPressed: _onPressed,
-              tooltip: 'Search',
-              child: Icon(Icons.house_outlined),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 8.0, 16.0, 8.0),
+              child: ElevatedButton.icon(
+                onPressed: _onPressed,
+                label: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text('Search'),
+                ),
+                icon: Icon(Icons.house_outlined),
+              ),
             ),
           ],
         ),
@@ -105,9 +111,44 @@ class HomeState extends State<Home> {
   }
 
   Widget _loading() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: LinearProgressIndicator(),
+    return Center(
+      child: Container(
+        color: Colors.black12,
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.80,
+                child: LinearProgressIndicator(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.80,
+                child: Text(
+                  'This was made by lazy developers so this could take a while. \n Maybe go make a cup of coffee ☕️. \n Or call your mom.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.80,
+                child: Text(
+                  'Seriously, we\'re talking like 5 minutes here.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12.0),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

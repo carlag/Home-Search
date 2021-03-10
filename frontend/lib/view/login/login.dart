@@ -24,10 +24,10 @@ class SignInDemo extends StatefulWidget {
 
 class SignInDemoState extends State<SignInDemo> {
   GoogleSignInAccount? _currentUser;
-  String? _contactText;
   final service = LoginService();
   var _state = UserState.unknown;
   var _accessToken;
+  var _errorMessage;
 
   @override
   void initState() {
@@ -48,12 +48,11 @@ class SignInDemoState extends State<SignInDemo> {
         setState(() {
           print('Signed in');
           if (_accessToken != null) {
-            print('State updated 1');
             _currentUser = account;
             _state = UserState.authenticated;
           } else {
-            print('State updated 2');
             _currentUser = null;
+            _errorMessage = 'Error authenticating user';
             _state = UserState.error;
           }
         });
@@ -67,6 +66,11 @@ class SignInDemoState extends State<SignInDemo> {
       await _googleSignIn.signIn();
     } catch (error) {
       print(error);
+      setState(() {
+        _currentUser = null;
+        _state = UserState.error;
+        _errorMessage = error;
+      });
     }
   }
 
@@ -90,7 +94,8 @@ class SignInDemoState extends State<SignInDemo> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          if (_state == UserState.error) Text('Error authenticated user'),
+          if (_state == UserState.error)
+            Text(_errorMessage ?? 'Could not sign in'),
           const Text("You are not currently signed in."),
           ElevatedButton(
             child: const Text('SIGN IN'),
