@@ -50,7 +50,7 @@ class AutoCompleteState extends State<AutoComplete> {
               height: 30.0,
               child: Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Expanded(child: Text('Add stations to search nearby')),
+                child: Text('Add stations to search nearby'),
               ),
             ),
           ListTile(
