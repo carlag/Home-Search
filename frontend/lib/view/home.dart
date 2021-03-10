@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/services/property_service.dart';
@@ -62,7 +64,10 @@ class HomeState extends State<Home> {
             ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: 120.0,
-                maxHeight: MediaQuery.of(context).size.height * 0.50,
+                maxHeight: max(
+                  120.0,
+                  MediaQuery.of(context).size.height * 0.20,
+                ),
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -130,19 +135,8 @@ class HomeState extends State<Home> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.80,
                 child: Text(
-                  'This was made by lazy developers so this could take a while. \n Maybe go make a cup of coffee ☕️. \n Or call your mom.',
+                  'This was made by lazy developers so this could take a while. Maybe go make a cup of coffee ☕️.',
                   textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.80,
-                child: Text(
-                  'Seriously, we\'re talking like 5 minutes here.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12.0),
                 ),
               ),
             ),

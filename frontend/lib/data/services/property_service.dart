@@ -99,7 +99,6 @@ class PropertyService {
 
     while (properties == null && retryCount <= maxRetryCount) {
       print('Poll Count: $retryCount, ${DateTime.now()}');
-
       retryCount++;
       properties = await _poll(postcodes, requestId);
       await Future.delayed(const Duration(seconds: 10), () {});
