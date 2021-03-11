@@ -37,6 +37,10 @@ The simplest way to deploy it locally is to use docker:
    ```
    localhost:5001
    ```
+1. The OpenAPI docs foe the backend are available at:
+   ```
+   localhost/docs
+   ```
 
 If you need to force a rebuild of the containers, try:
  
@@ -51,6 +55,8 @@ docker volume prune
 
 
 ## Server Deployment (Heroku)
+The following instructions show you how to create a new deployment for this app on Heroku. If you have already done this, you can run the `deploy.sh` script instead, which only assumes you have set the `APP_NAME` environment variable.
+
 1. [Install the heroku cli and log in](https://devcenter.heroku.com/articles/heroku-cli)
 1. Set the name for your heroku app:
    ```bash
@@ -84,7 +90,7 @@ docker volume prune
    ```bash
    docker compose up -d
    ```
-   You can stop the containers using `docker down` as you don't need them.
+   You can stop the containers using `docker compose down` as you don't need them.
 1. Tag the images:
    ```bash
    docker tag home-search_backend registry.heroku.com/$API_NAME/web
