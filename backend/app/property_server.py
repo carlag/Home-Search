@@ -97,7 +97,9 @@ class PropertyServer:
         except Exception as err:
             LOGGER.info(f"Oh dear, you appear to have had an exception during the async call"
                         f" to poll for properties: {err}")
-            request_model = RequestModel(request_id=request_id)
+            # request_model = RequestModel(request_id=request_id)
+            request_model = db.query(RequestModel).filter_by(request_id=request_id).first()
+            request_model.error = str(err)
             db.add(request_model)
             db.commit()
 
@@ -131,7 +133,7 @@ class PropertyServer:
             else:
                 save_mark = check_if_property_marked(db, property_model.listing_id, user_email)
                 if save_mark:
-                    if save_mark == SaveMark.REJECT:s
+                    if save_mark == SaveMark.REJECT:
                         continue
                     property_schema.mark = save_mark
             if property_schema.floor_plan:
