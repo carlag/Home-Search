@@ -47,7 +47,7 @@ async def get_properties(
         postcodes: PostcodeList  # request body (post params)
 ) -> Optional[PropertyList]:
     if is_request_in_db(db, request_id):
-        return get_data_for_request(db, request_id)
+        return get_data_for_request(db, request_id)  # This method can raise a 500 http error
 
     LOGGER.info(f"New request ID: '{request_id}'")
     loop = asyncio.get_running_loop()

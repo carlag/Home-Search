@@ -8,3 +8,4 @@ class RequestModel(Base):
 
     request_id = Column(String, primary_key=True, nullable=False)
     response = Column(String, nullable=True)
+    error = Column(String, nullable=True)

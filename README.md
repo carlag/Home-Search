@@ -84,7 +84,7 @@ docker volume prune
    ```bash
    docker compose up -d
    ```
-   You can stop the containers using `docker down` as you don't need them.
+   You can stop the containers using `docker compose down` as you don't need them.
 1. Tag the images:
    ```bash
    docker tag home-search_backend registry.heroku.com/$API_NAME/web

@@ -44,18 +44,13 @@ class PropertyServer:
 
         self.floorplan_reader = Ocr()
 
-    def get_property_information_polling(self,
-                                         db: Session,
-                                         postcodes: List[str],
-                                         user_email: str,
-                                         request_id: str,
-                                         page_number: int,
-                                         min_area: Optional[int],
-                                         min_price: Optional[int],
-                                         max_price: Optional[int],
-                                         min_beds: Optional[int],
-                                         keywords: Optional[str],
-                                         listing_status: Optional[str]) -> None:
+    def _set_filter_args(self,
+                         min_area: Optional[int],
+                         min_price: Optional[int],
+                         max_price: Optional[int],
+                         min_beds: Optional[int],
+                         keywords: Optional[str],
+                         listing_status: Optional[str]) -> None:
         if min_area:
             self.minimum_area = min_area
         if min_price:
@@ -69,16 +64,42 @@ class PropertyServer:
         if listing_status:
             self.listing_status = listing_status
 
-        if is_request_in_db(db, request_id):
-            raise RuntimeError(f"Attempting to poll but that id ({request_id}) is already in the DB.")
-        request_model = RequestModel(request_id=request_id)
-        db.add(request_model)
-        db.flush()
+    def get_property_information_polling(self,
+                                         db: Session,
+                                         postcodes: List[str],
+                                         user_email: str,
+                                         request_id: str,
+                                         page_number: int,
+                                         min_area: Optional[int],
+                                         min_price: Optional[int],
+                                         max_price: Optional[int],
+                                         min_beds: Optional[int],
+                                         keywords: Optional[str],
+                                         listing_status: Optional[str]) -> None:
+        self._set_filter_args(min_area=min_area,
+                              min_price=min_price,
+                              max_price=max_price,
+                              min_beds=min_beds,
+                              keywords=keywords,
+                              listing_status=listing_status)
 
-        response = self.get_property_information(db, postcodes, user_email, page_number)
-        request_model.response = response.json(by_alias=True)
-        LOGGER.debug(f"Saving the following property json to the DB:\n'{request_model.response}'")
-        db.commit()
+        try:
+            if is_request_in_db(db, request_id):
+                raise RuntimeError(f"Attempting to poll but that id ({request_id}) is already in the DB.")
+            request_model = RequestModel(request_id=request_id)
+            db.add(request_model)
+            db.flush()
+
+            response = self.get_property_information(db, postcodes, user_email, page_number)
+            request_model.response = response.json(by_alias=True)
+            LOGGER.debug(f"Saving the following property json to the DB:\n'{request_model.response}'")
+            db.commit()
+        except Exception as err:
+            LOGGER.info(f"Oh dear, you appear to have had an exception during the async call"
+                        f" to poll for properties: {err}")
+            request_model = RequestModel(request_id=request_id)
+            db.add(request_model)
+            db.commit()
 
     def get_property_information(self,
                                  db: Session,
