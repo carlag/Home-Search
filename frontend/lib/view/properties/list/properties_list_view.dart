@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/property.dart';
+import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/services/property_service.dart';
 import 'package:proper_house_search/view/home.dart';
 import 'package:proper_house_search/view/properties/summary/property_summary.dart';
@@ -21,12 +22,13 @@ class PropertiesListView extends StatefulWidget {
 class PropertiesListViewState extends State<PropertiesListView> {
   late PropertiesNotifier notifier;
   var isLoading = false;
+  var pageNumber = 1;
+  var postCodes = <StationPostcode>[];
 
   @override
   void initState() {
     super.initState();
     notifier = PropertiesNotifier(widget.propertyService);
-    notifier.getMore();
   }
 
   @override
@@ -40,6 +42,9 @@ class PropertiesListViewState extends State<PropertiesListView> {
     return ValueListenableBuilder<List<Property>>(
       valueListenable: notifier,
       builder: (BuildContext context, List<Property>? value, Widget? child) {
+        if (notifier.errorMessage != null) {
+          return Text('Error: ${notifier.errorMessage}');
+        }
         return value != null
             ? _propertyList(value)
             : Center(child: CircularProgressIndicator());
@@ -98,8 +103,9 @@ class PropertiesListViewState extends State<PropertiesListView> {
   Future<void> _moreButtonPressed() async {
     setState(() {
       isLoading = true;
+      pageNumber++;
     });
-    await notifier.getMore();
+    await notifier.reload(postCodes, pageNumber);
     setState(() {
       isLoading = false;
     });

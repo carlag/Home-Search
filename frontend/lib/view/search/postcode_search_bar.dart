@@ -66,7 +66,6 @@ class AutoCompleteState extends State<AutoComplete> {
                 suggestionsBoxController: _suggestionsBoxController,
                 suggestionsBoxDecoration: SuggestionsBoxDecoration(),
                 suggestionsCallback: (pattern) {
-                  print(pattern);
                   return service.getSuggestions(pattern);
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {

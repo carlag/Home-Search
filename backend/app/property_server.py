@@ -103,14 +103,14 @@ class PropertyServer:
         for property_number, property_json in enumerate(properties_json):
             property_schema = Property.parse_obj(property_json)
             property_model = property_schema.to_orm()
-            LOGGER.info(f"Working on property {property_number}/{properties_count} - {property_model}:")
+            LOGGER.info(f"Working on property {property_number + 1}/{properties_count} - {property_model}:")
             if not _is_property_in_db(db, property_model.listing_id):
                 db.add(property_model)
                 db.flush()
             else:
                 save_mark = check_if_property_marked(db, property_model.listing_id, user_email)
                 if save_mark:
-                    if save_mark == SaveMark.REJECT:
+                    if save_mark == SaveMark.REJECT:s
                         continue
                     property_schema.mark = save_mark
             if property_schema.floor_plan:

@@ -31,13 +31,14 @@ class HomeState extends State<Home> {
 
   List<StationPostcode> selectedStations = [];
 
-  Future<void> _onPressed() async {
+  Future<void> _onSearchPressed() async {
     setState(() {
       _propertyListState.currentState?.notifier.listProperties = [];
       _propertyListState.currentState?.notifier.value = [];
+      _propertyListState.currentState?.pageNumber = 1;
       _isLoading = true;
     });
-    await _propertyListState.currentState?.notifier.reload(selectedStations);
+    await _propertyListState.currentState?.notifier.reload(selectedStations, 1);
     setState(() {
       _isLoading = false;
       selectedStations = _autoCompleteState.currentState?.addedStations() ?? [];
@@ -101,7 +102,7 @@ class HomeState extends State<Home> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 8.0, 16.0, 8.0),
               child: ElevatedButton.icon(
-                onPressed: _onPressed,
+                onPressed: _onSearchPressed,
                 label: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Text('Search'),
