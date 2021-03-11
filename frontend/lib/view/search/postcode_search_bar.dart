@@ -6,8 +6,10 @@ import 'package:proper_house_search/data/services/postcode_service.dart';
 
 class AutoComplete extends StatefulWidget {
   List<StationPostcode> addedStations;
+  Function(List<StationPostcode>)? onStationsUpdated;
 
-  AutoComplete({required Key key, this.addedStations = const []})
+  AutoComplete(
+      {required Key key, this.addedStations = const [], this.onStationsUpdated})
       : super(key: key);
 
   @override
@@ -84,6 +86,9 @@ class AutoCompleteState extends State<AutoComplete> {
                   setState(() {
                     if (!widget.addedStations.contains(station)) {
                       widget.addedStations.add(station);
+                      if (widget.onStationsUpdated != null) {
+                        widget.onStationsUpdated!(widget.addedStations);
+                      }
                     }
                   });
                 }),
@@ -111,6 +116,9 @@ class AutoCompleteState extends State<AutoComplete> {
                     onDeleted: () {
                       setState(() {
                         widget.addedStations.remove(item);
+                        if (widget.onStationsUpdated != null) {
+                          widget.onStationsUpdated!(widget.addedStations);
+                        }
                       });
                     },
                   ),

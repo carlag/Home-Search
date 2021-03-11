@@ -54,14 +54,7 @@ class PropertiesListViewState extends State<PropertiesListView> {
 
   Widget _propertyList(List<Property> value) {
     return value.isEmpty
-        ? ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: 1,
-            itemBuilder: (BuildContext context, int index) {
-              return const Center(
-                  child: Text('Add stations to view properties'));
-            },
-          )
+        ? Container()
         : NotificationListener<ScrollNotification>(
             child: ListView.separated(
                 separatorBuilder: (context, index) => Padding(

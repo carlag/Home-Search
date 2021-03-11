@@ -13,7 +13,6 @@ class StationService {
   Future<List<Station>?> fetchStations(LatLng origin) async {
     try {
       final request = await _fetchStationsRequest(origin);
-      print('Request: $request');
       final response = await client.get(
         request,
         headers: {

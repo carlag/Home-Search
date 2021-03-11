@@ -30,8 +30,6 @@ class _PropertySummaryState extends State<PropertySummary> {
     if (_markType == null) {
       _markType = widget.property.markType;
     }
-    print('PROPERTY URL: ${widget.property.listingURL}');
-    print('MARKTYPE: ${_markType}');
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =
