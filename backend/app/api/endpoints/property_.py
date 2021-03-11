@@ -51,18 +51,18 @@ async def get_properties(
 
     LOGGER.info(f"New request ID: '{request_id}'")
     loop = asyncio.get_running_loop()
-    loop.run_in_executor(None, lambda: property_server.get_property_information_polling(
-        db,
-        postcodes.postcodes,
-        current_user.email,
-        request_id,
-        page_number,
-        min_area,
-        min_price,
-        max_price,
-        min_beds,
-        keywords,
-        listing_status,
+    await loop.run_in_executor(None, lambda: property_server.get_property_information_polling(
+          db,
+          postcodes.postcodes,
+          current_user.email,
+          request_id,
+          page_number,
+          min_area,
+          min_price,
+          max_price,
+          min_beds,
+          keywords,
+          listing_status,
     ))
     response.status_code = status.HTTP_201_CREATED
 

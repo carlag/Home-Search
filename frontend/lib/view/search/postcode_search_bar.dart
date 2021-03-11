@@ -44,41 +44,19 @@ class AutoCompleteState extends State<AutoComplete> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.addedStations.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: SizedBox(
-                height: 50,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: widget.addedStations.length,
-                  itemBuilder: (_, index) {
-                    final item = widget.addedStations[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Chip(
-                        label: Text(item.name),
-                        deleteIcon: Icon(Icons.close),
-                        onDeleted: () {
-                          setState(() {
-                            widget.addedStations.remove(item);
-                          });
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-            )
+            SizedBox(height: 30.0, child: _selectedStations)
           else
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Text('No stations added'),
+            SizedBox(
+              height: 30.0,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Text('Add stations to search nearby'),
+              ),
             ),
           ListTile(
             title: TypeAheadField(
                 textFieldConfiguration: TextFieldConfiguration(
                   decoration: InputDecoration(
-                    helperText: 'Stations to search nearby',
                     hintText: 'e.g. West Hampstead',
                     hintStyle: TextStyle(color: Colors.black26),
                   ),
@@ -115,4 +93,32 @@ class AutoCompleteState extends State<AutoComplete> {
       ),
     );
   }
+
+  Widget get _selectedStations => SizedBox(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: SizedBox(
+            height: 30,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.addedStations.length,
+              itemBuilder: (_, index) {
+                final item = widget.addedStations[index];
+                return Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Chip(
+                    label: Text(item.name),
+                    deleteIcon: Icon(Icons.close),
+                    onDeleted: () {
+                      setState(() {
+                        widget.addedStations.remove(item);
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
 }
