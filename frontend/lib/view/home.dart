@@ -70,7 +70,8 @@ class HomeState extends State<Home> {
         body = _message('Add stations to load properties');
         break;
       case ViewState.error:
-        body = _message('An error has occurred.');
+        body = _message(
+            'An error has occurred. \n\n ${_propertyListState.currentState?.notifier.errorMessage}');
         break;
     }
     return Column(
@@ -182,7 +183,7 @@ class HomeState extends State<Home> {
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.80,
-                  child: Text(
+                  child: SelectableText(
                     'This was made by lazy developers so this could take a while. Maybe go make a cup of coffee ☕️.',
                     textAlign: TextAlign.center,
                   ),
@@ -200,7 +201,10 @@ class HomeState extends State<Home> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
-              child: Text(message),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),

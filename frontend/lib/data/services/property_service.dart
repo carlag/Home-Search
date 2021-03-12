@@ -44,13 +44,15 @@ class PropertyService {
 
     final requestId = shortHash(UniqueKey());
     var retryCount = 0;
-    var maxRetryCount = 90;
+    var maxRetryCount = 60;
     Tuple2<List<Property>?, String?> pollResponse = Tuple2(null, null);
 
-    while (pollResponse.item1 == null && retryCount < maxRetryCount) {
+    while (pollResponse.item1 == null &&
+        pollResponse.item2 == null &&
+        retryCount < maxRetryCount) {
       retryCount++;
       pollResponse = await _poll(postcodes, requestId, pageNumber: pageNumber);
-      await Future.delayed(const Duration(seconds: 10), () {});
+      await Future.delayed(const Duration(seconds: 3), () {});
     }
 
     if (retryCount == maxRetryCount) {

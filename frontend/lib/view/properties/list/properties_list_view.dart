@@ -42,8 +42,8 @@ class PropertiesListViewState extends State<PropertiesListView> {
     return ValueListenableBuilder<List<Property>>(
       valueListenable: notifier,
       builder: (BuildContext context, List<Property>? value, Widget? child) {
-        if (notifier.errorMessage != null) {
-          return Text('Error: ${notifier.errorMessage}');
+        if (notifier.listProperties.isEmpty) {
+          return Container();
         }
         return value != null
             ? _propertyList(value)
