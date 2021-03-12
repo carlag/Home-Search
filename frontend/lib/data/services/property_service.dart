@@ -52,7 +52,7 @@ class PropertyService {
         retryCount < maxRetryCount) {
       retryCount++;
       pollResponse = await _poll(postcodes, requestId, pageNumber: pageNumber);
-      await Future.delayed(const Duration(seconds: 3), () {});
+      await Future.delayed(const Duration(seconds: 10), () {});
     }
 
     if (retryCount == maxRetryCount) {

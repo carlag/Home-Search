@@ -21,10 +21,8 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
   }
 
   Future<void> reload(List<StationPostcode> postCodes, int pageNumber) async {
-    print('started');
     final response =
         await propertyService.fetchPropertiesPoll(postCodes, pageNumber);
-    print('finished');
     listProperties.addAll(response.item1 ?? []);
     value = listProperties;
     errorMessage = response.item2;

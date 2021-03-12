@@ -175,14 +175,14 @@ class HomeState extends State<Home> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.80,
+                  width: MediaQuery.of(context).size.width * 0.60,
                   child: LinearProgressIndicator(),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.80,
+                  width: MediaQuery.of(context).size.width * 0.60,
                   child: SelectableText(
                     'This was made by lazy developers so this could take a while. Maybe go make a cup of coffee ☕️.',
                     textAlign: TextAlign.center,
@@ -198,12 +198,15 @@ class HomeState extends State<Home> {
 
   Widget _message(String message) => Expanded(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: Text(
-                message,
-                textAlign: TextAlign.center,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.50,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  message,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),
