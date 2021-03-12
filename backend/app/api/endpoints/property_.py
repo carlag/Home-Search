@@ -51,7 +51,7 @@ async def get_properties(
 
     LOGGER.info(f"New request ID: '{request_id}'")
     loop = asyncio.get_running_loop()
-    await loop.run_in_executor(None, lambda: property_server.get_property_information_polling(
+    loop.run_in_executor(None, lambda: property_server.get_property_information_polling(
           db,
           postcodes.postcodes,
           current_user.email,
