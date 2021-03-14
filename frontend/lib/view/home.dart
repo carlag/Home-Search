@@ -25,25 +25,35 @@ class HomeState extends State<Home> {
   final _propertyListState = GlobalKey<PropertiesListViewState>();
   final _filtersState = GlobalKey<FiltersState>();
   String? errorMessage;
-  ViewState state = ViewState.empty;
+  String? infoMessage;
+
+  ViewState state = ViewState.initialized;
 
   List<StationPostcode> selectedStations = [];
 
   @override
   Widget build(BuildContext context) {
-    Widget? body;
     switch (state) {
+      case ViewState.initialized:
+        errorMessage = null;
+        infoMessage =
+            'Add stations to load properties. The more stations you add the slower the search unfortunately.';
+        break;
       case ViewState.loaded:
-        // body = _propertiesList();
+        errorMessage = null;
+        infoMessage = null;
         break;
       case ViewState.loading:
-        body = loading(context);
+        errorMessage = null;
+        infoMessage = null;
         break;
       case ViewState.empty:
-        body = _message('Add more stations to load properties');
+        errorMessage = null;
+        infoMessage = 'No properties found. Try updating filters and stations.';
         break;
       case ViewState.error:
-        body = _message('An error has occurred. \n\n ${errorMessage}');
+        infoMessage = null;
+        errorMessage = 'An error has occurred. \n\n ${errorMessage}';
         break;
     }
     return Column(
@@ -52,7 +62,9 @@ class HomeState extends State<Home> {
       children: [
         _stations(),
         Filters(key: _filtersState),
-        if (body != null) body,
+        if (errorMessage != null) _errorMessage,
+        if (infoMessage != null) _infoMessage,
+        if (state == ViewState.loading) loading(context),
         _propertiesList(),
         _footer(),
       ],
@@ -104,22 +116,16 @@ class HomeState extends State<Home> {
     );
   }
 
-  Widget _message(String message) => Expanded(
-        child: SingleChildScrollView(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.50,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Text(message,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: state == ViewState.error
-                            ? Colors.red
-                            : Colors.black)),
-              ),
-            ),
-          ),
+  Widget get _errorMessage =>
+      _message(errorMessage!, TextStyle(color: Colors.red));
+
+  Widget get _infoMessage =>
+      _message(infoMessage!, TextStyle(color: Colors.black));
+
+  Widget _message(String message, TextStyle style) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(message, textAlign: TextAlign.center, style: style),
         ),
       );
 
@@ -141,7 +147,7 @@ class HomeState extends State<Home> {
 
   Future<void> _performSearch({int pageNumber = 1}) async {
     final propertiesBefore =
-        _propertyListState.currentState?.notifier.listProperties;
+        _propertyListState.currentState?.notifier.listProperties.length;
     setState(() {
       _propertyListState.currentState?.pageNumber = pageNumber;
       state = ViewState.loading;
@@ -151,17 +157,18 @@ class HomeState extends State<Home> {
             _filtersState.currentState!.filterValues)
         .then((_) {
       final propertiesAfter =
-          _propertyListState.currentState?.notifier.listProperties;
+          _propertyListState.currentState?.notifier.listProperties.length;
       setState(() {
-        if (propertiesAfter?.isNotEmpty ?? false) {
+        if (propertiesAfter == propertiesBefore) {
+          state = ViewState.empty;
+        } else if (_propertyListState
+                .currentState?.notifier.listProperties.isNotEmpty ??
+            false) {
           state = ViewState.loaded;
         } else if (_propertyListState.currentState?.notifier.errorMessage !=
             null) {
           state = ViewState.error;
           errorMessage = _propertyListState.currentState?.notifier.errorMessage;
-        } else if (propertiesAfter == propertiesBefore) {
-          print('No more');
-          state = ViewState.empty;
         } else {
           state = ViewState.loaded;
         }
@@ -172,20 +179,23 @@ class HomeState extends State<Home> {
   bool _validate() {
     // only validate if the form exists
     final filterValues = _filtersState.currentState?.filterValues;
-    if (_filtersState.currentState != null &&
-        filterValues!.isNotEmpty &&
+    // TODO: Remove the defaults from the BE code
+    int min = filterValues![FilterTitles.minPrice] ?? 500000;
+    int max = filterValues[FilterTitles.maxPrice] ?? 850000;
+    if (_filtersState.currentState == null) {
+      setState(() {
+        state = ViewState.error;
+        errorMessage = 'Invalid form data. Current state is null';
+      });
+      return false;
+    } else if (filterValues.isNotEmpty &&
         !_filtersState.currentState!.validate()) {
       setState(() {
         state = ViewState.error;
         errorMessage = 'Invalid form data. Expand Filters to view errors.';
       });
       return false;
-    }
-
-    // TODO: Remove the defaults from the BE code
-    int min = filterValues![FilterTitles.minPrice] ?? 500000;
-    int max = filterValues[FilterTitles.maxPrice] ?? 850000;
-    if (max < min) {
+    } else if (max < min) {
       setState(() {
         state = ViewState.error;
         errorMessage = 'Invalid form data. Min is greater than max';
