@@ -159,17 +159,17 @@ class HomeState extends State<Home> {
       final propertiesAfter =
           _propertyListState.currentState?.notifier.listProperties.length;
       setState(() {
-        if (propertiesAfter == propertiesBefore) {
+        if (_propertyListState.currentState?.notifier.errorMessage !=
+            null) {
+          state = ViewState.error;
+          errorMessage = _propertyListState.currentState?.notifier.errorMessage;
+        } else if (propertiesAfter == propertiesBefore) {
           state = ViewState.empty;
         } else if (_propertyListState
                 .currentState?.notifier.listProperties.isNotEmpty ??
             false) {
           state = ViewState.loaded;
-        } else if (_propertyListState.currentState?.notifier.errorMessage !=
-            null) {
-          state = ViewState.error;
-          errorMessage = _propertyListState.currentState?.notifier.errorMessage;
-        } else {
+        } else  {
           state = ViewState.loaded;
         }
       });
