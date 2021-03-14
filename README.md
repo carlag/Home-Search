@@ -28,6 +28,10 @@ The simplest way to deploy it locally is to use docker:
    ```bash
    docker compose up
    ```
+   note if you have set `URL_API` to your remote server, then for local testing run:
+   ```bash
+   URL_API=http://localhost docker compose up
+   ```
 1. Test the backend:
    ```bash
    curl localhost:80/pdf/acf057f7f02b0cf3552e149de5772640bf0bfd2c.pdf

@@ -48,7 +48,9 @@ async def get_properties(
         listing_status: Optional[str] = None # query param
 ) -> Optional[PropertyList]:
     if request_manager.check_for_request_id(request_id):
-        return request_manager.get_data_for_request(request_id)  # This method can raise a 500 http error
+        response = request_manager.get_data_for_request(request_id)  # This method can raise a 500 http error
+        request_manager.remove_request(request_id)
+        return response
 
     LOGGER.info(f"New request ID: '{request_id}'")
     loop = asyncio.get_running_loop()
