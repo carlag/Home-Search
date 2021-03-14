@@ -28,7 +28,7 @@ class RequestManager:
 
     def check_for_request_id(self, request_id: str) -> bool:
         result = request_id in self.requests
-        LOGGER.info(f"Request ID '{request_id}' is {'' if result else 'not'} already in DB.")
+        LOGGER.info(f"Request ID '{request_id}' {'already' if result else 'does not'} exists.")
         return result
 
     def create_request(self, request_id: str) -> None:
