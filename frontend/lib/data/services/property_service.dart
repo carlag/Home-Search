@@ -61,7 +61,7 @@ class PropertyService {
         requestId,
         pageNumber: pageNumber,
       );
-      await Future.delayed(const Duration(seconds: 10), () {});
+      await Future.delayed(const Duration(seconds: 5), () {});
     }
 
     if (retryCount == maxRetryCount) {
@@ -77,7 +77,9 @@ class PropertyService {
     String requestId, {
     int pageNumber = 1,
   }) async {
-    print(filterValues);
+    final keywords = filterValues[FilterTitles.keywords] != null
+        ? (filterValues[FilterTitles.keywords] as List<String>).join(',')
+        : null;
     final params = {
       'page_number': '$pageNumber',
       if (filterValues[FilterTitles.minFloorSize] != null)
@@ -88,8 +90,7 @@ class PropertyService {
         'max_price': '${filterValues[FilterTitles.maxPrice]}',
       if (filterValues[FilterTitles.minBeds] != null)
         'min_beds': '${filterValues[FilterTitles.minBeds]}',
-      if (filterValues[FilterTitles.keywords] != null)
-        'keywords': '${filterValues[FilterTitles.keywords]}',
+      if (filterValues[FilterTitles.keywords] != null) 'keywords': '$keywords',
       'listing_status': 'sale',
     };
     final path = '$propertiesPollPath/$requestId';

@@ -40,7 +40,7 @@ class HomeState extends State<Home> {
         body = loading(context);
         break;
       case ViewState.empty:
-        body = _message('Add stations to load properties');
+        body = _message('Add more stations to load properties');
         break;
       case ViewState.error:
         body = _message('An error has occurred. \n\n ${errorMessage}');
@@ -140,6 +140,8 @@ class HomeState extends State<Home> {
   }
 
   Future<void> _performSearch({int pageNumber = 1}) async {
+    final propertiesBefore =
+        _propertyListState.currentState?.notifier.listProperties;
     setState(() {
       _propertyListState.currentState?.pageNumber = pageNumber;
       state = ViewState.loading;
@@ -147,15 +149,17 @@ class HomeState extends State<Home> {
     await _propertyListState.currentState!.notifier
         .reload(selectedStations, 1, _filtersState.currentState!.filterValues)
         .then((_) {
+      final propertiesAfter =
+          _propertyListState.currentState?.notifier.listProperties;
       setState(() {
-        if (_propertyListState
-                .currentState?.notifier.listProperties.isNotEmpty ??
-            false) {
+        if (propertiesAfter?.isNotEmpty ?? false) {
           state = ViewState.loaded;
         } else if (_propertyListState.currentState?.notifier.errorMessage !=
             null) {
           state = ViewState.error;
           errorMessage = _propertyListState.currentState?.notifier.errorMessage;
+        } else if (propertiesAfter == propertiesBefore) {
+          state = ViewState.empty;
         } else {
           state = ViewState.loaded;
         }
