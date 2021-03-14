@@ -1,5 +1,6 @@
 import json
 import logging
+import traceback
 from typing import List, Optional
 
 import requests
@@ -8,7 +9,6 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.like_reject_server import SaveMark, check_if_property_marked, get_all_liked_property_ids
 from app.models.property_ import PropertyModel
-from app.models.request import RequestModel
 from app.ocr import Ocr
 from app.request_queue import RequestManager
 from app.schemas.property_ import PropertyList, Property, PostcodeList
@@ -97,13 +97,9 @@ class PropertyServer:
             self.request_manager.set_request_body(request_id, response_json)
             LOGGER.debug(f"Saving the following property json to the DB:\n'{response_json}'")
         except Exception as err:
-            LOGGER.info(f"Danger Will Robsinson! There was an error during the async call"
-                        f" to poll for properties: {err}")
-            # request_model = RequestModel(request_id=request_id)
-            request_model = db.query(RequestModel).filter_by(request_id=request_id).first()
-            request_model.error = str(err)
-            db.add(request_model)
-            db.commit()
+            LOGGER.warning(f"DANGER WILL ROBINSON! There was an error during the async call"
+                           f" to poll for properties: {err}")
+            self.request_manager.set_request_body(request_id, traceback.format_exc())
 
     def get_property_information(self,
                                  db: Session,
