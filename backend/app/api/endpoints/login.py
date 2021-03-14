@@ -29,9 +29,9 @@ async def login_access_token(*, db: Session = Depends(get_db), request: Request 
         user = UserModel(email=user_email)
         db.add(user)
         db.commit()
-        LOGGER.info(f"Added user '{user}' to the DB")
+        LOGGER.info(f"Added user '{user.email}' to the DB")
     else:
-        LOGGER.info(f"User '{user}' already in DB")
+        LOGGER.info(f"User '{user.email}' already in DB")
 
     token = {
         "access_token": create_access_token(user_email),

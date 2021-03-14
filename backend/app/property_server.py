@@ -1,4 +1,6 @@
+import json
 import logging
+import traceback
 from typing import List, Optional
 
 import requests
@@ -7,9 +9,8 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.like_reject_server import SaveMark, check_if_property_marked, get_all_liked_property_ids
 from app.models.property_ import PropertyModel
-from app.models.request import RequestModel
 from app.ocr import Ocr
-from app.request_queue import is_request_in_db
+from app.request_queue import RequestManager
 from app.schemas.property_ import PropertyList, Property, PostcodeList
 
 LOGGER = logging.getLogger()
@@ -19,6 +20,7 @@ ZOOPLA_API_KEY = settings.ZOOPLA_API_KEY
 class PropertyServer:
 
     def __init__(self,
+                 request_manager: Optional[RequestManager] = None,
                  minimum_area: int = 90,
                  minimum_price: int = 500_000,
                  maximum_price: int = 850_000,
@@ -27,6 +29,10 @@ class PropertyServer:
                  listing_status: str = "sale",
                  keywords: str = "garden",
                  minimum_beds: int = 2):
+        if not request_manager:
+            request_manager = RequestManager()
+        self.request_manager = request_manager
+
         if page_size > 100 or page_size < 1:
             raise ValueError(f"{page_size} is an invalid value for page_size."
                              f" It must be between 1 and 100 inclusive.")
@@ -84,24 +90,15 @@ class PropertyServer:
                               listing_status=listing_status)
 
         try:
-            if is_request_in_db(db, request_id):
-                raise RuntimeError(f"Attempting to poll but that id ({request_id}) is already in the DB.")
-            request_model = RequestModel(request_id=request_id)
-            db.add(request_model)
-            db.flush()
+            self.request_manager.create_request(request_id)
 
             response = self.get_property_information(db, postcodes, user_email, page_number)
-            request_model.response = response.json(by_alias=True)
-            LOGGER.debug(f"Saving the following property json to the DB:\n'{request_model.response}'")
-            db.commit()
+            self.request_manager.set_request_body(request_id, response)
+            LOGGER.debug(f"Saving the following property json to the DB:\n'{response}'")
         except Exception as err:
-            LOGGER.info(f"Oh dear, you appear to have had an exception during the async call"
-                        f" to poll for properties: {err}")
-            # request_model = RequestModel(request_id=request_id)
-            request_model = db.query(RequestModel).filter_by(request_id=request_id).first()
-            request_model.error = str(err)
-            db.add(request_model)
-            db.commit()
+            LOGGER.warning(f"DANGER WILL ROBINSON! There was an error during the async call"
+                           f" to poll for properties: {err}")
+            self.request_manager.set_request_error(request_id, traceback.format_exc())
 
     def get_property_information(self,
                                  db: Session,
