@@ -92,7 +92,7 @@ class HomeState extends State<Home> {
         Padding(
           padding: const EdgeInsets.fromLTRB(8.0, 8.0, 16.0, 8.0),
           child: ElevatedButton.icon(
-            onPressed: selectedStations.isNotEmpty ? performSearch : null,
+            onPressed: selectedStations.isNotEmpty ? searchNew : null,
             label: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text('Search'),
@@ -123,33 +123,24 @@ class HomeState extends State<Home> {
         ),
       );
 
-  Future<void> performSearch({int pageNumber = 1}) async {
-    // only validate if the form exists
-    final filterValues = _filtersState.currentState?.filterValues;
-    if (_filtersState.currentState != null &&
-        filterValues!.isNotEmpty &&
-        !_filtersState.currentState!.validate()) {
-      setState(() {
-        state = ViewState.error;
-        errorMessage = 'Invalid form data. Expand Filters to view errors.';
-      });
-      return;
+  Future<void> searchMore({required int pageNumber}) async {
+    if (_validate()) {
+      await _performSearch(pageNumber: pageNumber);
     }
+  }
 
-    // TODO: Remove the defaults from the BE code
-    int min = int.parse(filterValues![FilterTitles.minPrice] ?? '500000');
-    int max = int.parse(filterValues[FilterTitles.maxPrice] ?? '850000');
-    if (max <= min) {
+  Future<void> searchNew() async {
+    if (_validate()) {
       setState(() {
-        state = ViewState.error;
-        errorMessage = 'Invalid form data. Min is greater than max';
+        _propertyListState.currentState?.notifier.listProperties = [];
+        _propertyListState.currentState?.notifier.value = [];
       });
-      return;
+      _performSearch(pageNumber: 1);
     }
+  }
 
+  Future<void> _performSearch({int pageNumber = 1}) async {
     setState(() {
-      _propertyListState.currentState?.notifier.listProperties = [];
-      _propertyListState.currentState?.notifier.value = [];
       _propertyListState.currentState?.pageNumber = pageNumber;
       state = ViewState.loading;
     });
@@ -170,6 +161,33 @@ class HomeState extends State<Home> {
         }
       });
     });
+  }
+
+  bool _validate() {
+    // only validate if the form exists
+    final filterValues = _filtersState.currentState?.filterValues;
+    if (_filtersState.currentState != null &&
+        filterValues!.isNotEmpty &&
+        !_filtersState.currentState!.validate()) {
+      setState(() {
+        state = ViewState.error;
+        errorMessage = 'Invalid form data. Expand Filters to view errors.';
+      });
+      return false;
+    }
+
+    // TODO: Remove the defaults from the BE code
+    int min = int.parse(filterValues![FilterTitles.minPrice] ?? '500000');
+    int max = int.parse(filterValues[FilterTitles.maxPrice] ?? '850000');
+    if (max <= min) {
+      setState(() {
+        state = ViewState.error;
+        errorMessage = 'Invalid form data. Min is greater than max';
+      });
+      return false;
+    }
+
+    return true;
   }
 }
 

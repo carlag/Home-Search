@@ -98,7 +98,7 @@ class PropertiesListViewState extends State<PropertiesListView> {
       isLoading = true;
       pageNumber++;
     });
-    await widget.parent.performSearch(pageNumber: pageNumber);
+    await widget.parent.searchMore(pageNumber: pageNumber);
     setState(() {
       isLoading = false;
     });
