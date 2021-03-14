@@ -60,6 +60,7 @@ class RequestManager:
             LOGGER.info(f"Request id '{request_id}' has not responded yet.")
             return None
 
+    # TODO: Use an LRU-cache instead of managing the deletion manually
     def remove_request(self, request_id) -> None:
         self._fail_if_request_does_not_exist(request_id)
         del self.requests[request_id]

@@ -49,7 +49,9 @@ async def get_properties(
 ) -> Optional[PropertyList]:
     if request_manager.check_for_request_id(request_id):
         response = request_manager.get_data_for_request(request_id)  # This method can raise a 500 http error
-        request_manager.remove_request(request_id)
+        if response:
+            # TODO - never deletes if there is an error
+            request_manager.remove_request(request_id)
         return response
 
     LOGGER.info(f"New request ID: '{request_id}'")
