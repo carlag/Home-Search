@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:proper_house_search/data/models/property.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
+import 'package:proper_house_search/view/search/filters.dart';
 import 'package:tuple/tuple.dart';
 
 import '../models/access_token.dart';
@@ -39,7 +40,10 @@ class PropertyService {
   }
 
   Future<Tuple2<List<Property>?, String?>> fetchPropertiesPoll(
-      List<StationPostcode> stations, int pageNumber) async {
+    List<StationPostcode> stations,
+    int pageNumber,
+    Map<String, String> filterValues,
+  ) async {
     final postcodes = stations.map((e) => e.postcode).toList();
 
     final requestId = shortHash(UniqueKey());
@@ -51,7 +55,12 @@ class PropertyService {
         pollResponse.item2 == null &&
         retryCount < maxRetryCount) {
       retryCount++;
-      pollResponse = await _poll(postcodes, requestId, pageNumber: pageNumber);
+      pollResponse = await _poll(
+        postcodes,
+        filterValues,
+        requestId,
+        pageNumber: pageNumber,
+      );
       await Future.delayed(const Duration(seconds: 10), () {});
     }
 
@@ -64,16 +73,17 @@ class PropertyService {
 
   Future<Tuple2<List<Property>?, String>> _poll(
     List<String> postcodes,
+    Map<String, String> filterValues,
     String requestId, {
     int pageNumber = 1,
   }) async {
     final params = {
       'page_number': '$pageNumber',
-      'min_area': '100',
-      'min_price': '600000',
-      'max_price': '900000',
-      'min_beds': '2',
-      'keywords': 'garden',
+      'min_area': filterValues[FilterTitles.minFloorSize],
+      'min_price': filterValues[FilterTitles.minPrice],
+      'max_price': filterValues[FilterTitles.maxPrice],
+      'min_beds': filterValues[FilterTitles.minBeds],
+      'keywords': filterValues[FilterTitles.keywords],
       'listing_status': 'sale',
     };
     final path = '$propertiesPollPath/$requestId';

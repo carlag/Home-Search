@@ -20,9 +20,16 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
     notifyListeners();
   }
 
-  Future<void> reload(List<StationPostcode> postCodes, int pageNumber) async {
-    final response =
-        await propertyService.fetchPropertiesPoll(postCodes, pageNumber);
+  Future<void> reload(
+    List<StationPostcode> postCodes,
+    int pageNumber,
+    Map<String, String> filterValues,
+  ) async {
+    final response = await propertyService.fetchPropertiesPoll(
+      postCodes,
+      pageNumber,
+      filterValues,
+    );
     listProperties.addAll(response.item1 ?? []);
     value = listProperties;
     errorMessage = response.item2;
