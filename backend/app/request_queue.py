@@ -10,7 +10,7 @@ LOGGER = logging.getLogger()
 
 
 class PropertyResponse(NamedTuple):
-    body: Optional[str] = None
+    body: Optional[PropertyList] = None
     error: Optional[str] = None
 
 
@@ -27,14 +27,16 @@ class RequestManager:
                                 detail="Request ID '{request_id}' not found.")
 
     def check_for_request_id(self, request_id: str) -> bool:
-        return request_id in self.requests
+        result = request_id in self.requests
+        LOGGER.info(f"Request ID '{request_id}' is {'' if result else 'not'} already in DB.")
+        return result
 
     def create_request(self, request_id: str) -> None:
         if request_id in self.requests:
             raise ValueError(f"Request ID '{request_id}' already exists")
         self.requests[request_id] = PropertyResponse()
 
-    def set_request_body(self, request_id: str, data: str):
+    def set_request_body(self, request_id: str, data: PropertyList):
         self._fail_if_request_does_not_exist(request_id)
         self.requests[request_id] = PropertyResponse(body=data)
 
@@ -53,7 +55,7 @@ class RequestManager:
                                        f" data for request '{request_id}': {response.error}")
         elif response.body:
             LOGGER.info(f"Request id '{request_id}' returned:\n'{response.body}'")
-            return PropertyList.parse_obj(json.loads(response.body))
+            return PropertyList.parse_obj(response.body)
         else:
             LOGGER.info(f"Request id '{request_id}' has not responded yet.")
             return None

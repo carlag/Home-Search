@@ -93,13 +93,12 @@ class PropertyServer:
             self.request_manager.create_request(request_id)
 
             response = self.get_property_information(db, postcodes, user_email, page_number)
-            response_json = json.dumps(response.json(by_alias=True))
-            self.request_manager.set_request_body(request_id, response_json)
-            LOGGER.debug(f"Saving the following property json to the DB:\n'{response_json}'")
+            self.request_manager.set_request_body(request_id, response)
+            LOGGER.debug(f"Saving the following property json to the DB:\n'{response}'")
         except Exception as err:
             LOGGER.warning(f"DANGER WILL ROBINSON! There was an error during the async call"
                            f" to poll for properties: {err}")
-            self.request_manager.set_request_body(request_id, traceback.format_exc())
+            self.request_manager.set_request_error(request_id, traceback.format_exc())
 
     def get_property_information(self,
                                  db: Session,

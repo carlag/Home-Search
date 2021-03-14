@@ -15,7 +15,7 @@ from app.schemas.property_ import PropertyList, PostcodeList, extract_listing_id
 
 router = APIRouter()
 request_manager = RequestManager()
-property_server = PropertyServer(page_size=10)
+property_server = PropertyServer(request_manager=request_manager, page_size=10)
 LOGGER = logging.getLogger()
 
 
