@@ -10,10 +10,11 @@ from app.like_reject_server import save_property_mark
 from app.models.access import UserModel
 from app.models.property_ import SaveMark
 from app.property_server import PropertyServer
-from app.request_queue import get_data_for_request, is_request_in_db
+from app.request_queue import RequestManager
 from app.schemas.property_ import PropertyList, PostcodeList, extract_listing_id_from_listing_url
 
 router = APIRouter()
+request_manager = RequestManager()
 property_server = PropertyServer(page_size=10)
 LOGGER = logging.getLogger()
 
@@ -46,8 +47,8 @@ async def get_properties(
         request_id: str,  # path param
         postcodes: PostcodeList  # request body (post params)
 ) -> Optional[PropertyList]:
-    if is_request_in_db(db, request_id):
-        return get_data_for_request(db, request_id)  # This method can raise a 500 http error
+    if request_manager.check_for_request_id(request_id):
+        return request_manager.get_data_for_request(request_id)  # This method can raise a 500 http error
 
     LOGGER.info(f"New request ID: '{request_id}'")
     loop = asyncio.get_running_loop()
