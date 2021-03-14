@@ -27,8 +27,8 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
   ) async {
     final response = await propertyService.fetchPropertiesPoll(
       postCodes,
-      pageNumber,
       filterValues,
+      pageNumber,
     );
     listProperties.addAll(response.item1 ?? []);
     value = listProperties;

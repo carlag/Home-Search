@@ -41,8 +41,8 @@ class PropertyService {
 
   Future<Tuple2<List<Property>?, String?>> fetchPropertiesPoll(
     List<StationPostcode> stations,
-    int pageNumber,
     Map<String, dynamic> filterValues,
+    int pageNumber,
   ) async {
     final postcodes = stations.map((e) => e.postcode).toList();
 

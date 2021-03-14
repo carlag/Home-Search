@@ -147,7 +147,8 @@ class HomeState extends State<Home> {
       state = ViewState.loading;
     });
     await _propertyListState.currentState!.notifier
-        .reload(selectedStations, 1, _filtersState.currentState!.filterValues)
+        .reload(selectedStations, pageNumber,
+            _filtersState.currentState!.filterValues)
         .then((_) {
       final propertiesAfter =
           _propertyListState.currentState?.notifier.listProperties;
@@ -159,6 +160,7 @@ class HomeState extends State<Home> {
           state = ViewState.error;
           errorMessage = _propertyListState.currentState?.notifier.errorMessage;
         } else if (propertiesAfter == propertiesBefore) {
+          print('No more');
           state = ViewState.empty;
         } else {
           state = ViewState.loaded;
