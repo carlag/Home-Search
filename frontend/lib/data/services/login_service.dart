@@ -10,7 +10,6 @@ class LoginService {
   static final client = http.Client();
 
   Future<AccessToken> swapTokens(String idToken) async {
-    print(swapTokensEndpoint);
     final response = await client.post(
       swapTokensEndpoint,
       headers: _headers(),
@@ -18,11 +17,7 @@ class LoginService {
     );
 
     if (response.statusCode == 200) {
-      print('Received token');
-      print(response);
-      print(response.body);
       final accessTokenJSON = jsonDecode(response.body);
-      print(accessTokenJSON);
       final accessToken = AccessToken.fromJson(accessTokenJSON);
       return accessToken;
     } else {

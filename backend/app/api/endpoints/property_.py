@@ -37,22 +37,22 @@ async def get_properties(
         db: Session = Depends(get_db),
         current_user: UserModel = Depends(get_current_user),
         response: Response,
-        page_number: int,  # query param
-        min_area: Optional[int],  # query param
-        min_price: Optional[int],  # query param
-        max_price: Optional[int],  # query param
-        min_beds: Optional[int],  # query param
-        keywords: Optional[str],  # query param
-        listing_status: Optional[str],  # query param
         request_id: str,  # path param
-        postcodes: PostcodeList  # request body (post params)
+        postcodes: PostcodeList,  # request body (post params)
+        page_number: int,  # query param
+        min_area: Optional[int] = None,  # query param
+        min_price: Optional[int] = None,  # query param
+        max_price: Optional[int] = None,  # query param
+        min_beds: Optional[int] = None,  # query param
+        keywords: Optional[str] = None,  # query param
+        listing_status: Optional[str] = None # query param
 ) -> Optional[PropertyList]:
     if request_manager.check_for_request_id(request_id):
         return request_manager.get_data_for_request(request_id)  # This method can raise a 500 http error
 
     LOGGER.info(f"New request ID: '{request_id}'")
     loop = asyncio.get_running_loop()
-    await loop.run_in_executor(None, lambda: property_server.get_property_information_polling(
+    loop.run_in_executor(None, lambda: property_server.get_property_information_polling(
           db,
           postcodes.postcodes,
           current_user.email,

@@ -99,7 +99,9 @@ class PropertyServer:
         except Exception as err:
             LOGGER.info(f"Danger Will Robsinson! There was an error during the async call"
                         f" to poll for properties: {err}")
-            request_model = RequestModel(request_id=request_id)
+            # request_model = RequestModel(request_id=request_id)
+            request_model = db.query(RequestModel).filter_by(request_id=request_id).first()
+            request_model.error = str(err)
             db.add(request_model)
             db.commit()
 
@@ -126,7 +128,7 @@ class PropertyServer:
         for property_number, property_json in enumerate(properties_json):
             property_schema = Property.parse_obj(property_json)
             property_model = property_schema.to_orm()
-            LOGGER.info(f"Working on property {property_number}/{properties_count} - {property_model}:")
+            LOGGER.info(f"Working on property {property_number + 1}/{properties_count} - {property_model}:")
             if not _is_property_in_db(db, property_model.listing_id):
                 db.add(property_model)
                 db.flush()

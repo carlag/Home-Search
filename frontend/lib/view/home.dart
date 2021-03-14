@@ -1,9 +1,9 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:proper_house_search/data/models/station_postcode.dart';
 import 'package:proper_house_search/data/services/property_service.dart';
-import 'package:proper_house_search/view/search/search_form.dart';
+import 'package:proper_house_search/view/loading.dart';
+import 'package:proper_house_search/view/search/filters.dart';
+import 'package:proper_house_search/view/view_state.dart';
 
 import '../data/services/property_service.dart';
 import 'properties/list/properties_list_view.dart';
@@ -21,128 +21,177 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  final GlobalKey<AutoCompleteState> _autoCompleteState =
-      GlobalKey<AutoCompleteState>();
-
-  final GlobalKey<PropertiesListViewState> _propertyListState =
-      GlobalKey<PropertiesListViewState>();
-
-  var _isLoading = false;
+  final _autoCompleteState = GlobalKey<AutoCompleteState>();
+  final _propertyListState = GlobalKey<PropertiesListViewState>();
+  final _filtersState = GlobalKey<FiltersState>();
+  String? errorMessage;
+  ViewState state = ViewState.empty;
 
   List<StationPostcode> selectedStations = [];
 
-  Future<void> _onPressed() async {
-    setState(() {
-      _propertyListState.currentState?.notifier.listProperties = [];
-      _propertyListState.currentState?.notifier.value = [];
-      _isLoading = true;
-    });
-    await _propertyListState.currentState?.notifier.reload(selectedStations);
-    setState(() {
-      _isLoading = false;
-      selectedStations = _autoCompleteState.currentState?.addedStations() ?? [];
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    const padding = 16.0;
+    Widget? body;
+    switch (state) {
+      case ViewState.loaded:
+        // body = _propertiesList();
+        break;
+      case ViewState.loading:
+        body = loading(context);
+        break;
+      case ViewState.empty:
+        body = _message('Add stations to load properties');
+        break;
+      case ViewState.error:
+        body = _message('An error has occurred. \n\n ${errorMessage}');
+        break;
+    }
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        _stations(),
+        Filters(key: _filtersState),
+        if (body != null) body,
+        _propertiesList(),
+        _footer(),
+      ],
+    );
+  }
+
+  Widget _stations() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+      child: AutoComplete(
+        key: _autoCompleteState,
+        addedStations: selectedStations,
+        onStationsUpdated: (stations) {
+          setState(() {
+            selectedStations = stations;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _propertiesList() {
+    return Expanded(
+      child: PropertiesListView(
+        key: _propertyListState,
+        parent: this,
+        propertyService: widget.propertyService,
+      ),
+    );
+  }
+
+  Widget _footer() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _logo,
         Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: AutoComplete(
-            key: _autoCompleteState,
-            addedStations: selectedStations,
+          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 16.0, 8.0),
+          child: ElevatedButton.icon(
+            onPressed: selectedStations.isNotEmpty ? searchNew : null,
+            label: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text('Search'),
+            ),
+            icon: Icon(Icons.house_outlined),
           ),
-        ),
-        ExpansionTile(
-          expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          title: Text('Filters'),
-          children: [
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: 120.0,
-                maxHeight: max(
-                  120.0,
-                  MediaQuery.of(context).size.height * 0.20,
-                ),
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: padding),
-                      child: SearchForm(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        if (_isLoading) _loading(),
-        Expanded(
-          child: PropertiesListView(
-            key: _propertyListState,
-            parent: this,
-            propertyService: widget.propertyService,
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Image.network(
-              "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
-              headers: {'Access-Control-Allow-Origin': '*'},
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8.0, 8.0, 16.0, 8.0),
-              child: ElevatedButton.icon(
-                onPressed: _onPressed,
-                label: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text('Search'),
-                ),
-                icon: Icon(Icons.house_outlined),
-              ),
-            ),
-          ],
         ),
       ],
     );
   }
 
-  Widget _loading() {
-    return Center(
-      child: Container(
-        color: Colors.black12,
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
+  Widget _message(String message) => Expanded(
+        child: SingleChildScrollView(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.50,
+            child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.80,
-                child: LinearProgressIndicator(),
+              child: Center(
+                child: Text(message,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: state == ViewState.error
+                            ? Colors.red
+                            : Colors.black)),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.80,
-                child: Text(
-                  'This was made by lazy developers so this could take a while. Maybe go make a cup of coffee ☕️.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
-    );
+      );
+
+  Future<void> searchMore({required int pageNumber}) async {
+    if (_validate()) {
+      await _performSearch(pageNumber: pageNumber);
+    }
+  }
+
+  Future<void> searchNew() async {
+    if (_validate()) {
+      setState(() {
+        _propertyListState.currentState?.notifier.listProperties = [];
+        _propertyListState.currentState?.notifier.value = [];
+      });
+      _performSearch(pageNumber: 1);
+    }
+  }
+
+  Future<void> _performSearch({int pageNumber = 1}) async {
+    setState(() {
+      _propertyListState.currentState?.pageNumber = pageNumber;
+      state = ViewState.loading;
+    });
+    await _propertyListState.currentState!.notifier
+        .reload(selectedStations, 1, _filtersState.currentState!.filterValues)
+        .then((_) {
+      setState(() {
+        if (_propertyListState
+                .currentState?.notifier.listProperties.isNotEmpty ??
+            false) {
+          state = ViewState.loaded;
+        } else if (_propertyListState.currentState?.notifier.errorMessage !=
+            null) {
+          state = ViewState.error;
+          errorMessage = _propertyListState.currentState?.notifier.errorMessage;
+        } else {
+          state = ViewState.loaded;
+        }
+      });
+    });
+  }
+
+  bool _validate() {
+    // only validate if the form exists
+    final filterValues = _filtersState.currentState?.filterValues;
+    if (_filtersState.currentState != null &&
+        filterValues!.isNotEmpty &&
+        !_filtersState.currentState!.validate()) {
+      setState(() {
+        state = ViewState.error;
+        errorMessage = 'Invalid form data. Expand Filters to view errors.';
+      });
+      return false;
+    }
+
+    // TODO: Remove the defaults from the BE code
+    int min = int.parse(filterValues![FilterTitles.minPrice] ?? '500000');
+    int max = int.parse(filterValues[FilterTitles.maxPrice] ?? '850000');
+    if (max <= min) {
+      setState(() {
+        state = ViewState.error;
+        errorMessage = 'Invalid form data. Min is greater than max';
+      });
+      return false;
+    }
+
+    return true;
   }
 }
+
+Widget get _logo => Image.network(
+      "https://www.zoopla.co.uk/static/images/mashery/powered-by-zoopla-150x73.png",
+      headers: {'Access-Control-Allow-Origin': '*'},
+    );

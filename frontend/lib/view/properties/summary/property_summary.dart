@@ -8,8 +8,6 @@ import 'package:universal_html/html.dart' as html;
 
 import 'property_map.dart';
 
-const _rowHeight = 400.0;
-
 class PropertySummary extends StatefulWidget {
   PropertySummary(
       {required Key key, required this.property, required this.propertyService})
@@ -27,19 +25,18 @@ class _PropertySummaryState extends State<PropertySummary> {
 
   @override
   Widget build(BuildContext context) {
+    final _rowHeight = MediaQuery.of(context).size.width * 0.3;
     if (_markType == null) {
       _markType = widget.property.markType;
     }
-    print('PROPERTY URL: ${widget.property.listingURL}');
-    print('MARKTYPE: ${_markType}');
     final titleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 2.0);
     final subTitleStyle =
         DefaultTextStyle.of(context).style.apply(fontSizeFactor: 1.2);
     return ListTile(
       title: _title(widget.property, titleStyle),
-      subtitle: _body(
-          widget.key!, widget.property, subTitleStyle, widget.propertyService),
+      subtitle: _body(widget.key!, widget.property, subTitleStyle,
+          widget.propertyService, _rowHeight),
     );
   }
 
@@ -53,8 +50,9 @@ class _PropertySummaryState extends State<PropertySummary> {
       );
 
   Widget _body(Key key, Property property, TextStyle style,
-          PropertyService service) =>
+          PropertyService service, double rowHeight) =>
       Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -86,14 +84,11 @@ class _PropertySummaryState extends State<PropertySummary> {
             style: style,
           ),
           if (property.latitude != null && property.longitude != null)
-            SizedBox(
-              height: 100,
-              child: Stations(
-                key: Key('station_${key.hashCode}'),
-                origin: LatLng(property.latitude, property.longitude),
-              ),
+            Stations(
+              key: Key('station_${key.hashCode}'),
+              origin: LatLng(property.latitude, property.longitude),
             ),
-          _details(property),
+          _details(property, rowHeight),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Divider(height: 2.0),
@@ -123,47 +118,47 @@ class _PropertySummaryState extends State<PropertySummary> {
   }
 }
 
-Widget _details(Property property) => Column(
+Widget _details(Property property, double rowHeight) => Column(
       children: [
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _floorPlan(property),
-              _image(property),
+              _floorPlan(property, rowHeight),
+              _image(property, rowHeight),
               if (property.longitude != null && property.latitude != null)
-                _map(property),
+                _map(property, rowHeight),
             ],
           ),
         ),
       ],
     );
 
-Widget _floorPlan(Property property) => FlatButton(
+Widget _floorPlan(Property property, double rowHeight) => FlatButton(
       onPressed: () => html.window.open('${property.floorPlan?[0] ?? ''}',
           '${property.floorPlan?[0] ?? ''}'), // handle your image tap here
       child: Image.network(
         '${property.floorPlan?[0] ?? ''}',
-        height: _rowHeight,
+        height: rowHeight,
         headers: {'Access-Control-Allow-Origin': '*'},
       ),
     );
 
-Widget _image(Property property) => FlatButton(
+Widget _image(Property property, double rowHeight) => FlatButton(
       onPressed: () => html.window
           .open('${property.imageURL ?? ''}', '${property.imageURL ?? ''}'),
       child: Image.network(
         '${property.imageURL}',
-        height: _rowHeight,
+        height: rowHeight,
         headers: {'Access-Control-Allow-Origin': '*'},
       ),
     );
 
-Widget _map(Property property) {
+Widget _map(Property property, double rowHeight) {
   return SizedBox(
-    height: _rowHeight,
-    width: _rowHeight,
+    height: rowHeight,
+    width: rowHeight,
     child: PropertyMap(
       longitude: property.longitude!,
       latitude: property.latitude!,

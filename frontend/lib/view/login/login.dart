@@ -35,18 +35,15 @@ class SignInDemoState extends State<SignInDemo> {
     _googleSignIn.onCurrentUserChanged
         .listen((GoogleSignInAccount account) async {
       if (account == null) {
-        print('Sign out');
         _accessToken = null;
         setState(() {
           _currentUser = null;
           _state = UserState.unknown;
         });
       } else {
-        print('Signed in');
         final authentication = await account.authentication;
         _accessToken = await service.swapTokens(authentication.idToken);
         setState(() {
-          print('Signed in');
           if (_accessToken != null) {
             _currentUser = account;
             _state = UserState.authenticated;
