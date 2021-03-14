@@ -177,9 +177,9 @@ class HomeState extends State<Home> {
     }
 
     // TODO: Remove the defaults from the BE code
-    int min = int.parse(filterValues![FilterTitles.minPrice] ?? '500000');
-    int max = int.parse(filterValues[FilterTitles.maxPrice] ?? '850000');
-    if (max <= min) {
+    int min = filterValues![FilterTitles.minPrice] ?? 500000;
+    int max = filterValues[FilterTitles.maxPrice] ?? 850000;
+    if (max < min) {
       setState(() {
         state = ViewState.error;
         errorMessage = 'Invalid form data. Min is greater than max';

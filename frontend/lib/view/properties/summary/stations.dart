@@ -55,6 +55,9 @@ class Stations extends StatelessWidget {
           child: Text(prefix, style: subtitle),
         ),
         TableCell(
+          child: Text(' Distance: ', style: subtitle),
+        ),
+        TableCell(
           child: Text('${(station.distance! / 1000.0).toStringAsFixed(2)} km, ',
               style: accentedStyle),
         ),
