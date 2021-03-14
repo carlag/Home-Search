@@ -30,7 +30,7 @@ const padding = 16.0;
 // Define a corresponding State class.
 // This class holds data related to the form.
 class FiltersState extends State<Filters> {
-  Map<String, String> filterValues = {};
+  Map<String, dynamic> filterValues = {};
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -72,30 +72,34 @@ class FiltersState extends State<Filters> {
         children: <Widget>[
           Wrap(
             children: [
-              _input(
-                title: FilterTitles.minPrice,
-                hint: 'e.g.400000',
-                validationType: ValidationType.number,
-              ),
-              _input(
-                title: FilterTitles.maxPrice,
-                hint: 'e.g. 600000',
-                validationType: ValidationType.number,
-              ),
-              _input(
-                title: FilterTitles.minFloorSize,
-                hint: 'e.g. 100',
-                validationType: ValidationType.number,
-              ),
-              _input(
-                title: FilterTitles.minBeds,
-                hint: 'e.g. 2',
-                validationType: ValidationType.number,
-              ),
-              _input(
-                title: FilterTitles.keywords,
-                hint: 'e.g. Garden',
-              ),
+              _dropdown<int>(
+                  title: FilterTitles.minPrice,
+                  items:
+                      List.generate(25, (index) => (100000 + index * (50000)))
+                          .toList(),
+                  display: (value) =>
+                      value != null ? Text('£$value') : Text(' ')),
+              _dropdown<int>(
+                  title: FilterTitles.maxPrice,
+                  items:
+                      List.generate(25, (index) => (100000 + index * (50000)))
+                          .toList(),
+                  display: (value) =>
+                      value != null ? Text('£$value') : Text(' ')),
+              _dropdown<int>(
+                  title: FilterTitles.minFloorSize,
+                  items: List.generate(20, (index) => (30 + index * (10)))
+                      .toList(),
+                  display: (value) =>
+                      value != null ? Text('$value sqm') : Text(' ')),
+              _dropdown<int>(
+                  title: FilterTitles.minBeds,
+                  items:
+                      List.generate(10, (index) => (1 + index * (1))).toList(),
+                  display: (value) =>
+                      value != null ? Text('$value') : Text(' ')),
+              _checkbox(title: 'Garden'),
+              _checkbox(title: 'Parking'),
             ],
           ),
         ],
@@ -105,6 +109,71 @@ class FiltersState extends State<Filters> {
 
   bool validate() {
     return _formKey.currentState != null && _formKey.currentState!.validate();
+  }
+
+  Widget _checkbox({required String title}) {
+    return SizedBox(
+      width: 120,
+      child: CheckboxListTile(
+        title: Text(title),
+        contentPadding: EdgeInsets.all(2.0),
+        controlAffinity: ListTileControlAffinity.leading,
+        value: (filterValues[FilterTitles.keywords] ?? []).contains(title),
+        onChanged: (checked) {
+          setState(() {
+            List<String>? values = filterValues[FilterTitles.keywords];
+            if (checked != null && checked) {
+              values = values ?? [];
+              values.add(title);
+              filterValues[FilterTitles.keywords] = values;
+            }
+            if (checked != null && !checked) {
+              values!.remove(title);
+              if (values.isEmpty) {
+                filterValues[FilterTitles.keywords] = values;
+                filterValues.remove(FilterTitles.keywords);
+              }
+            }
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _dropdown<T>({
+    required String title,
+    double width = 120,
+    required List<T?> items,
+    required Widget Function(T?) display,
+    bool shouldHandleOnchanged = true,
+  }) {
+    items.insert(0, null);
+    final textField = DropdownButtonFormField<T>(
+      value: shouldHandleOnchanged ? filterValues[title] : 'Garden',
+      onChanged: shouldHandleOnchanged
+          ? (value) {
+              setState(() {
+                if (value == null) {
+                  filterValues.remove(title);
+                } else {
+                  filterValues[title] = value;
+                }
+              });
+            }
+          : (_) {},
+      items: items
+          .map((item) => DropdownMenuItem<T>(
+                child: display(item),
+                value: item,
+              ))
+          .toList(),
+      decoration: InputDecoration(
+        helperText: title,
+        helperMaxLines: 2,
+      ),
+    );
+
+    return _textFieldContainer(textField, width);
   }
 
   Widget _input(
@@ -139,31 +208,36 @@ class FiltersState extends State<Filters> {
           break;
       }
     }
+    final textField = TextFormField(
+      initialValue: filterValues[title],
+      keyboardType: textInputType,
+      onChanged: (text) {
+        setState(() {
+          if (text.isEmpty) {
+            filterValues.remove(title);
+          } else {
+            filterValues[title] = text;
+          }
+        });
+      },
+      validator: validator,
+      decoration: InputDecoration(
+        helperText: title,
+        helperMaxLines: 2,
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.black26),
+      ),
+    );
+    return _textFieldContainer(textField, width);
+  }
+
+  Widget _textFieldContainer(Widget textField, double width) {
     return Container(
       child: Padding(
           padding: const EdgeInsets.only(left: 16, right: 50.0, bottom: 8.0),
           child: Container(
             width: width,
-            child: TextFormField(
-              initialValue: filterValues[title],
-              keyboardType: textInputType,
-              onChanged: (text) {
-                setState(() {
-                  if (text.isEmpty) {
-                    filterValues.remove(title);
-                  } else {
-                    filterValues[title] = text;
-                  }
-                });
-              },
-              validator: validator,
-              decoration: InputDecoration(
-                helperText: title,
-                helperMaxLines: 2,
-                hintText: hint,
-                hintStyle: TextStyle(color: Colors.black26),
-              ),
-            ),
+            child: textField,
           )),
     );
   }

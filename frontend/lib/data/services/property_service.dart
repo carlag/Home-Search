@@ -42,7 +42,7 @@ class PropertyService {
   Future<Tuple2<List<Property>?, String?>> fetchPropertiesPoll(
     List<StationPostcode> stations,
     int pageNumber,
-    Map<String, String> filterValues,
+    Map<String, dynamic> filterValues,
   ) async {
     final postcodes = stations.map((e) => e.postcode).toList();
 
@@ -61,7 +61,7 @@ class PropertyService {
         requestId,
         pageNumber: pageNumber,
       );
-      await Future.delayed(const Duration(seconds: 10), () {});
+      await Future.delayed(const Duration(seconds: 5), () {});
     }
 
     if (retryCount == maxRetryCount) {
@@ -73,22 +73,24 @@ class PropertyService {
 
   Future<Tuple2<List<Property>?, String>> _poll(
     List<String> postcodes,
-    Map<String, String> filterValues,
+    Map<String, dynamic> filterValues,
     String requestId, {
     int pageNumber = 1,
   }) async {
+    final keywords = filterValues[FilterTitles.keywords] != null
+        ? (filterValues[FilterTitles.keywords] as List<String>).join(',')
+        : null;
     final params = {
       'page_number': '$pageNumber',
       if (filterValues[FilterTitles.minFloorSize] != null)
-        'min_area': filterValues[FilterTitles.minFloorSize],
+        'min_area': '${filterValues[FilterTitles.minFloorSize]}',
       if (filterValues[FilterTitles.minPrice] != null)
-        'min_price': filterValues[FilterTitles.minPrice],
+        'min_price': '${filterValues[FilterTitles.minPrice]}',
       if (filterValues[FilterTitles.maxPrice] != null)
-        'max_price': filterValues[FilterTitles.maxPrice],
+        'max_price': '${filterValues[FilterTitles.maxPrice]}',
       if (filterValues[FilterTitles.minBeds] != null)
-        'min_beds': filterValues[FilterTitles.minBeds],
-      if (filterValues[FilterTitles.keywords] != null)
-        'keywords': filterValues[FilterTitles.keywords],
+        'min_beds': '${filterValues[FilterTitles.minBeds]}',
+      if (filterValues[FilterTitles.keywords] != null) 'keywords': '$keywords',
       'listing_status': 'sale',
     };
     final path = '$propertiesPollPath/$requestId';

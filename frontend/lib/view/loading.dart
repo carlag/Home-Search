@@ -19,7 +19,7 @@ Widget loading(BuildContext context) {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.60,
                 child: SelectableText(
-                  'This was made by lazy developers so this could take a while. Maybe go make a cup of coffee ☕️.',
+                  'This may take a while. Maybe go make a cup of coffee ☕️',
                   textAlign: TextAlign.center,
                 ),
               ),

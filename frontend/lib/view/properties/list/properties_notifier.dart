@@ -23,7 +23,7 @@ class PropertiesNotifier extends ValueNotifier<List<Property>> {
   Future<void> reload(
     List<StationPostcode> postCodes,
     int pageNumber,
-    Map<String, String> filterValues,
+    Map<String, dynamic> filterValues,
   ) async {
     final response = await propertyService.fetchPropertiesPoll(
       postCodes,

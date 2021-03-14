@@ -84,9 +84,12 @@ class _PropertySummaryState extends State<PropertySummary> {
             style: style,
           ),
           if (property.latitude != null && property.longitude != null)
-            Stations(
-              key: Key('station_${key.hashCode}'),
-              origin: LatLng(property.latitude, property.longitude),
+            SizedBox(
+              height: 100.0,
+              child: Stations(
+                key: Key('station_${key.hashCode}'),
+                origin: LatLng(property.latitude, property.longitude),
+              ),
             ),
           _details(property, rowHeight),
           Padding(
