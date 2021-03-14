@@ -79,11 +79,16 @@ class PropertyService {
   }) async {
     final params = {
       'page_number': '$pageNumber',
-      'min_area': filterValues[FilterTitles.minFloorSize],
-      'min_price': filterValues[FilterTitles.minPrice],
-      'max_price': filterValues[FilterTitles.maxPrice],
-      'min_beds': filterValues[FilterTitles.minBeds],
-      'keywords': filterValues[FilterTitles.keywords],
+      if (filterValues[FilterTitles.minFloorSize] != null)
+        'min_area': filterValues[FilterTitles.minFloorSize],
+      if (filterValues[FilterTitles.minPrice] != null)
+        'min_price': filterValues[FilterTitles.minPrice],
+      if (filterValues[FilterTitles.maxPrice] != null)
+        'max_price': filterValues[FilterTitles.maxPrice],
+      if (filterValues[FilterTitles.minBeds] != null)
+        'min_beds': filterValues[FilterTitles.minBeds],
+      if (filterValues[FilterTitles.keywords] != null)
+        'keywords': filterValues[FilterTitles.keywords],
       'listing_status': 'sale',
     };
     final path = '$propertiesPollPath/$requestId';

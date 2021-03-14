@@ -47,7 +47,8 @@ class HomeState extends State<Home> {
         break;
     }
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _stations(),
         Filters(key: _filtersState),
@@ -123,11 +124,25 @@ class HomeState extends State<Home> {
       );
 
   Future<void> performSearch({int pageNumber = 1}) async {
-    if (_filtersState.currentState == null ||
+    // only validate if the form exists
+    final filterValues = _filtersState.currentState?.filterValues;
+    if (_filtersState.currentState != null &&
+        filterValues!.isNotEmpty &&
         !_filtersState.currentState!.validate()) {
       setState(() {
         state = ViewState.error;
         errorMessage = 'Invalid form data. Expand Filters to view errors.';
+      });
+      return;
+    }
+
+    // TODO: Remove the defaults from the BE code
+    int min = int.parse(filterValues![FilterTitles.minPrice] ?? '500000');
+    int max = int.parse(filterValues[FilterTitles.maxPrice] ?? '850000');
+    if (max <= min) {
+      setState(() {
+        state = ViewState.error;
+        errorMessage = 'Invalid form data. Min is greater than max';
       });
       return;
     }
@@ -137,10 +152,6 @@ class HomeState extends State<Home> {
       _propertyListState.currentState?.notifier.value = [];
       _propertyListState.currentState?.pageNumber = pageNumber;
       state = ViewState.loading;
-      // If the form is valid, display a snackbar. In the real world,
-      // you'd often call a server or save the information in a database.
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Processing Data')));
     });
     await _propertyListState.currentState!.notifier
         .reload(selectedStations, 1, _filtersState.currentState!.filterValues)

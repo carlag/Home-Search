@@ -37,7 +37,7 @@ class FiltersState extends State<Filters> {
   Widget build(BuildContext context) {
     return ExpansionTile(
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
-      title: Text('Filters'),
+      title: Text('Filters (${filterValues.length} selected)'),
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(
@@ -96,21 +96,6 @@ class FiltersState extends State<Filters> {
                 title: FilterTitles.keywords,
                 hint: 'e.g. Garden',
               ),
-              // _input(
-              //   title: FilterTitles.maxWalkingTime,
-              //   hint: 'e.g. 10',
-              //   validationType: ValidationType.number,
-              // ),
-              // _input(
-              //   title: FilterTitles.maxCommutingTime,
-              //   hint: 'e.g. 45',
-              //   validationType: ValidationType.number,
-              // ),
-              // _input(
-              //   title: FilterTitles.workPostcodes,
-              //   hint: 'e.g. N1C 4AG, W1T 1FB',
-              //   width: 200,
-              // ),
             ],
           ),
         ],
@@ -128,9 +113,11 @@ class FiltersState extends State<Filters> {
       double width = 120,
       ValidationType? validationType}) {
     String? Function(String?)? validator;
+    TextInputType? textInputType;
     if (validationType != null) {
       switch (validationType) {
         case ValidationType.number:
+          textInputType = TextInputType.number;
           validator = (value) {
             if (value!.isNotEmpty) {
               if (double.tryParse(value) == null) {
@@ -158,7 +145,17 @@ class FiltersState extends State<Filters> {
           child: Container(
             width: width,
             child: TextFormField(
-              onChanged: (text) => filterValues[title] = text,
+              initialValue: filterValues[title],
+              keyboardType: textInputType,
+              onChanged: (text) {
+                setState(() {
+                  if (text.isEmpty) {
+                    filterValues.remove(title);
+                  } else {
+                    filterValues[title] = text;
+                  }
+                });
+              },
               validator: validator,
               decoration: InputDecoration(
                 helperText: title,

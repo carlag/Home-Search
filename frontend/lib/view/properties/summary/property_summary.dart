@@ -53,6 +53,7 @@ class _PropertySummaryState extends State<PropertySummary> {
   Widget _body(Key key, Property property, TextStyle style,
           PropertyService service) =>
       Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -84,12 +85,9 @@ class _PropertySummaryState extends State<PropertySummary> {
             style: style,
           ),
           if (property.latitude != null && property.longitude != null)
-            SizedBox(
-              height: 100,
-              child: Stations(
-                key: Key('station_${key.hashCode}'),
-                origin: LatLng(property.latitude, property.longitude),
-              ),
+            Stations(
+              key: Key('station_${key.hashCode}'),
+              origin: LatLng(property.latitude, property.longitude),
             ),
           _details(property),
           Padding(
