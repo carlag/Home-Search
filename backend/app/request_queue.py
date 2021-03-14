@@ -64,3 +64,4 @@ class RequestManager:
     def remove_request(self, request_id) -> None:
         self._fail_if_request_does_not_exist(request_id)
         del self.requests[request_id]
+        LOGGER.info(f"Request ID '{request_id}' deleted.")
